@@ -1,5 +1,6 @@
 import type { Page } from "@playwright/test";
-import BasePage, { BasePageArgs } from "./__BasePage";
+import BasePage from "./__BasePage";
+import type { BasePageArgs } from "./__BasePage";
 
 type UrlArgs = { letter: string };
 

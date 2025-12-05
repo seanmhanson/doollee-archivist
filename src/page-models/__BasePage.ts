@@ -1,16 +1,6 @@
-import { Page } from "playwright";
+import type { Page } from "playwright";
 
-/**
- * Metadata gathered during page extraction to facilitate error handling
- * and debugging across multiple calls to the same script.
- */
-export type PageMetadata = Partial<{
-  statusCode: number;
-  error: string;
-  timestamp: string;
-  results: number;
-  url: string;
-}>;
+import { PageMetadata } from "../types";
 
 /**
  * Supports both direct URL scraping and parameterized URL construction.
