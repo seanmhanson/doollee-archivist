@@ -86,7 +86,7 @@ export default abstract class BasePage<
     };
     const gotoOptions = { ...defaultOptions, ...options };
 
-    console.log(`🔗 Attempting navigation to: ${this.url}`);
+    console.debug(`🔗 Attempting navigation to: ${this.url}`);
 
     try {
       const response = await this.page.goto(this.url, gotoOptions);
@@ -108,7 +108,7 @@ export default abstract class BasePage<
           statusCode,
         });
       } else {
-        console.log(`✅ Successfully navigated to: ${this.url}`);
+        console.debug(`✅ Successfully navigated to: ${this.url}`);
       }
     } catch (error) {
       console.log(`❌ Navigation failed for: ${this.url}`);

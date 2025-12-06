@@ -40,7 +40,7 @@ class ModuleWriter {
 
   private async initialize(moduleName: string) {
     this.moduleName = moduleName;
-    this.outputDir = path.resolve(`./output/${this.moduleName}`);
+    this.outputDir = path.resolve(`output/${this.moduleName}`);
     await fs.mkdir(this.outputDir, { recursive: true });
   }
 
@@ -171,7 +171,8 @@ class ModuleWriter {
 
     if (verbose) {
       console.log(
-        ` 📦 Module '${this.moduleName}' created with ${this.filenames.length} files written to ${this.outputDir}`
+        ` 📦 Module created with ${this.filenames.length} files written to ` +
+          `output/${this.moduleName}`
       );
     }
   }
