@@ -7,9 +7,8 @@ type UrlArgs = {
   firstLetter: string;
   lastLetter: string;
 };
-type Data = { [key: string]: string };
 
-type PageArgs = BasePageArgs<UrlArgs>;
+type Data = { [key: string]: string };
 
 /**
  * Scraper for sub-index pages for authors on doollee.com.
@@ -57,7 +56,7 @@ export default class AuthorSubindexPage extends BasePage<UrlArgs, Data> {
   /**
    * @inheritDoc
    */
-  constructor(page: Page, pageArgs: PageArgs) {
+  constructor(page: Page, pageArgs: BasePageArgs<UrlArgs>) {
     super(page, pageArgs);
   }
 

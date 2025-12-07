@@ -1,4 +1,4 @@
-import { Page } from "playwright";
+import type { Page } from "playwright";
 import type { AuthorData } from "../../types";
 
 export default class SectionBio {

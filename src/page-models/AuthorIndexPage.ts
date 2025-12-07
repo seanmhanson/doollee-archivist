@@ -4,8 +4,6 @@ import type { BasePageArgs } from "./__BasePage";
 
 type UrlArgs = { letter: string };
 
-type PageArgs = BasePageArgs<UrlArgs>;
-
 type Data = { [key: string]: string };
 
 /**
@@ -56,7 +54,7 @@ export default class AuthorIndexPage extends BasePage<UrlArgs, Data> {
   /**
    * @inheritDoc
    */
-  constructor(page: Page, pageArgs: PageArgs) {
+  constructor(page: Page, pageArgs: BasePageArgs<UrlArgs>) {
     super(page, pageArgs);
   }
 
