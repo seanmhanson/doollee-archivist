@@ -19,3 +19,19 @@ export type IndexUrlsData = {
     };
   };
 };
+
+export type AuthorData = Partial<{
+  image: string;
+  name: string;
+  altName: string;
+  born: string;
+  died: string;
+  nationality: string;
+  email: string;
+  website: string;
+  literaryAgent: string;
+  biography: string;
+  research: string;
+  address: string;
+  telephone: string;
+}>;
