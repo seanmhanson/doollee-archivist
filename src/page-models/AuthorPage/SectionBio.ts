@@ -1,7 +1,7 @@
 import { Page } from "playwright";
 import type { AuthorData } from "../../types";
 
-export default class AuthorBio {
+export default class SectionBio {
   static readonly selectors = {
     section: "#osborne",
     image: "> img",
@@ -23,8 +23,8 @@ export default class AuthorBio {
     this.data = {};
   }
 
-  static async create(page: Page): Promise<AuthorBio> {
-    const instance = new AuthorBio(page);
+  static async create(page: Page): Promise<SectionBio> {
+    const instance = new SectionBio(page);
     try {
       await instance.extractData();
     } catch (error) {
@@ -35,7 +35,7 @@ export default class AuthorBio {
   }
 
   private async getLabeledContent(labelText: string): Promise<string> {
-    const section = this.page.locator(AuthorBio.selectors.section);
+    const section = this.page.locator(SectionBio.selectors.section);
     const label = section.locator(`strong:has-text("${labelText}")`);
     const content = label.locator("xpath=following-sibling::text()[1]");
     return (await content.textContent())?.trim() || "";
@@ -48,7 +48,7 @@ export default class AuthorBio {
     return (
       (
         await this.page
-          .locator(AuthorBio.selectors.section)
+          .locator(SectionBio.selectors.section)
           .locator(selector)
           .getAttribute(attribute)
       )?.trim() || ""
@@ -59,7 +59,7 @@ export default class AuthorBio {
     return (
       (
         await this.page
-          .locator(AuthorBio.selectors.section)
+          .locator(SectionBio.selectors.section)
           .locator(selector)
           .textContent()
       )?.trim() || ""
@@ -67,9 +67,9 @@ export default class AuthorBio {
   }
 
   private async extractData(): Promise<void> {
-    this.data.name = await this.getTextContent(AuthorBio.selectors.name);
+    this.data.name = await this.getTextContent(SectionBio.selectors.name);
     this.data.altName = await this.getAttribute(
-      AuthorBio.selectors.image,
+      SectionBio.selectors.image,
       "alt"
     );
 
@@ -88,7 +88,7 @@ export default class AuthorBio {
   }
 
   private async getDates(): Promise<{ born: string; died: string }> {
-    const datesText = await this.getTextContent(AuthorBio.selectors.dates);
+    const datesText = await this.getTextContent(SectionBio.selectors.dates);
     const datePattern = /\((\d{4})?\s*-\s*(\d{4})?\)/;
     const match = datesText.match(datePattern);
     return {
@@ -107,7 +107,7 @@ export default class AuthorBio {
 
     const normalizedBioText = (
       await this.page
-        .locator(AuthorBio.selectors.section)
+        .locator(SectionBio.selectors.section)
         .locator("xpath=./strong[last()]/following-sibling::text()")
         .allTextContents()
     )
