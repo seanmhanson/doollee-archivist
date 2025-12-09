@@ -1,7 +1,7 @@
 import type { Page, Locator } from "playwright";
 import type { AuthorData } from "../../types";
 
-export default class TableBio {
+export default class AuthorTable {
   static readonly selectors = {
     table: "#table table:first-child",
     name: "> td:nth-child(2) > h1",
@@ -23,8 +23,8 @@ export default class TableBio {
     this.data = {};
   }
 
-  static async create(page: Page): Promise<TableBio> {
-    const instance = new TableBio(page);
+  static async create(page: Page): Promise<AuthorTable> {
+    const instance = new AuthorTable(page);
     try {
       await instance.extractData();
     } catch (error) {
@@ -52,13 +52,13 @@ export default class TableBio {
   }
 
   private async extractData(): Promise<void> {
-    const tableLocator = this.page.locator(TableBio.selectors.table);
-    const firstRow = tableLocator.locator(TableBio.selectors.nthRow(1));
-    const secondRow = tableLocator.locator(TableBio.selectors.nthRow(2));
-    const thirdRow = tableLocator.locator(TableBio.selectors.nthRow(3));
-    const nameLocator = firstRow.locator(TableBio.selectors.name);
-    const imageLocator = firstRow.locator(TableBio.selectors.img);
-    const bioLocator = tableLocator.locator(TableBio.selectors.bio);
+    const tableLocator = this.page.locator(AuthorTable.selectors.table);
+    const firstRow = tableLocator.locator(AuthorTable.selectors.nthRow(1));
+    const secondRow = tableLocator.locator(AuthorTable.selectors.nthRow(2));
+    const thirdRow = tableLocator.locator(AuthorTable.selectors.nthRow(3));
+    const nameLocator = firstRow.locator(AuthorTable.selectors.name);
+    const imageLocator = firstRow.locator(AuthorTable.selectors.img);
+    const bioLocator = tableLocator.locator(AuthorTable.selectors.bio);
 
     const nameText = await this.getTextContent(nameLocator);
     const { name, born, died } = await this.extractNameAndDates(nameText);

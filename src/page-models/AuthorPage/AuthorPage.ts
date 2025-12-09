@@ -1,9 +1,11 @@
 import { Page } from "playwright";
 import BasePage from "../__BasePage";
-import SectionBio from "./SectionBio";
-import TableBio from "./TableBio";
+import AuthorSection from "./AuthorSection";
+import AuthorTable from "./AuthorTable";
 import type { AuthorData } from "../../types";
 import type { BasePageArgs } from "../__BasePage";
+import PlaySection from "./PlaySection";
+import PlayTable from "./PlayTable";
 
 type UrlArgs = { slug: string; letter: string };
 
@@ -18,7 +20,8 @@ export default class AuthorPage extends BasePage<UrlArgs, Data> {
   };
 
   private template: TemplateType = null;
-  private biographyComponent: SectionBio | TableBio | null = null;
+  private biographyComponent: AuthorSection | AuthorTable | null = null;
+  private worksListComponent: PlaySection | PlayTable | null = null;
   public readonly data: AuthorData = {};
 
   public get authorData(): AuthorData {
@@ -44,9 +47,11 @@ export default class AuthorPage extends BasePage<UrlArgs, Data> {
     this.template = await this.identifyTemplate();
 
     if (this.template === "regular") {
-      this.biographyComponent = await SectionBio.create(this.page);
+      this.biographyComponent = await AuthorSection.create(this.page);
+      this.worksListComponent = await PlaySection.create(this.page);
     } else if (this.template === "table") {
-      this.biographyComponent = await TableBio.create(this.page);
+      this.biographyComponent = await AuthorTable.create(this.page);
+      this.worksListComponent = await PlayTable.create(this.page);
     }
   }
 

@@ -1,9 +1,9 @@
 import type { ObjectId } from "mongodb";
 
 export type Metadata = {
-  _id: ObjectId;
-  scrapedAt: Date;
-  sourceUrl: string;
+  _id?: ObjectId;
+  scrapedAt?: Date;
+  sourceUrl?: string;
 };
 
 export const requiredMetadataFields = ["_id", "scrapedAt", "sourceUrl"];
