@@ -5,3 +5,4 @@ output/
 .editorconfig
 .gitattributes
 .yarn/
+.vscode

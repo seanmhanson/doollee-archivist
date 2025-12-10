@@ -1,15 +1,19 @@
-import { Page } from "playwright";
+import type { Page } from "playwright";
 import BasePage from "../__BasePage";
 import AuthorSection from "./AuthorSection";
 import AuthorTable from "./AuthorTable";
-import type { AuthorData } from "../../types";
-import type { BasePageArgs } from "../__BasePage";
 import PlaySection from "./PlaySection";
 import PlayTable from "./PlayTable";
+import type { AuthorData } from "../../types";
+import type { BasePageArgs } from "../__BasePage";
+import type { PlayData } from "../../types/play";
 
 type UrlArgs = { slug: string; letter: string };
 
-type Data = { [key: string]: string };
+type Data = {
+  author: AuthorData;
+  plays: PlayData[];
+};
 
 type TemplateType = "regular" | "table" | null;
 
@@ -20,12 +24,22 @@ export default class AuthorPage extends BasePage<UrlArgs, Data> {
   };
 
   private template: TemplateType = null;
-  private biographyComponent: AuthorSection | AuthorTable | null = null;
-  private worksListComponent: PlaySection | PlayTable | null = null;
-  public readonly data: AuthorData = {};
 
-  public get authorData(): AuthorData {
-    return this.data;
+  private biographyComponent: AuthorSection | AuthorTable | null = null;
+
+  private playsListComponent: PlaySection | PlayTable | null = null;
+
+  public readonly data: Data = {
+    author: {},
+    plays: [],
+  };
+
+  public get AuthorData(): AuthorData {
+    return this.data.author;
+  }
+
+  public get PlaysData(): PlayData[] {
+    return this.data.plays;
   }
 
   constructor(page: Page, pageArgs: BasePageArgs<UrlArgs>) {
@@ -48,18 +62,25 @@ export default class AuthorPage extends BasePage<UrlArgs, Data> {
 
     if (this.template === "regular") {
       this.biographyComponent = await AuthorSection.create(this.page);
-      this.worksListComponent = await PlaySection.create(this.page);
+      this.playsListComponent = await PlaySection.create(this.page);
     } else if (this.template === "table") {
       this.biographyComponent = await AuthorTable.create(this.page);
-      this.worksListComponent = await PlayTable.create(this.page);
+      this.playsListComponent = await PlayTable.create(this.page);
     }
   }
 
   public async extractPage(): Promise<void> {
     if (this.biographyComponent) {
-      Object.assign(this.data, this.biographyComponent.authorData);
+      Object.assign(this.data.author, this.biographyComponent.authorData);
     } else {
       console.warn("No biography component available for data extraction.");
+    }
+
+    if (this.playsListComponent) {
+      this.data.plays = this.playsListComponent.playsData;
+      Object.assign(this.data.plays, this.playsListComponent.playsData);
+    } else {
+      console.warn("No works list component available for data extraction.");
     }
   }
 

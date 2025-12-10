@@ -1,5 +1,5 @@
 import type { Page } from "playwright";
-import { PartsData } from "../../types/play";
+import type { PartsData } from "../../types/play";
 
 export default class PlaySection {
   static indexedSelector = (selector: string) => (index: number) =>
@@ -128,6 +128,10 @@ export default class PlaySection {
     };
   }
 
+  private async extractProduction(): Promise<void> {}
+
+  private async extractPublisher(): Promise<void> {}
+
   private async extractParts(index: number): Promise<PartsData | null> {
     const partsText = await this.getTextContent(
       PlaySection.selectors.parts(index)
@@ -212,9 +216,6 @@ export default class PlaySection {
 
     return null;
   }
-
-  private async extractProduction(): Promise<void> {}
-  private async extractPublisher(): Promise<void> {}
 
   private async extractData(): Promise<void> {}
 }

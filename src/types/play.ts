@@ -6,6 +6,8 @@ export type PlayData = Metadata & {
   playId: string; // the id used by doollee, not our internal id
   title: string;
   altTitle?: string;
+  adaptingAuthor?: string;
+  originalAuthor?: string;
   synopsis?: string;
   notes?: string;
   firstProduction?: {
@@ -41,6 +43,8 @@ export const PlaySchema: Document = {
     playId: { bsonType: "string" },
     title: { bsonType: "string" },
     altTitle: { bsonType: "string" },
+    adaptingAuthor: { bsonType: "string" },
+    originalAuthor: { bsonType: "string" },
     synopsis: { bsonType: "string" },
     notes: { bsonType: "string" },
     firstProduction: {
