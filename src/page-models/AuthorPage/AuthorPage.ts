@@ -34,11 +34,11 @@ export default class AuthorPage extends BasePage<UrlArgs, Data> {
     plays: [],
   };
 
-  public get AuthorData(): AuthorData {
+  public get authorData(): AuthorData {
     return this.data.author;
   }
 
-  public get PlaysData(): PlayData[] {
+  public get playsData(): PlayData[] {
     return this.data.plays;
   }
 

@@ -8,7 +8,7 @@ async function main() {
   // for local only testing
   console.debug = () => {};
 
-  const rootDir = "authors";
+  const rootDir = "author-lists";
   const scraper = await WebScraper.create();
 
   const allMetadata: any = {};

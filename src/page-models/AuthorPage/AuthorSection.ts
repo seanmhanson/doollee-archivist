@@ -10,6 +10,16 @@ export default class AuthorSection {
     bio: "xpath=./text()[last()]",
   };
 
+  static readonly labels = [
+    "Nationality",
+    "Email",
+    "Website",
+    "Literary Agent",
+    "Research",
+    "Address",
+    "Telephone",
+  ];
+
   private page: Page;
 
   private data: AuthorData;
@@ -34,11 +44,57 @@ export default class AuthorSection {
     return instance;
   }
 
-  private async getLabeledContent(labelText: string): Promise<string> {
-    const section = this.page.locator(AuthorSection.selectors.section);
-    const label = section.locator(`strong:has-text("${labelText}")`);
-    const content = label.locator("xpath=following-sibling::text()[1]");
-    return (await content.textContent())?.trim() || "";
+  /**
+   * The author biography section contains text values without clear labels or tags
+   * that allow accurate extraction. This processes the full HTML and selects values
+   * from it using regex matching, intended to run only once per page to minimize
+   * performance impact.
+   */
+  private async getLabeledContent(): Promise<Partial<AuthorData>> {
+    const sectionHTML = await this.page
+      .locator(AuthorSection.selectors.section)
+      .innerHTML();
+
+    let label = AuthorSection.labels[0];
+    const labels = AuthorSection.labels.join("|");
+    /**
+     * Construct a case-insensitive regex that will find bolded labels, then omit
+     * whitespace and any optional anchor tags, capturing the text content that follows
+     */
+    const labelRegex = new RegExp(
+      `<strong>(${labels})[^<]*</strong>` + // any of the bold label text
+        `\\s*` + // optional whitespace
+        `(?:<a[^>]*>)?` + // optional opening anchor tag
+        `([^<]+)` + // capture text content (greedy now)
+        `(?:</a>)?`, // optional closing anchor tag
+      "gi" // global, case-insensitive flag
+    );
+
+    const matches = sectionHTML.matchAll(labelRegex);
+    const results: Record<string, string> = {};
+
+    for (const match of matches) {
+      const trimmedValue = match[2]
+        ?.replace(/&nbsp;/g, "")
+        ?.replace(/\s/g, "")
+        .toLowerCase();
+
+      if (trimmedValue === "n/a" || trimmedValue === "") {
+        results[match[1]] = "";
+        continue;
+      }
+
+      const normalizedValue = match[2]
+        ?.trim() // Remove leading/trailing whitespace and newlines
+        .replace(/&nbsp;/g, " ") // Replace non-breaking spaces
+        .replace(/\s+/g, " "); // Normalize multiple whitespace to single spaces
+
+      results[match[1]] = normalizedValue || "";
+    }
+
+    const biography = await this.getBiography(sectionHTML);
+    results["biography"] = biography || "";
+    return results;
   }
 
   private async getAttribute(
@@ -67,24 +123,26 @@ export default class AuthorSection {
   }
 
   private async extractData(): Promise<void> {
-    this.data.name = await this.getTextContent(AuthorSection.selectors.name);
-    this.data.altName = await this.getAttribute(
+    const name = await this.getTextContent(AuthorSection.selectors.name);
+    const altName = await this.getAttribute(
       AuthorSection.selectors.image,
       "alt"
     );
+    const dates = await this.getDates();
 
-    const { born, died } = await this.getDates();
-    this.data.born = born;
-    this.data.died = died;
+    this.data.born = dates.born;
+    this.data.died = dates.died;
 
-    this.data.nationality = await this.getLabeledContent("Nationality:");
-    this.data.email = await this.getLabeledContent("Email:");
-    this.data.website = await this.getLabeledContent("Website:");
-    this.data.literaryAgent = await this.getLabeledContent("Literary Agent:");
-    this.data.research = await this.getLabeledContent("Research:");
-    this.data.address = await this.getLabeledContent("Address:");
-    this.data.telephone = await this.getLabeledContent("Telephone:");
-    this.data.biography = await this.getBiography();
+    const labeledContents = await this.getLabeledContent();
+
+    this.data = {
+      ...this.data,
+      ...labeledContents,
+      name,
+      altName,
+      born: dates.born,
+      died: dates.died,
+    };
   }
 
   private async getDates(): Promise<{ born: string; died: string }> {
@@ -97,7 +155,7 @@ export default class AuthorSection {
     };
   }
 
-  private async getBiography(): Promise<string> {
+  private async getBiography(sectionHTML: string): Promise<string> {
     const biographyPlaceholders = [
       "including biography, theatres, agent, synopses, cast sizes, production and published dates",
       "please send me a biography and information about this playwright",
@@ -105,20 +163,39 @@ export default class AuthorSection {
       "please help doollee to become even more complete",
     ];
 
-    const normalizedBioText = (
-      await this.page
-        .locator(AuthorSection.selectors.section)
-        .locator("xpath=./strong[last()]/following-sibling::text()")
-        .allTextContents()
-    )
-      .join("")
-      .trim()
-      .replace(/\s+/g, " ");
+    /**
+     * The biography is the last text content after the labeled sections, so this
+     * regex finds all bold labels, and matching against all gives the remaining
+     * text content for the section
+     */
+    const lastStrongPattern = new RegExp(
+      `<strong[^>]*>.*?<\\/strong>` + // bold label
+        `(?:\\s*<a[^>]*>.*?<\\/a>)?`, // optional anchor tag from literary agent
+      "g" // global match flag
+    );
+    const labelMatches = [...sectionHTML.matchAll(lastStrongPattern)];
 
-    if (biographyPlaceholders.includes(normalizedBioText.toLowerCase())) {
+    if (labelMatches.length === 0) {
+      return "";
+    }
+    const lastMatch = labelMatches[labelMatches.length - 1];
+    const afterLastStrong = sectionHTML.substring(
+      lastMatch.index + lastMatch[0].length
+    );
+
+    // Clean up the biography text
+    const bioText = afterLastStrong
+      .replace(/<[^>]*>/g, "") // Remove HTML
+      .replace(/&nbsp;/g, " ") // Replace entities for non-breaking spaces
+      .trim()
+      .replace(/\s+/g, " "); // Normalize whitespace
+
+    if (
+      biographyPlaceholders.some((placeholder) => bioText.includes(placeholder))
+    ) {
       return "";
     }
 
-    return normalizedBioText;
+    return bioText;
   }
 }
