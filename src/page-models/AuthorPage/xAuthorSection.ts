@@ -74,22 +74,24 @@ export default class AuthorSection {
     const results: Record<string, string> = {};
 
     for (const match of matches) {
-      const trimmedValue = match[2]
-        ?.replace(/&nbsp;/g, "")
+      const key = match[1].toLowerCase();
+      const rawValue = match[2] || "";
+      const trimmedValue = rawValue
+        .replace(/&nbsp;/g, "")
         ?.replace(/\s/g, "")
         .toLowerCase();
 
       if (trimmedValue === "n/a" || trimmedValue === "") {
-        results[match[1]] = "";
+        results[key] = "";
         continue;
       }
 
-      const normalizedValue = match[2]
-        ?.trim() // Remove leading/trailing whitespace and newlines
+      const normalizedValue = rawValue
+        .trim() // Remove leading/trailing whitespace and newlines
         .replace(/&nbsp;/g, " ") // Replace non-breaking spaces
         .replace(/\s+/g, " "); // Normalize multiple whitespace to single spaces
 
-      results[match[1]] = normalizedValue || "";
+      results[key] = normalizedValue || "";
     }
 
     const biography = await this.getBiography(sectionHTML);
@@ -190,9 +192,7 @@ export default class AuthorSection {
       .trim()
       .replace(/\s+/g, " "); // Normalize whitespace
 
-    if (
-      biographyPlaceholders.some((placeholder) => bioText.includes(placeholder))
-    ) {
+    if (biographyPlaceholders.some(bioText.includes)) {
       return "";
     }
 

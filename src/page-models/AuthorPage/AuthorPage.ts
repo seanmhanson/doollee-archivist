@@ -1,7 +1,6 @@
 import type { Page } from "playwright";
 import BasePage from "../__BasePage";
-import AuthorSection from "./AuthorSection";
-import AuthorTable from "./AuthorTable";
+import AuthorDetails from "./AuthorDetails";
 import PlaySection from "./PlaySection";
 import PlayTable from "./PlayTable";
 import type { AuthorData } from "../../types";
@@ -15,7 +14,7 @@ type Data = {
   plays: PlayData[];
 };
 
-type TemplateType = "regular" | "table" | null;
+type TemplateType = "section" | "table" | null;
 
 export default class AuthorPage extends BasePage<UrlArgs, Data> {
   static readonly selectors = {
@@ -25,7 +24,7 @@ export default class AuthorPage extends BasePage<UrlArgs, Data> {
 
   private template: TemplateType = null;
 
-  private biographyComponent: AuthorSection | AuthorTable | null = null;
+  private biographyComponent: AuthorDetails | null = null;
 
   private playsListComponent: PlaySection | PlayTable | null = null;
 
@@ -60,11 +59,14 @@ export default class AuthorPage extends BasePage<UrlArgs, Data> {
     await super.goto(options);
     this.template = await this.identifyTemplate();
 
-    if (this.template === "regular") {
-      this.biographyComponent = await AuthorSection.create(this.page);
+    this.biographyComponent = await AuthorDetails.create(
+      this.page,
+      this.template
+    );
+
+    if (this.template === "section") {
       this.playsListComponent = await PlaySection.create(this.page);
     } else if (this.template === "table") {
-      this.biographyComponent = await AuthorTable.create(this.page);
       this.playsListComponent = await PlayTable.create(this.page);
     }
   }
@@ -104,6 +106,6 @@ export default class AuthorPage extends BasePage<UrlArgs, Data> {
       throw new Error("Neither regular nor table templates are visible.");
     }
 
-    return regularIsVisible ? "regular" : "table";
+    return regularIsVisible ? "section" : "table";
   }
 }

@@ -3,7 +3,7 @@ import ModuleWriter from "../core/ModuleWriter";
 import AuthorPage from "../page-models/AuthorPage";
 import authorFixtures from "../input/authorLists";
 
-function constructUrl([authorName, authorSlug]: [string, string]): string {
+function constructUrl([, authorSlug]: [string, string]): string {
   const firstLetter = authorSlug.charAt(0).toUpperCase();
   return `https://www.doollee.com/Playwrights${firstLetter}/${authorSlug}.php`;
 }
