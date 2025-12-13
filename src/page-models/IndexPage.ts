@@ -18,9 +18,9 @@ type Data = { [key: string]: string };
  *   "Aa-Af", "Ag-Al", "Am-Ar", "As-Az"
  *
  * ```
- * const authorIndexPage = new AuthorIndexPage(page, { letter: 'A' });
- * await authorIndexPage.extractPage();
- * console.log(authorIndexPage.data);
+ * const indexPage = new IndexPage(page, { letter: 'A' });
+ * await indexPage.extractPage();
+ * console.log(indexPage.data);
  * ```
  *
  * Resulting data structure:
@@ -33,7 +33,7 @@ type Data = { [key: string]: string };
  * }
  * ```
  */
-export default class AuthorIndexPage extends BasePage<UrlArgs, Data> {
+export default class IndexPage extends BasePage<UrlArgs, Data> {
   /**
    * Selectors for locating link containers and links within the page.
    * @remarks  Page structure differs for the indexes for the letters
@@ -73,18 +73,18 @@ export default class AuthorIndexPage extends BasePage<UrlArgs, Data> {
    */
   public async extractPage(): Promise<void> {
     const mainSelector = this.page.locator(
-      AuthorIndexPage.selectors.linkContainer
+      IndexPage.selectors.linkContainer
     );
     const eSelector = this.page.locator(
-      AuthorIndexPage.selectors.linkContainerE
+      IndexPage.selectors.linkContainerE
     );
     const qxSelector = this.page.locator(
-      AuthorIndexPage.selectors.linkContainerQX
+      IndexPage.selectors.linkContainerQX
     );
     const combinedSelector = mainSelector.or(eSelector).or(qxSelector);
     await combinedSelector.waitFor();
 
-    const links = this.page.locator(AuthorIndexPage.selectors.links);
+    const links = this.page.locator(IndexPage.selectors.links);
     const linkCount = await links.count();
 
     for (let i = 0; i < linkCount; i++) {

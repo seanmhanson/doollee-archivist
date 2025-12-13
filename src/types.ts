@@ -1,3 +1,9 @@
+export type WaitUntilConditions =
+  | "load"
+  | "domcontentloaded"
+  | "networkidle"
+  | "commit";
+
 /**
  * Metadata gathered during page extraction to facilitate error handling
  * and debugging across multiple calls to the same script.
@@ -20,6 +26,7 @@ export type IndexUrlsData = {
   };
 };
 
+// TODO: remove this
 export type AuthorData = Partial<{
   image: string;
   name: string;

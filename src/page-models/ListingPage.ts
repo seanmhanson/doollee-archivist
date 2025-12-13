@@ -20,13 +20,13 @@ type Data = { [key: string]: string };
  *
  * @example
  * ```
- * const authorSubindexPage = new AuthorSubindexPage(page, {
+ * const listingPage = new ListingPage(page, {
  *   indexLetter: 'A',
  *   firstLetter: 'g',
  *   lastLetter: 'l'
  * });
- * await authorSubindexPage.extractPage();
- * console.log(authorSubindexPage.data);
+ * await listingPage.extractPage();
+ * console.log(listingPage.data);
  * ```
  *
  * Resulting data structure (excerpted):
@@ -38,7 +38,7 @@ type Data = { [key: string]: string };
  * }
  * ```
  */
-export default class AuthorSubindexPage extends BasePage<UrlArgs, Data> {
+export default class ListingPage extends BasePage<UrlArgs, Data> {
   /**
    * Selectors for locating table rows that containt links to
    * individual author pages, and those links.
@@ -77,7 +77,7 @@ export default class AuthorSubindexPage extends BasePage<UrlArgs, Data> {
    * @inheritDoc
    */
   public async extractPage(): Promise<void> {
-    const rows = this.page.locator(AuthorSubindexPage.selectors.tableRows);
+    const rows = this.page.locator(ListingPage.selectors.tableRows);
     const rowCount = await rows.count();
     for (let i = 0; i < rowCount; i++) {
       const row = rows.nth(i);
@@ -88,7 +88,7 @@ export default class AuthorSubindexPage extends BasePage<UrlArgs, Data> {
       }
 
       // some rows are malformed, so we can't assume a fixed number of cells
-      const links = row.locator(AuthorSubindexPage.selectors.tableLink);
+      const links = row.locator(ListingPage.selectors.tableLink);
       const linkCount = await links.count();
 
       for (let j = 0; j < linkCount; j++) {

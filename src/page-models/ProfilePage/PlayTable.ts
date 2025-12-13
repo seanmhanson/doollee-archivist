@@ -1,5 +1,5 @@
 import type { Page, Locator } from "playwright";
-import type { PlayData } from "../../types/play";
+import type { PlayData } from "#/db-types/play";
 
 type PlayLocators = {
   header: Locator;
@@ -10,7 +10,7 @@ type SelectorKey = keyof typeof PlayTable.selectors;
 
 /**
  * Scraper for tables of play data present on author pages using a table template,
- * to be used in conjunction with an AuthorPage model representing the author's biography
+ * to be used in conjunction with a ProfilePage model representing the author's biography
  * and repetoire listing.
  *
  * In general, these templates are used for plays that are adaptations or translations of

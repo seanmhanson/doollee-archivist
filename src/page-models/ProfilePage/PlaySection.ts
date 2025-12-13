@@ -1,5 +1,5 @@
 import type { Page } from "playwright";
-import type { PartsData } from "../../types/play";
+import type { PartsData } from "#/db-types/play";
 
 export default class PlaySection {
   static indexedSelector = (selector: string) => (index: number) =>

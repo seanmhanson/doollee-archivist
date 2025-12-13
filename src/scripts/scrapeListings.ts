@@ -1,55 +1,60 @@
-import WebScraper from "../core/WebScraper";
-import ModuleWriter from "../core/ModuleWriter";
+import WebScraper from "#/core/WebScraper";
+import ModuleWriter from "#/core/ModuleWriter";
 
-import AuthorSubindexPage from "../page-models/AuthorSubindexPage";
-import authorSubindexes from "../input/authorSubindexes";
+/** page models */
+import ListingPage from "#/page-models/ListingPage";
+
+/** input data */
+import listingUrls from "#/input/listingUrls";
 
 async function main() {
   // for local only testing
   console.debug = () => {};
 
-  const rootDir = "author-lists";
+  const rootDir = "profile-urls";
   const scraper = await WebScraper.create();
 
   const allMetadata: any = {};
   let totalFiles = 0;
-  let totalAuthors = 0;
+  let totalPlaywrights = 0;
 
   const rootModuleWriter = await ModuleWriter.create(rootDir);
-  for (const [letter, subsections] of Object.entries(authorSubindexes)) {
+  for (const [letter, subsections] of Object.entries(listingUrls)) {
     const path = `${rootDir}/${letter.toUpperCase()}`;
     const moduleWriter = await ModuleWriter.create(path);
 
-    console.log(`🔄 Scraping authors for letter ${letter}...`);
+    console.log(`🔄 Scraping playwrights for letter ${letter}...`);
     for (const [letterRange, url] of Object.entries(subsections)) {
       let filenameSuffix = "";
-      console.log(`   ➡️  Scraping authors for range ${letterRange}...`);
+      console.log(
+        `   ➡️  Scraping playwright profile urls for range ${letterRange}...`
+      );
 
-      const authorListPage = new AuthorSubindexPage(scraper.getPage(), { url });
-      await authorListPage.goto();
+      const listingPage = new ListingPage(scraper.getPage(), { url });
+      await listingPage.goto();
       const rateLimitTimeout = new Promise((resolve) =>
         setTimeout(resolve, 3000)
       );
 
       try {
-        await authorListPage.extractPage();
+        await listingPage.extractPage();
       } catch (error) {
-        console.error(`  ⚠️ Error scraping page for URL ${url}:`, error);
+        console.error(`  ⚠️ Error scraping page for url ${url}:`, error);
         filenameSuffix = "_error";
       }
 
-      let numberOfAuthors = Object.keys(authorListPage.data).length;
+      let playwrightCount = Object.keys(listingPage.data).length;
 
       const metadata = {
-        ...authorListPage.metadata,
-        results: numberOfAuthors,
+        ...listingPage.metadata,
+        results: playwrightCount,
         timeStamp: new Date().toISOString(),
         url,
       };
       const filename = `${letterRange}${filenameSuffix}.ts`;
       const data = {
         metadata,
-        authors: authorListPage.data || {},
+        playwrights: listingPage.data || {},
       };
 
       try {
@@ -64,13 +69,13 @@ async function main() {
       }
 
       totalFiles += 1;
-      totalAuthors += numberOfAuthors;
+      totalPlaywrights += playwrightCount;
 
       // Collect metadata from all pages (including 404s, extraction errors, etc.)
-      if (Object.keys(authorListPage.metadata).length > 0) {
+      if (Object.keys(listingPage.metadata).length > 0) {
         allMetadata[letterRange] = {
           url: url,
-          ...authorListPage.metadata,
+          ...listingPage.metadata,
         };
       }
 
@@ -99,9 +104,9 @@ async function main() {
   await scraper.close();
 
   console.log("--------------------------------");
-  console.log("🎭 All author directories processed successfully!");
+  console.log("🎭 All playwright directories processed successfully!");
   console.log("  📁 Total files written:\t", totalFiles);
-  console.log("  👤 Total authors scraped:\t", totalAuthors);
+  console.log("  👤 Total playwrights scraped:\t", totalPlaywrights);
   console.log(
     "   ⚠️ Total errors encountered:\t",
     Object.keys(allMetadata).length

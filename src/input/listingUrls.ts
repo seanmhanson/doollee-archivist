@@ -1,10 +1,10 @@
-type AuthorIndexes = {
-  [letter: string]: {
-    [range: string]: string;
+type ListingUrls = {
+  [index: string]: {
+    [listing: string]: string;
   };
 };
 
-const authorIndexUrls: AuthorIndexes = {
+const listingUrls: ListingUrls = {
   A: {
     "aa-af": "https://www.doollee.com/PlaywrightsA/A_playwrights_a-f.php",
     "ag-al": "https://www.doollee.com/PlaywrightsA/A_playwrights_g-l.php",
@@ -155,4 +155,4 @@ const authorIndexUrls: AuthorIndexes = {
   },
 };
 
-export default authorIndexUrls;
+export default listingUrls;

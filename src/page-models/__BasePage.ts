@@ -1,6 +1,6 @@
 import type { Page } from "playwright";
 
-import { PageMetadata } from "../types";
+import { PageMetadata, WaitUntilConditions } from "#/types";
 
 /**
  * Supports both direct URL scraping and parameterized URL construction.
@@ -77,7 +77,7 @@ export default abstract class BasePage<
    * @param options Navigation options including waitUntil and timeout.
    */
   async goto(options?: {
-    waitUntil?: "load" | "domcontentloaded" | "networkidle" | "commit";
+    waitUntil?: WaitUntilConditions;
     timeout?: number;
   }): Promise<void> {
     const defaultOptions = {

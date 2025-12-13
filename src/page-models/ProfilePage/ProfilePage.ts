@@ -1,22 +1,25 @@
 import type { Page } from "playwright";
+
 import BasePage from "../__BasePage";
-import AuthorDetails from "./AuthorDetails";
+
+import BiographySection from "./BiographySection";
 import PlaySection from "./PlaySection";
 import PlayTable from "./PlayTable";
-import type { AuthorData } from "../../types";
+
+import type { AuthorData } from "#/types";
 import type { BasePageArgs } from "../__BasePage";
-import type { PlayData } from "../../types/play";
+import type { PlayData } from "#/db-types/play";
 
 type UrlArgs = { slug: string; letter: string };
 
 type Data = {
-  author: AuthorData;
-  plays: PlayData[];
+  biography: AuthorData;
+  works: PlayData[];
 };
 
-type TemplateType = "section" | "table" | null;
+type TemplateType = "standard" | "adaptations" | null;
 
-export default class AuthorPage extends BasePage<UrlArgs, Data> {
+export default class ProfilePage extends BasePage<UrlArgs, Data> {
   static readonly selectors = {
     tableIdentifier: ".content > #table > table",
     sectionIdentifier: "#osborne",
@@ -24,21 +27,21 @@ export default class AuthorPage extends BasePage<UrlArgs, Data> {
 
   private template: TemplateType = null;
 
-  private biographyComponent: AuthorDetails | null = null;
+  private biographyComponent: BiographySection | null = null;
 
-  private playsListComponent: PlaySection | PlayTable | null = null;
+  private worksListComponent: PlaySection | PlayTable | null = null;
 
   public readonly data: Data = {
-    author: {},
-    plays: [],
+    biography: {},
+    works: [],
   };
 
-  public get authorData(): AuthorData {
-    return this.data.author;
+  public get biographyData(): AuthorData {
+    return this.data.biography;
   }
 
-  public get playsData(): PlayData[] {
-    return this.data.plays;
+  public get worksData(): PlayData[] {
+    return this.data.works;
   }
 
   constructor(page: Page, pageArgs: BasePageArgs<UrlArgs>) {
@@ -48,7 +51,7 @@ export default class AuthorPage extends BasePage<UrlArgs, Data> {
   public constructUrl(pageArgs: UrlArgs): string {
     const uppercase = pageArgs.letter.toUpperCase();
     const directory = `Playwrights${uppercase}`;
-    const pageName = `3Playwrights${uppercase}data.php`;
+    const pageName = `${pageArgs.slug}.php`;
     return `${BasePage.baseUrl}/${directory}/${pageName}`;
   }
 
@@ -59,28 +62,27 @@ export default class AuthorPage extends BasePage<UrlArgs, Data> {
     await super.goto(options);
     this.template = await this.identifyTemplate();
 
-    this.biographyComponent = await AuthorDetails.create(
+    this.biographyComponent = await BiographySection.create(
       this.page,
       this.template
     );
 
-    if (this.template === "section") {
-      this.playsListComponent = await PlaySection.create(this.page);
-    } else if (this.template === "table") {
-      this.playsListComponent = await PlayTable.create(this.page);
+    if (this.template === "standard") {
+      this.worksListComponent = await PlaySection.create(this.page);
+    } else if (this.template === "adaptations") {
+      this.worksListComponent = await PlayTable.create(this.page);
     }
   }
 
   public async extractPage(): Promise<void> {
     if (this.biographyComponent) {
-      Object.assign(this.data.author, this.biographyComponent.authorData);
+      Object.assign(this.data.biography, this.biographyComponent.biographyData);
     } else {
       console.warn("No biography component available for data extraction.");
     }
 
-    if (this.playsListComponent) {
-      this.data.plays = this.playsListComponent.playsData;
-      Object.assign(this.data.plays, this.playsListComponent.playsData);
+    if (this.worksListComponent) {
+      Object.assign(this.data.works, this.worksListComponent.playsData);
     } else {
       console.warn("No works list component available for data extraction.");
     }
@@ -88,10 +90,10 @@ export default class AuthorPage extends BasePage<UrlArgs, Data> {
 
   private async identifyTemplate(): Promise<TemplateType> {
     const regularLocator = this.page.locator(
-      AuthorPage.selectors.sectionIdentifier
+      ProfilePage.selectors.sectionIdentifier
     );
     const tableLocator = this.page.locator(
-      AuthorPage.selectors.tableIdentifier
+      ProfilePage.selectors.tableIdentifier
     );
     await regularLocator.or(tableLocator).first().waitFor();
 
@@ -106,6 +108,6 @@ export default class AuthorPage extends BasePage<UrlArgs, Data> {
       throw new Error("Neither regular nor table templates are visible.");
     }
 
-    return regularIsVisible ? "section" : "table";
+    return regularIsVisible ? "standard" : "adaptations";
   }
 }

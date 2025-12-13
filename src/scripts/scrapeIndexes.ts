@@ -1,29 +1,27 @@
 import { promises as fs } from "fs";
 import path from "path";
 
-import WebScraper from "../core/WebScraper";
-import AuthorIndexPage from "../page-models/AuthorIndexPage";
+import WebScraper from "#/core/WebScraper";
 
-import type { IndexUrlsData } from "../types";
+/** page models */
+import IndexPage from "#/page-models/IndexPage";
 
-function getUppercaseLetters(): string[] {
-  const letters: string[] = [];
-  const firstCharCode = `A`.charCodeAt(0);
-  const lastCharCode = `Z`.charCodeAt(0);
-  for (let i = firstCharCode; i <= lastCharCode; i++) {
-    letters.push(String.fromCharCode(i));
-  }
-  return letters;
-}
+import type { IndexUrlsData } from "#/types";
 
 async function main() {
   const data: IndexUrlsData = {};
   const scraper = await WebScraper.create();
-  const uppercaseLetters = getUppercaseLetters();
+
+  const uppercaseLetters: string[] = [];
+  const firstLetter = `A`.charCodeAt(0);
+  const lastLetter = `Z`.charCodeAt(0);
+  for (let i = firstLetter; i <= lastLetter; i++) {
+    uppercaseLetters.push(String.fromCharCode(i));
+  }
 
   for (const letter of uppercaseLetters) {
     console.log(`🔄 Scraping letter ${letter}...`);
-    const indexPage = new AuthorIndexPage(scraper.getPage(), { letter });
+    const indexPage = new IndexPage(scraper.getPage(), { letter });
 
     try {
       await indexPage.goto();

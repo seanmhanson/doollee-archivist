@@ -1,7 +1,7 @@
 import type { Page, Locator } from "playwright";
-import type { AuthorData } from "../../types";
+import type { AuthorData } from "#/types";
 
-type Template = "section" | "table" | null;
+type Template = "standard" | "adaptations" | null;
 
 type NameAndDates = {
   name: string;
@@ -9,7 +9,7 @@ type NameAndDates = {
   died: string;
 };
 
-export default class AuthorDetails {
+export default class BiographySection {
   static readonly labels = [
     "Nationality",
     "Email",
@@ -27,7 +27,7 @@ export default class AuthorDetails {
     "please help doollee to become even more complete",
   ];
 
-  static readonly sectionSelectors = {
+  static readonly selectors = {
     section: "#osborne",
     image: "> img",
     name: "> .welcome > h1",
@@ -35,7 +35,7 @@ export default class AuthorDetails {
     bio: "xpath=./text()[last()]",
   };
 
-  static readonly tableSelectors = {
+  static readonly adaptationsSelectors = {
     table: "#table table:first-child",
     name: "> td:nth-child(2) > h1",
     img: "> td:nth-child(1) > P > a > img",
@@ -49,7 +49,7 @@ export default class AuthorDetails {
 
   private data: AuthorData;
 
-  public get authorData(): AuthorData {
+  public get biographyData(): AuthorData {
     return this.data;
   }
 
@@ -59,22 +59,25 @@ export default class AuthorDetails {
     this.data = {};
   }
 
-  static async create(page: Page, template: Template): Promise<AuthorDetails> {
-    const instance = new AuthorDetails(page, template);
+  static async create(
+    page: Page,
+    template: Template
+  ): Promise<BiographySection> {
+    const instance = new BiographySection(page, template);
     try {
       await instance.extractData();
     } catch (error) {
-      console.error("Error extracting author biographical data:", error);
+      console.error("Error extracting biographical data:", error);
     }
 
     return instance;
   }
 
   private async extractData(): Promise<void> {
-    if (this.template === "section") {
-      await this.extractDataForSection();
+    if (this.template === "standard") {
+      await this.extractStandardData();
     } else {
-      await this.extractDataForTable();
+      await this.extractAdaptationData();
     }
   }
 
@@ -87,7 +90,7 @@ export default class AuthorDetails {
   }
 
   /**
-   * Both templates used for authro biographies contain text values without clear
+   * Both templates used for playwright biographies contain text values without clear
    * tags or structure to allow accurate extraction. Instead, we process the
    * full HTML and select values using regex matching to identify bolded labels and
    * their surrounding content. The biography section is distinct between the two
@@ -95,12 +98,12 @@ export default class AuthorDetails {
    */
   private async getLabeledContent(): Promise<Partial<AuthorData>> {
     const htmlLocator =
-      this.template === "section"
-        ? this.page.locator(AuthorDetails.sectionSelectors.section)
-        : this.page.locator(AuthorDetails.tableSelectors.table);
+      this.template === "standard"
+        ? this.page.locator(BiographySection.selectors.section)
+        : this.page.locator(BiographySection.adaptationsSelectors.table);
     const innerHTML = await htmlLocator.innerHTML();
 
-    const labels = AuthorDetails.labels.join("|");
+    const labels = BiographySection.labels.join("|");
 
     /**
      * Construct a case-insensitive regex that will find bolded labels, then omit
@@ -139,16 +142,14 @@ export default class AuthorDetails {
       results[key] = normalizedValue || "";
     }
 
-    // const biography = await this.getBiography();
-    // results["biography"] = biography || "";
     return results;
   }
 
-  private async getAltNameFromTable(): Promise<string> {
+  private async getAdaptationAltName(): Promise<string> {
     const locator = this.page
-      .locator(AuthorDetails.tableSelectors.table)
-      .locator(AuthorDetails.tableSelectors.nthRow(1))
-      .locator(AuthorDetails.tableSelectors.img);
+      .locator(BiographySection.adaptationsSelectors.table)
+      .locator(BiographySection.adaptationsSelectors.nthRow(1))
+      .locator(BiographySection.adaptationsSelectors.img);
     const imageSrc = await this.getAttribute(locator, "src");
     const imageAlt = await this.getAttribute(locator, "alt");
     const hasNoImage =
@@ -176,28 +177,24 @@ export default class AuthorDetails {
     };
   }
 
-  private async getNameAndDatesFromSection(): Promise<NameAndDates> {
-    const nameLocator = this.page.locator(AuthorDetails.sectionSelectors.name);
-    const datesLocator = this.page.locator(
-      AuthorDetails.sectionSelectors.dates
-    );
+  private async getStandardNameAndDates(): Promise<NameAndDates> {
+    const nameLocator = this.page.locator(BiographySection.selectors.name);
+    const datesLocator = this.page.locator(BiographySection.selectors.dates);
     const name = await this.getTextContent(nameLocator);
     const { born, died } = await this.extractDates(datesLocator);
     return { name, born, died };
   }
 
-  private async getNameAndDatesFromTable(): Promise<NameAndDates> {
+  private async getAdaptationNameAndDates(): Promise<NameAndDates> {
     const locator = this.page
-      .locator(AuthorDetails.tableSelectors.table)
-      .locator(AuthorDetails.tableSelectors.nthRow(1))
-      .locator(AuthorDetails.tableSelectors.name);
+      .locator(BiographySection.adaptationsSelectors.table)
+      .locator(BiographySection.adaptationsSelectors.nthRow(1))
+      .locator(BiographySection.adaptationsSelectors.name);
     return await this.extractDates(locator);
   }
 
-  private async getBioFromSection(): Promise<string> {
-    const htmlLocator = this.page.locator(
-      AuthorDetails.sectionSelectors.section
-    );
+  private async getStandardBio(): Promise<string> {
+    const htmlLocator = this.page.locator(BiographySection.selectors.section);
     const innerHTML = await htmlLocator.innerHTML();
 
     /**
@@ -223,8 +220,10 @@ export default class AuthorDetails {
     return this.normalizeBiography(afterLastStrong);
   }
 
-  private async getBioFromTable(): Promise<string> {
-    const locator = this.page.locator(AuthorDetails.tableSelectors.biography);
+  private async getAdaptationBio(): Promise<string> {
+    const locator = this.page.locator(
+      BiographySection.adaptationsSelectors.biography
+    );
     const textContent = await this.getTextContent(locator);
     return this.normalizeBiography(textContent);
   }
@@ -236,21 +235,19 @@ export default class AuthorDetails {
       .trim()
       .replace(/\s+/g, " "); // Normalize whitespace
 
-    if (AuthorDetails.bioPlaceholders.some(bioText.includes)) {
+    if (BiographySection.bioPlaceholders.some(bioText.includes)) {
       return "";
     }
 
     return bioText;
   }
 
-  private async extractDataForSection(): Promise<void> {
-    const imageLocator = this.page.locator(
-      AuthorDetails.sectionSelectors.image
-    );
+  private async extractStandardData(): Promise<void> {
+    const imageLocator = this.page.locator(BiographySection.selectors.image);
     const altName = await this.getAttribute(imageLocator, "alt");
-    const { name, born, died } = await this.getNameAndDatesFromSection();
+    const { name, born, died } = await this.getStandardNameAndDates();
     const labeledContents = await this.getLabeledContent();
-    const biography = await this.getBioFromSection();
+    const biography = await this.getStandardBio();
 
     this.data = {
       ...this.data,
@@ -263,19 +260,11 @@ export default class AuthorDetails {
     };
   }
 
-  private async extractDataForTable(): Promise<void> {
-    // const tableLocator = this.page.locator(AuthorTable.selectors.table);
-    // const firstRow = tableLocator.locator(AuthorTable.selectors.nthRow(1));
-    // const secondRow = tableLocator.locator(AuthorTable.selectors.nthRow(2));
-    // const thirdRow = tableLocator.locator(AuthorTable.selectors.nthRow(3));
-    // const nameLocator = firstRow.locator(AuthorTable.selectors.name);
-    // const imageLocator = firstRow.locator(AuthorTable.selectors.img);
-    // const bioLocator = tableLocator.locator(AuthorTable.selectors.bio);
-
-    const { name, born, died } = await this.getNameAndDatesFromTable();
-    const altName = await this.getAltNameFromTable();
+  private async extractAdaptationData(): Promise<void> {
+    const { name, born, died } = await this.getAdaptationNameAndDates();
+    const altName = await this.getAdaptationAltName();
     const labeledContents = await this.getLabeledContent();
-    const biography = await this.getBioFromTable();
+    const biography = await this.getAdaptationBio();
 
     this.data = {
       ...this.data,
