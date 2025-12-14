@@ -29,9 +29,9 @@ export default class BiographySection {
 
   static readonly selectors = {
     section: "#osborne",
-    image: "> img",
-    name: "> .welcome > h1",
-    dates: "> .welcome",
+    image: "#osborne > img",
+    name: "#osborne > .welcome > h1",
+    dates: "#osborne > .welcome",
     bio: "xpath=./text()[last()]",
   };
 
@@ -235,11 +235,13 @@ export default class BiographySection {
       .trim()
       .replace(/\s+/g, " "); // Normalize whitespace
 
-    if (BiographySection.bioPlaceholders.some(bioText.includes)) {
-      return "";
-    }
+    const isPlaceholderText = BiographySection.bioPlaceholders.some(
+      (placeholder) => {
+        return bioText.includes(placeholder);
+      }
+    );
 
-    return bioText;
+    return isPlaceholderText ? "" : bioText;
   }
 
   private async extractStandardData(): Promise<void> {

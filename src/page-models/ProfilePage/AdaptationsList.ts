@@ -6,7 +6,7 @@ type PlayLocators = {
   body: Locator;
 };
 
-type SelectorKey = keyof typeof PlayTable.selectors;
+type SelectorKey = keyof typeof AdaptationsList.selectors;
 
 /**
  * Scraper for tables of play data present on author pages using a table template,
@@ -21,7 +21,7 @@ type SelectorKey = keyof typeof PlayTable.selectors;
  * - a primary table with all other play data
  * - a divider table with a "back to top" link
  */
-export default class PlayTable {
+export default class AdaptationsList {
   static getCellSelector(rowIndex: number, cellIndex: number) {
     return `tr:nth-of-type(${rowIndex}) > td:nth-child(${cellIndex})`;
   }
@@ -31,28 +31,31 @@ export default class PlayTable {
     playTables: "#table > h2 ~ table",
 
     // found on header tables
-    playId: `${PlayTable.getCellSelector(1, 1)} > p > strong > a:nth-child(1)`,
-    adaptingAuthor: `${PlayTable.getCellSelector(
+    playId: `${AdaptationsList.getCellSelector(
+      1,
+      1
+    )} > p > strong > a:nth-child(1)`,
+    adaptingAuthor: `${AdaptationsList.getCellSelector(
       1,
       1
     )} > p > strong > a:nth-child(2)`,
-    title: PlayTable.getCellSelector(1, 2),
+    title: AdaptationsList.getCellSelector(1, 2),
 
     // found on body tables
-    production: PlayTable.getCellSelector(1, 2),
-    productionDate: PlayTable.getCellSelector(1, 3),
-    organizations: PlayTable.getCellSelector(2, 2),
-    publisher: PlayTable.getCellSelector(3, 2),
-    music: PlayTable.getCellSelector(4, 2),
-    genre: PlayTable.getCellSelector(7, 2),
-    maleParts: PlayTable.getCellSelector(8, 3),
-    femaleParts: PlayTable.getCellSelector(8, 5),
-    otherParts: PlayTable.getCellSelector(9, 2),
-    notes: PlayTable.getCellSelector(10, 2),
-    synopsis: PlayTable.getCellSelector(11, 2),
-    reference: PlayTable.getCellSelector(12, 2),
-    isbn: PlayTable.getCellSelector(3, 4),
-    image: `${PlayTable.getCellSelector(11, 1)} > p > img`,
+    production: AdaptationsList.getCellSelector(1, 2),
+    productionDate: AdaptationsList.getCellSelector(1, 3),
+    organizations: AdaptationsList.getCellSelector(2, 2),
+    publisher: AdaptationsList.getCellSelector(3, 2),
+    music: AdaptationsList.getCellSelector(4, 2),
+    genre: AdaptationsList.getCellSelector(7, 2),
+    maleParts: AdaptationsList.getCellSelector(8, 3),
+    femaleParts: AdaptationsList.getCellSelector(8, 5),
+    otherParts: AdaptationsList.getCellSelector(9, 2),
+    notes: AdaptationsList.getCellSelector(10, 2),
+    synopsis: AdaptationsList.getCellSelector(11, 2),
+    reference: AdaptationsList.getCellSelector(12, 2),
+    isbn: AdaptationsList.getCellSelector(3, 4),
+    image: `${AdaptationsList.getCellSelector(11, 1)} > p > img`,
   };
 
   private page: Page;
@@ -61,7 +64,7 @@ export default class PlayTable {
 
   private data: Array<Partial<PlayData>>;
 
-  public get playsData() {
+  public get worksData() {
     return this.data;
   }
 
@@ -71,8 +74,8 @@ export default class PlayTable {
     this.tables = [];
   }
 
-  static async create(page: Page): Promise<PlayTable> {
-    const instance = new PlayTable(page);
+  static async create(page: Page): Promise<AdaptationsList> {
+    const instance = new AdaptationsList(page);
     try {
       await instance.extractData();
     } catch (error) {
@@ -86,7 +89,7 @@ export default class PlayTable {
     section: Locator,
     selectorKey: SelectorKey
   ): Promise<string> {
-    const locator = section.locator(PlayTable.selectors[selectorKey]);
+    const locator = section.locator(AdaptationsList.selectors[selectorKey]);
     return (await locator.textContent())?.trim() || "";
   }
 
@@ -104,7 +107,7 @@ export default class PlayTable {
    */
   public async extractTables(): Promise<void> {
     const tables = await this.page
-      .locator(PlayTable.selectors.playTables)
+      .locator(AdaptationsList.selectors.playTables)
       .all();
     const playTables = [];
 
@@ -142,7 +145,7 @@ export default class PlayTable {
       playId: await this.getTextContent(header, "playId"),
       title: await this.getTextContent(header, "title"),
       altTitle: await this.getAttribute(
-        body.locator(PlayTable.selectors.image),
+        body.locator(AdaptationsList.selectors.image),
         "alt"
       ),
       adaptingAuthor: await this.getTextContent(header, "adaptingAuthor"),

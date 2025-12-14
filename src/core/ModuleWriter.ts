@@ -133,7 +133,13 @@ class ModuleWriter {
       (acc, filename): IndexContent => {
         const importPath = `./${filename}`;
         const exportKey = filename.replace(/\.(ts|json)$/, "");
-        const reference = exportKey.replace(/[-.]/g, "_");
+        let reference = exportKey.replace(/[-.]/g, "_");
+
+        // Prefix with underscore if it starts with a number
+        if (/^\d/.test(reference)) {
+          reference = `_${reference}`;
+        }
+
         acc.imports.push(`import ${reference} from '${importPath}';`);
         acc.exports.push(`  '${exportKey}': ${reference},`);
         return acc;

@@ -7,11 +7,19 @@
   "license": "ISC",
   "packageManager": "yarn@4.12.0",
   "type": "commonjs",
+  "scripts": {
+    "build:noEmit": "tsc -p tsconfig.json --noEmit",
+    "build": "tsc -p tsconfig.json",
+    "scrape:indexes": "ts-node -r tsconfig-paths/register src/scripts/scrapeIndexes.ts",
+    "scrape:profiles": "ts-node -r tsconfig-paths/register src/scripts/scrapeProfiles.ts",
+    "scrape:listings": "ts-node -r tsconfig-paths/register src/scripts/scrapeListings.ts"
+  },
   "devDependencies": {
     "@types/mongodb": "^4.0.7",
     "@types/node": "^24.10.1",
     "@types/yargs": "^17.0.35",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {

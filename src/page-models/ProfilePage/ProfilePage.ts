@@ -3,8 +3,8 @@ import type { Page } from "playwright";
 import BasePage from "../__BasePage";
 
 import BiographySection from "./BiographySection";
-import PlaySection from "./PlaySection";
-import PlayTable from "./PlayTable";
+import WorksList from "./WorksList";
+import AdaptationsList from "./AdaptationsList";
 
 import type { AuthorData } from "#/types";
 import type { BasePageArgs } from "../__BasePage";
@@ -29,7 +29,7 @@ export default class ProfilePage extends BasePage<UrlArgs, Data> {
 
   private biographyComponent: BiographySection | null = null;
 
-  private worksListComponent: PlaySection | PlayTable | null = null;
+  private worksListComponent: WorksList | AdaptationsList | null = null;
 
   public readonly data: Data = {
     biography: {},
@@ -68,9 +68,9 @@ export default class ProfilePage extends BasePage<UrlArgs, Data> {
     );
 
     if (this.template === "standard") {
-      this.worksListComponent = await PlaySection.create(this.page);
+      this.worksListComponent = await WorksList.create(this.page);
     } else if (this.template === "adaptations") {
-      this.worksListComponent = await PlayTable.create(this.page);
+      this.worksListComponent = await AdaptationsList.create(this.page);
     }
   }
 
@@ -82,7 +82,7 @@ export default class ProfilePage extends BasePage<UrlArgs, Data> {
     }
 
     if (this.worksListComponent) {
-      Object.assign(this.data.works, this.worksListComponent.playsData);
+      Object.assign(this.data.works, this.worksListComponent.worksData);
     } else {
       console.warn("No works list component available for data extraction.");
     }

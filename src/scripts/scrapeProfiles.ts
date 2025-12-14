@@ -54,12 +54,14 @@ async function main() {
       stringify: true,
       fileType: "ts",
     });
+    console.log(`✅ bio data written to file: ${profileName}`);
 
     // write plays
+    console.log(`🔄 Writing files for ${worksData.length} plays`);
     for (const work of worksData) {
-      const playId = work.playId || "000000";
+      const playId = work.playId.padStart(6, "0") || "0000000";
       const truncatedName = work.title
-        .substring(0, 12)
+        .substring(0, 16)
         .toLowerCase()
         .replace(/\s+/g, "-")
         .replace(/[^a-z0-9\-]/g, "");
@@ -70,7 +72,7 @@ async function main() {
           timeStamp: new Date().toISOString(),
           url,
         },
-        data: { worksData },
+        data: { work },
       };
       await playModuleWriter.writeFile({
         filename: playFilename,
@@ -78,10 +80,12 @@ async function main() {
         stringify: true,
         fileType: "json",
       });
+      console.log(`✅ play data written to file: ${playFilename}`);
     }
   }
   await playModuleWriter.close();
   await playwrightModuleWriter.close();
+  await scraper.close();
 }
 
 main().catch(console.error);
