@@ -1,10 +1,8 @@
 import type { Page } from "playwright";
 
 import BasePage from "../__BasePage";
-
-import BiographySection from "./BiographySection";
-import WorksList from "./WorksList";
-import AdaptationsList from "./AdaptationsList";
+import { AdaptationBiography, StandardBiography } from "./Biography";
+import { AdaptationList, PlaysList } from "./WorksList";
 
 import type { AuthorData } from "#/types";
 import type { BasePageArgs } from "../__BasePage";
@@ -21,15 +19,15 @@ type TemplateType = "standard" | "adaptations" | null;
 
 export default class ProfilePage extends BasePage<UrlArgs, Data> {
   static readonly selectors = {
-    tableIdentifier: ".content > #table > table",
+    tableIdentifier: "#table table:first-child",
     sectionIdentifier: "#osborne",
   };
 
   private template: TemplateType = null;
 
-  private biographyComponent: BiographySection | null = null;
+  private biographyComponent: StandardBiography | AdaptationBiography | null = null;
 
-  private worksListComponent: WorksList | AdaptationsList | null = null;
+  private worksListComponent: PlaysList | AdaptationList | null = null;
 
   public readonly data: Data = {
     biography: {},
@@ -62,15 +60,12 @@ export default class ProfilePage extends BasePage<UrlArgs, Data> {
     await super.goto(options);
     this.template = await this.identifyTemplate();
 
-    this.biographyComponent = await BiographySection.create(
-      this.page,
-      this.template
-    );
-
     if (this.template === "standard") {
-      this.worksListComponent = await WorksList.create(this.page);
-    } else if (this.template === "adaptations") {
-      this.worksListComponent = await AdaptationsList.create(this.page);
+      this.biographyComponent = await StandardBiography.create(this.page);
+      this.worksListComponent = await PlaysList.create(this.page);
+    } else {
+      this.biographyComponent = await AdaptationBiography.create(this.page);
+      this.worksListComponent = await AdaptationList.create(this.page);
     }
   }
 
@@ -89,12 +84,9 @@ export default class ProfilePage extends BasePage<UrlArgs, Data> {
   }
 
   private async identifyTemplate(): Promise<TemplateType> {
-    const regularLocator = this.page.locator(
-      ProfilePage.selectors.sectionIdentifier
-    );
-    const tableLocator = this.page.locator(
-      ProfilePage.selectors.tableIdentifier
-    );
+    const regularLocator = this.page.locator(ProfilePage.selectors.sectionIdentifier);
+    const tableLocator = this.page.locator(ProfilePage.selectors.tableIdentifier).first();
+
     await regularLocator.or(tableLocator).first().waitFor();
 
     const regularIsVisible = await regularLocator.isVisible();
