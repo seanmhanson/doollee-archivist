@@ -12,7 +12,8 @@
     "build": "tsc -p tsconfig.json",
     "scrape:indexes": "ts-node -r tsconfig-paths/register src/scripts/scrapeIndexes.ts",
     "scrape:profiles": "ts-node -r tsconfig-paths/register src/scripts/scrapeProfiles.ts",
-    "scrape:listings": "ts-node -r tsconfig-paths/register src/scripts/scrapeListings.ts"
+    "scrape:listings": "ts-node -r tsconfig-paths/register src/scripts/scrapeListings.ts",
+    "test:rateLimiting": "ts-node -r tsconfig-paths/register src/scripts/testRateLimiting.ts"
   },
   "devDependencies": {
     "@types/mongodb": "^4.0.7",
