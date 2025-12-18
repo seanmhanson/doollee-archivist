@@ -1,6 +1,5 @@
 import type { Page } from "playwright";
 import BaseWorksList from "./__BaseWorksList";
-import { extractISBN } from "#/utils/isbnUtils";
 
 export default class PlaysList extends BaseWorksList {
   public constructor(page: Page) {
@@ -10,19 +9,38 @@ export default class PlaysList extends BaseWorksList {
   protected async extractData(): Promise<void> {
     const data = await this.scrapeData();
 
-    this.data = data.map((play) => {
-      const playId = this.getPlayId(play.playId);
+    this.data = data.map(({ playId: playIdText, publisher, production: productionText, parts: partsText, ...rest }) => {
+      const publicationDetails = this.parsePublicationDetails(publisher, true);
+      const productionDetails = this.parseProductionDetails(productionText);
+      const playId = this.getPlayId(playIdText);
+      const parts = this.parseParts(partsText);
+      const production = {
+        location: productionDetails.location,
+        year: productionDetails.date,
+      };
+      const publication = {
+        publisher: publicationDetails.publisher,
+        year: publicationDetails.year,
+      };
+      const isbn = publicationDetails.isbn;
 
-      const parts = this.parseParts(play.parts || "");
-      const isbn = extractISBN(play.publisher || "");
+      return {
+        playId,
+        production,
+        publication,
+        isbn,
+        parts,
+        ...rest,
+      };
     });
   }
 
   protected async scrapeData() {
     return await this.page.evaluate(async () => {
       const containerSelector = ".gridContainer > strong";
-      const playIdSelector = "#playwrightTable";
+      const playIdSelector = "#playwrightTable > a";
       const titleSelector = "#playTable";
+      const imageSelector = "#synopsisTitle > center > img";
       const synopsisSelector = "#synopsisName";
       const notesSelector = "#notesName";
       const productionSelector = "#producedPlace";
@@ -39,6 +57,7 @@ export default class PlaysList extends BaseWorksList {
       const data = {
         allPlayIds: container.querySelectorAll(playIdSelector),
         allTitles: container.querySelectorAll(titleSelector),
+        allImages: container.querySelectorAll(imageSelector),
         allSynopses: container.querySelectorAll(synopsisSelector),
         allNotes: container.querySelectorAll(notesSelector),
         allProductions: container.querySelectorAll(productionSelector),
@@ -55,8 +74,9 @@ export default class PlaysList extends BaseWorksList {
 
       for (let i = 0; i < playCount; i++) {
         results.push({
-          playId: data.allPlayIds[i]?.textContent?.trim() || "",
+          playId: data.allPlayIds[i]?.getAttribute("name") || "",
           title: data.allTitles[i]?.textContent?.trim() || "",
+          altTitle: data.allImages[i]?.getAttribute("title")?.trim() || "",
           synopsis: data.allSynopses[i]?.textContent?.trim() || "",
           notes: data.allNotes[i]?.textContent?.trim() || "",
           production: data.allProductions[i]?.textContent?.trim() || "",

@@ -1,5 +1,7 @@
 import type { Page } from "playwright";
 import BaseWorksList from "./__BaseWorksList";
+import { removeAndNormalize } from "#/utils/stringUtils";
+import { normalize } from "yargs";
 
 export default class AdaptationsList extends BaseWorksList {
   private static publisherException = "I don't think it has been published.";
@@ -11,15 +13,38 @@ export default class AdaptationsList extends BaseWorksList {
   protected async extractData(): Promise<void> {
     const data = await this.scrapeTableData();
 
-    this.data = data.map((adaptation) => {
-      const originalAuthor = this.parseOriginalAuthor(adaptation.notes);
-      const maleParts = this.parseParts(adaptation.maleParts);
-      const femaleParts = this.parseParts(adaptation.femaleParts);
-      const otherParts = this.parseParts(adaptation.otherParts);
-      const { publisher, year } = this.parsePublisher(adaptation.publisher);
+    this.data = data.map(
+      ({
+        notes,
+        maleParts,
+        femaleParts,
+        otherParts,
+        publisher,
+        production: productionText,
+        productionDate,
+        ...rest
+      }) => {
+        const originalAuthor = this.parseOriginalAuthor(notes);
+        const parts = this.parseParts({ maleParts, femaleParts, otherParts });
+        const publicationDetails = this.parsePublicationDetails(publisher, false);
+        const publication = {
+          publisher: publicationDetails.publisher,
+          year: publicationDetails.year,
+        };
+        const production = {
+          publisher: removeAndNormalize(productionText, ">>>"),
+          year: normalize(productionDate),
+        };
 
-      // return with correct shape
-    });
+        return {
+          ...rest,
+          originalAuthor,
+          production,
+          publication,
+          parts,
+        };
+      }
+    );
   }
 
   protected async scrapeTableData() {
@@ -107,7 +132,23 @@ export default class AdaptationsList extends BaseWorksList {
     return match?.[1].trim() || "";
   }
 
-  private parseParts(partsString: string): number | null {
+  private parseParts({
+    maleParts,
+    femaleParts,
+    otherParts,
+  }: {
+    maleParts: string;
+    femaleParts: string;
+    otherParts: string;
+  }) {
+    return {
+      maleParts: this.parsePartsString(maleParts),
+      femaleParts: this.parsePartsString(femaleParts),
+      otherParts: this.parsePartsString(otherParts),
+    };
+  }
+
+  private parsePartsString(partsString: string): number | null {
     const numericString = /[0-9]+/;
     if (numericString.test(partsString)) {
       return parseInt(partsString, 10);
@@ -118,26 +159,5 @@ export default class AdaptationsList extends BaseWorksList {
     }
 
     return null;
-  }
-
-  private parsePublisher(publisherString: string) {
-    if (publisherString.includes(AdaptationsList.publisherException)) {
-      return { publisher: "", year: "" };
-    }
-
-    /**
-     * For now, parse this minimally by looking for the first four-digit
-     * year. In the future, more detailed parsing may be warranted
-     */
-    const yearPattern = /\(?[[12][0-9]{3}\)?/;
-    const yearMatch = publisherString.match(yearPattern);
-    if (!yearMatch) {
-      return { publisher: publisherString, year: "" };
-    }
-
-    const year = yearMatch[0].replace(/[\(\);]/g, "").trim();
-    const publisher = publisherString.replace(yearPattern, "").trim();
-
-    return { publisher, year };
   }
 }
