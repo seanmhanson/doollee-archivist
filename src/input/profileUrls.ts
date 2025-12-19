@@ -4,7 +4,7 @@
  */
 
 const authorFixtures: { [authorName: string]: string } = {
-  // "CARSON Anne": "carson-anne",
+  "CARSON Anne": "carson-anne",
   "EURIPIDES ": "euripides",
   // "KANE Sarah": "kane-sarah",
   // "MAMET David": "mamet-david",

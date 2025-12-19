@@ -1,7 +1,6 @@
 import type { Page } from "playwright";
 import BaseWorksList from "./__BaseWorksList";
-import { removeAndNormalize } from "#/utils/stringUtils";
-import { normalize } from "yargs";
+import { normalizeWhitespace, removeAndNormalize } from "#/utils/stringUtils";
 
 export default class AdaptationsList extends BaseWorksList {
   public constructor(page: Page) {
@@ -9,7 +8,7 @@ export default class AdaptationsList extends BaseWorksList {
   }
 
   protected async extractData(): Promise<void> {
-    const data = await this.scrapeTableData();
+    const data = this.normalizeStringFields(await this.scrapeTableData());
 
     this.data = data.map(
       ({
@@ -31,7 +30,7 @@ export default class AdaptationsList extends BaseWorksList {
         };
         const production = {
           publisher: removeAndNormalize(productionText, ">>>"),
-          year: normalize(productionDate),
+          year: normalizeWhitespace(productionDate),
         };
 
         return {
@@ -43,6 +42,8 @@ export default class AdaptationsList extends BaseWorksList {
         };
       }
     );
+
+    console.log(`${this.data.length} adaptations processed.`);
   }
 
   protected async scrapeTableData() {
@@ -51,8 +52,8 @@ export default class AdaptationsList extends BaseWorksList {
       const nthRow = (n: number) => `tr:nth-of-type(${n})`;
       const nthCell = (n: number) => `td:nth-of-type(${n})`;
       const containerSelector = "#table";
-      const headerSelector = "> h2 ~ table:nth-of-type(3n-2)";
-      const bodySelector = "> h2 ~ table:nth-of-type(3n-1)";
+      const headerSelector = "#table > h2 ~ table:nth-of-type(3n-1)";
+      const bodySelector = "#table > h2 ~ table:nth-of-type(3n)";
       const playIdSelector = `${headerSelector} ${nthRow(1)} > ${nthCell(1)} > p > strong > a:first-child`;
       const adaptingAuthorSelector = `${headerSelector} ${nthRow(1)} > ${nthCell(1)} > p > strong > a:nth-child(2)`;
       const titleSelector = `${headerSelector} ${nthRow(1)} > ${nthCell(2)}`;
@@ -75,23 +76,23 @@ export default class AdaptationsList extends BaseWorksList {
       if (!container) return [];
 
       const data = {
-        allPlayIds: container.querySelectorAll(playIdSelector),
-        allAuthors: container.querySelectorAll(adaptingAuthorSelector),
-        allTitles: container.querySelectorAll(titleSelector),
-        allProductions: container.querySelectorAll(productionSelector),
-        allDates: container.querySelectorAll(productionDateSelector),
-        allOrgs: container.querySelectorAll(organizationsSelector),
-        allPublishers: container.querySelectorAll(publisherSelector),
-        allIsbns: container.querySelectorAll(isbnSelector),
-        allMusic: container.querySelectorAll(musicSelector),
-        allGenres: container.querySelectorAll(genreSelector),
-        allMaleParts: container.querySelectorAll(malePartsSelector),
-        allFemaleParts: container.querySelectorAll(femalePartsSelector),
-        allOtherParts: container.querySelectorAll(otherPartsSelector),
-        allNotes: container.querySelectorAll(notesSelector),
-        allImages: container.querySelectorAll(imageSelector),
-        allSynopses: container.querySelectorAll(synopsisSelector),
-        allReferences: container.querySelectorAll(referenceSelector),
+        allPlayIds: document.querySelectorAll(playIdSelector),
+        allAuthors: document.querySelectorAll(adaptingAuthorSelector),
+        allTitles: document.querySelectorAll(titleSelector),
+        allProductions: document.querySelectorAll(productionSelector),
+        allDates: document.querySelectorAll(productionDateSelector),
+        allOrgs: document.querySelectorAll(organizationsSelector),
+        allPublishers: document.querySelectorAll(publisherSelector),
+        allIsbns: document.querySelectorAll(isbnSelector),
+        allMusic: document.querySelectorAll(musicSelector),
+        allGenres: document.querySelectorAll(genreSelector),
+        allMaleParts: document.querySelectorAll(malePartsSelector),
+        allFemaleParts: document.querySelectorAll(femalePartsSelector),
+        allOtherParts: document.querySelectorAll(otherPartsSelector),
+        allNotes: document.querySelectorAll(notesSelector),
+        allImages: document.querySelectorAll(imageSelector),
+        allSynopses: document.querySelectorAll(synopsisSelector),
+        allReferences: document.querySelectorAll(referenceSelector),
       };
 
       // Assemble results by index (each index = one adaptation)
@@ -100,7 +101,7 @@ export default class AdaptationsList extends BaseWorksList {
 
       for (let i = 0; i < adaptationCount; i++) {
         results.push({
-          playId: data.allPlayIds[i]?.textContent?.trim() || "",
+          playId: data.allPlayIds[i]?.getAttribute("name")?.trim() || "",
           adaptingAuthor: data.allAuthors[i]?.textContent?.trim() || "",
           title: data.allTitles[i]?.textContent?.trim() || "",
           production: data.allProductions[i]?.textContent?.trim() || "",
@@ -125,7 +126,7 @@ export default class AdaptationsList extends BaseWorksList {
   }
 
   private parseOriginalAuthor(notesString: string): string {
-    const regex = /Original Playwright:\s*(.+?)(;|$)/i;
+    const regex = /Original Playwright\s*[:\-]\s*(.+?)(;|$)/i;
     const match = notesString.match(regex);
     return match?.[1].trim() || "";
   }
@@ -139,10 +140,28 @@ export default class AdaptationsList extends BaseWorksList {
     femaleParts: string;
     otherParts: string;
   }) {
+    const parsedMaleParts = this.parsePartsString(maleParts);
+    const parsedFemaleParts = this.parsePartsString(femaleParts);
+    const parsedOtherParts = this.parsePartsString(otherParts);
+
+    // If all parts are either 0, null, or both, we treat the entire
+    // parts section as missing and return nulls for all.
+    if (
+      (parsedMaleParts === 0 || parsedMaleParts === null) &&
+      (parsedFemaleParts === 0 || parsedFemaleParts === null) &&
+      (parsedOtherParts === 0 || parsedOtherParts === null)
+    ) {
+      return {
+        maleParts: null,
+        femaleParts: null,
+        otherParts: null,
+      };
+    }
+
     return {
-      maleParts: this.parsePartsString(maleParts),
-      femaleParts: this.parsePartsString(femaleParts),
-      otherParts: this.parsePartsString(otherParts),
+      maleParts: parsedMaleParts,
+      femaleParts: parsedFemaleParts,
+      otherParts: parsedOtherParts,
     };
   }
 

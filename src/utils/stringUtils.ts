@@ -26,3 +26,16 @@ export function searchForAndRemove(input: string, patterns: RegExp[]): SearchAnd
   }
   return ["", input];
 }
+
+export function checkScrapedString(scrapedString: string | null | undefined): string {
+  // null-check values:
+  if (scrapedString === null || scrapedString === undefined) return "";
+
+  // check for strings like " - ", "   ", " -  - ", "---" etc.
+  if (/^[\s-]+$/.test(scrapedString)) return "";
+
+  // check for "n/a, N/A, etc"
+  if (scrapedString.trim().toLowerCase() === "n/a") return "";
+
+  return normalizeWhitespace(scrapedString);
+}

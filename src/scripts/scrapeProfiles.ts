@@ -13,11 +13,14 @@ function constructUrl([, profileSlug]: [string, string]): string {
 }
 
 async function main() {
-  // for local only testing
+  /** Configuration for debugging/testing locally */
   console.debug = () => {};
+  const timestamp = new Date().toTimeString().slice(0, 8).replace(/:/g, "");
+  const playwrightDir = `${timestamp}-playwrights`;
+  const playDir = `${timestamp}-plays`;
 
-  const playwrightDir = "playwrights";
-  const playDir = "plays";
+  // const playwrightDir = "playwrights";
+  // const playDir = "plays";
   const scraper = await WebScraper.create();
 
   // const allMetadata: any = {};
@@ -30,9 +33,7 @@ async function main() {
 
   for (const [profileName, profileSlug] of Object.entries(profileUrls)) {
     const url = constructUrl([profileName, profileSlug]);
-    console.log(
-      `🔄 Scraping playwright page for ${profileName}, profile slug ${profileSlug}...`
-    );
+    console.log(`🔄 Scraping playwright page for ${profileName}, profile slug ${profileSlug}...`);
     const profilePage = new ProfilePage(scraper.getPage(), { url });
     await profilePage.goto();
     await profilePage.extractPage();

@@ -6,3 +6,4 @@ output/
 .gitattributes
 .yarn/
 .vscode
+.DS_Store

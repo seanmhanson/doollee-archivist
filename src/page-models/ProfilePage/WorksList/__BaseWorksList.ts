@@ -39,6 +39,20 @@ export default abstract class BaseWorksList {
     return idString?.trim() || "0000000";
   }
 
+  protected normalizeStringFields(data: any[]) {
+    return data.map((work) => {
+      const normalizedWork: any = {};
+      for (const [key, value] of Object.entries(work)) {
+        if (typeof value === "string") {
+          normalizedWork[key] = stringUtils.checkScrapedString(value);
+        } else {
+          normalizedWork[key] = value;
+        }
+      }
+      return normalizedWork;
+    });
+  }
+
   protected parseProductionDetails(productionText: string): ProductionDetails {
     if (!hasAlphanumericCharacters(productionText)) {
       return { location: "", date: "" };
