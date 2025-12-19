@@ -4,8 +4,6 @@ import { removeAndNormalize } from "#/utils/stringUtils";
 import { normalize } from "yargs";
 
 export default class AdaptationsList extends BaseWorksList {
-  private static publisherException = "I don't think it has been published.";
-
   public constructor(page: Page) {
     super(page);
   }

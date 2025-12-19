@@ -8,6 +8,8 @@ type PublicationDetails = { publisher: string; year: string; isbn?: string };
 const { hasAlphanumericCharacters, normalizeWhitespace, removeAndNormalize } = stringUtils;
 
 export default abstract class BaseWorksList {
+  protected static publisherException = "I don't think it has been published.";
+
   protected page: Page;
 
   protected data: any[];
@@ -61,7 +63,10 @@ export default abstract class BaseWorksList {
     let workingString = publicationText;
     const isbn = includeISBN ? { isbn: "" } : {};
 
-    if (!hasAlphanumericCharacters(publicationText)) {
+    const isBlank = !hasAlphanumericCharacters(publicationText);
+    const isMissing = publicationText.includes(BaseWorksList.publisherException);
+
+    if (isBlank || isMissing) {
       return { publisher: "", year: "", ...isbn };
     }
 
