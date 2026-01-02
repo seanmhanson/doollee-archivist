@@ -1,6 +1,5 @@
 import type { Page } from "playwright";
 import BaseWorksList from "./__BaseWorksList";
-import { normalizeWhitespace, removeAndNormalize } from "#/utils/stringUtils";
 
 export default class AdaptationsList extends BaseWorksList {
   public constructor(page: Page) {
@@ -10,38 +9,32 @@ export default class AdaptationsList extends BaseWorksList {
   protected async extractData(): Promise<void> {
     const data = this.normalizeStringFields(await this.scrapeTableData());
 
-    this.data = data.map(
-      ({
-        notes,
-        maleParts,
-        femaleParts,
-        otherParts,
-        publisher,
-        production: productionText,
-        productionDate,
-        ...rest
-      }) => {
-        const originalAuthor = this.parseOriginalAuthor(notes);
-        const parts = this.parseParts({ maleParts, femaleParts, otherParts });
-        const publicationDetails = this.parsePublicationDetails(publisher, false);
-        const publication = {
+    this.data = data.map((adaptation) => {
+      const publicationDetails = this.parsePublicationDetails(adaptation.publisher, false);
+      const altTitle = adaptation.altTitle || adaptation.imgAlt || "";
+
+      return {
+        ...adaptation,
+        playId: this.formatPlayId(adaptation.playId, "adaptation"),
+        isbn: this.formatISBN(adaptation.isbn),
+        parts: this.parseParts(adaptation.parts),
+        organizations: this.formatOrganizations(adaptation.organizations),
+        publication: {
           publisher: publicationDetails.publisher,
           year: publicationDetails.year,
-        };
-        const production = {
-          publisher: removeAndNormalize(productionText, ">>>"),
-          year: normalizeWhitespace(productionDate),
-        };
-
-        return {
-          ...rest,
-          originalAuthor,
-          production,
-          publication,
-          parts,
-        };
-      }
-    );
+        },
+        displayTitle: this.formatDisplayTitle(adaptation.title),
+        originalAuthor: this.parseOriginalAuthor(adaptation.notes),
+        reference: this.formatReference(adaptation.reference),
+        production: publicationDetails,
+        title: adaptation.title,
+        music: adaptation.music,
+        genres: adaptation.genres,
+        synopsis: adaptation.synopsis,
+        adaptingAuthor: adaptation.adaptingAuthor,
+        altTitle,
+      };
+    });
 
     console.log(`${this.data.length} adaptations processed.`);
   }
@@ -111,13 +104,15 @@ export default class AdaptationsList extends BaseWorksList {
           isbn: data.allIsbns[i]?.textContent?.trim() || "",
           music: data.allMusic[i]?.textContent?.trim() || "",
           genres: data.allGenres[i]?.textContent?.trim() || "",
-          maleParts: data.allMaleParts[i]?.textContent?.trim() || "",
-          femaleParts: data.allFemaleParts[i]?.textContent?.trim() || "",
-          otherParts: data.allOtherParts[i]?.textContent?.trim() || "",
           notes: data.allNotes[i]?.textContent?.trim() || "",
           imgAlt: data.allImages[i]?.getAttribute("alt")?.trim() || "",
           synopsis: data.allSynopses[i]?.textContent?.trim() || "",
           reference: data.allReferences[i]?.textContent?.trim() || "",
+          parts: {
+            maleParts: data.allMaleParts[i]?.textContent?.trim() || "",
+            femaleParts: data.allFemaleParts[i]?.textContent?.trim() || "",
+            otherParts: data.allOtherParts[i]?.textContent?.trim() || "",
+          },
         });
       }
 

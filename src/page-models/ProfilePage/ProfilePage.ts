@@ -4,7 +4,7 @@ import BasePage from "../__BasePage";
 import { AdaptationBiography, StandardBiography } from "./Biography";
 import { AdaptationList, PlaysList } from "./WorksList";
 
-import type { AuthorData } from "#/types";
+import type { Input as AuthorData } from "#/db-types/author/author.types";
 import type { BasePageArgs } from "../__BasePage";
 import type { PlayData } from "#/db-types/play";
 
@@ -30,7 +30,7 @@ export default class ProfilePage extends BasePage<UrlArgs, Data> {
   private worksListComponent: PlaysList | AdaptationList | null = null;
 
   public readonly data: Data = {
-    biography: {},
+    biography: {} as AuthorData,
     works: [],
   };
 

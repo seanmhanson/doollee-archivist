@@ -1,9 +1,29 @@
 import type { Page } from "playwright";
+
 import BaseBiography from "./__BaseBiography";
 
+import type { Input as AuthorData } from "#/db-types/author/author.types";
+
+type ScrapedData = {
+  bio: string;
+  dateString: string;
+  imageSrc: string;
+  imageAlt: string;
+  innerHTML: string;
+};
+
+type ParsedNameAndDates = {
+  name: string;
+  born: string;
+  died: string;
+};
+
 export default class AdaptationBiography extends BaseBiography {
+  protected data: AuthorData;
+
   public constructor(page: Page) {
     super(page);
+    this.data = {} as AuthorData;
   }
 
   protected async extractData(): Promise<void> {
@@ -26,7 +46,7 @@ export default class AdaptationBiography extends BaseBiography {
     };
   }
 
-  protected async scrapeData() {
+  protected async scrapeData(): Promise<ScrapedData> {
     return await this.page.evaluate(async () => {
       const bioSelector = "#table > p";
       const tableSelector = "#table table:first-child";
@@ -50,7 +70,7 @@ export default class AdaptationBiography extends BaseBiography {
     });
   }
 
-  private parseAdaptationNameAndDates(dateString: string) {
+  private parseAdaptationNameAndDates(dateString: string): ParsedNameAndDates {
     const datePattern = /\s*\(([^-]+?)\s*-\s*([^)]+?)\)$/;
     const match = dateString.match(datePattern);
 

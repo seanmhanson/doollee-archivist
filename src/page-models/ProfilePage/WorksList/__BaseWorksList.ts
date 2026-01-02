@@ -101,4 +101,53 @@ export default abstract class BaseWorksList {
       ...isbn,
     };
   }
+
+  /**
+   * Formats the play ID to include an adaptation prefix if applicable,
+   * to avoid duplicate values and collisions with original play IDs, and
+   * to collate files easily.
+   */
+  protected formatPlayId(playId: string, type: "play" | "adaptation"): string {
+    const prefix = type === "adaptation" ? "A" : "";
+    const base = playId?.trim() || "0000000";
+    return `${prefix}${base}`;
+  }
+
+  /**
+   * Strips the ISBN value of any ISBN prefixes, whitespace, or dashes
+   */
+  protected formatISBN(isbnString: string = ""): string {
+    return isbnString.replace(/ISBN\s*[:\-]?\s*/i, "").trim();
+  }
+
+  protected formatReference(reference: string): string {
+    return removeAndNormalize(reference, ">>>");
+  }
+
+  protected formatOrganizations(reference: string): string {
+    return removeAndNormalize(reference, ">>>");
+  }
+
+  /**
+   * If the title ends with ", The", "A", or "An", moves that to the front of the title
+   * for display purposes, and ensures title capitalization
+   */
+  protected formatDisplayTitle(title: string): string {
+    const initialWords = ["the", "a", "an"];
+
+    let displayTitle = title.toLowerCase();
+    for (const word of initialWords) {
+      const suffix = `, ${word}`;
+      if (displayTitle.endsWith(suffix)) {
+        const mainTitle = title.slice(0, -suffix.length).trim();
+        displayTitle = `${word} ${mainTitle}`;
+      }
+    }
+
+    return displayTitle.split(" ").reduce((acc, word) => {
+      const capitalizedWord = word.charAt(0).toUpperCase() + word.slice(1);
+      const divider = acc ? " " : "";
+      return `${acc}${divider}${capitalizedWord}`;
+    }, "");
+  }
 }

@@ -39,3 +39,32 @@ export function checkScrapedString(scrapedString: string | null | undefined): st
 
   return normalizeWhitespace(scrapedString);
 }
+
+export function toTitleCase(str: string): string {
+  return str.normalize("NFC").replace(/\w\S*/g, (txt) => {
+    return txt.charAt(0).toLocaleUpperCase() + txt.slice(1).toLocaleLowerCase();
+  });
+}
+
+export function removeDisambiguationSuffix(name: string = ""): string {
+  return name
+    .replace(/^\(\d{1,2}\)$/, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function isAllCaps(str: string): boolean {
+  const allCapsPattern = /^(?!.*\p{Ll}).+$/u;
+  return allCapsPattern.test(str);
+}
+
+export function stringArraysEqual(arr1: string[], arr2: string[]): boolean {
+  const sameLength = arr1.length === arr2.length;
+  if (!sameLength) return false;
+
+  return arr1.every((name, index) => {
+    const normalizedStr1 = name.normalize("NFC").toLocaleLowerCase();
+    const normalizedStr2 = arr2[index].normalize("NFC").toLocaleLowerCase();
+    return normalizedStr1 === normalizedStr2;
+  });
+}

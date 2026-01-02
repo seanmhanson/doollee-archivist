@@ -10,21 +10,27 @@
   "scripts": {
     "build:noEmit": "tsc -p tsconfig.json --noEmit",
     "build": "tsc -p tsconfig.json",
+    "db:init": "ts-node -r tsconfig-paths/register src/scripts/init-db.ts",
+    "db:reset": "ts-node -r tsconfig-paths/register src/scripts/reset-db.ts",
     "scrape:indexes": "ts-node -r tsconfig-paths/register src/scripts/scrapeIndexes.ts",
     "scrape:profiles": "ts-node -r tsconfig-paths/register src/scripts/scrapeProfiles.ts",
     "scrape:listings": "ts-node -r tsconfig-paths/register src/scripts/scrapeListings.ts",
+    "scrape:bios": "ts-node -r tsconfig-paths/register src/scripts/scrapeBios.ts",
     "test:rateLimiting": "ts-node -r tsconfig-paths/register src/scripts/testRateLimiting.ts"
   },
   "devDependencies": {
     "@types/mongodb": "^4.0.7",
     "@types/node": "^24.10.1",
     "@types/yargs": "^17.0.35",
+    "mongodb-memory-server": "^11.0.0",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
     "@playwright/test": "^1.57.0",
+    "dotenv": "^17.2.3",
+    "mongodb": "^7.0.0",
     "playwright": "^1.57.0",
     "yargs": "^18.0.0"
   }

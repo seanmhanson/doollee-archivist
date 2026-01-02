@@ -1,19 +1,32 @@
 import type { Page } from "playwright";
 import BaseBiography from "./__BaseBiography";
+import type { Input as AuthorData } from "#/db-types/author/author.types";
+
+type ScrapedData = {
+  altName: string;
+  name: string;
+  dateString: string;
+  innerHTML: string;
+};
+
+type ParseDates = {
+  born: string;
+  died: string;
+};
 
 export default class StandardBiography extends BaseBiography {
+  protected data: AuthorData;
+
   public constructor(page: Page) {
     super(page);
+    this.data = {} as AuthorData;
   }
 
   protected async extractData(): Promise<void> {
     const { altName, name, dateString, innerHTML } = await this.scrapeData();
     const { born, died } = this.parseDates(dateString);
-
+    const biography = this.parseBiography(innerHTML);
     const labeledContent = this.parseLabeledContent(innerHTML);
-
-    const bio = this.parseBiography(innerHTML);
-    const biography = this.normalizeBiography(bio);
 
     this.data = {
       ...this.data,
@@ -26,7 +39,7 @@ export default class StandardBiography extends BaseBiography {
     };
   }
 
-  protected async scrapeData() {
+  protected async scrapeData(): Promise<ScrapedData> {
     return await this.page.evaluate(async () => {
       const sectionSelector = "#osborne";
       const nameSelector = "#osborne > .welcome > h1";
@@ -38,12 +51,7 @@ export default class StandardBiography extends BaseBiography {
       const dateString = document.querySelector(datesSelector)?.textContent?.trim() || "";
       const innerHTML = document.querySelector(sectionSelector)?.innerHTML || "";
 
-      return {
-        altName,
-        name,
-        dateString,
-        innerHTML,
-      };
+      return { altName, name, dateString, innerHTML };
     });
   }
 
@@ -60,10 +68,11 @@ export default class StandardBiography extends BaseBiography {
     }
 
     const lastMatch = labelMatches[labelMatches.length - 1];
-    return sectionHTML.substring(lastMatch.index + lastMatch[0].length);
+    const biography = sectionHTML.substring(lastMatch.index + lastMatch[0].length);
+    return this.normalizeBiography(biography);
   }
 
-  private parseDates(dateString: string) {
+  private parseDates(dateString: string): ParseDates {
     const datePattern = /\s*\(([^-]+?)\s*-\s*([^)]+?)\)$/;
     const match = dateString.match(datePattern);
 

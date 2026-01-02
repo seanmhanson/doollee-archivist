@@ -1,5 +1,6 @@
 import type { Page } from "playwright";
-import type { AuthorData } from "#/types";
+
+import type { Input as AuthorData } from "#/db-types/author/author.types";
 
 export default abstract class BaseBiography {
   protected static readonly labels = [
@@ -21,7 +22,7 @@ export default abstract class BaseBiography {
 
   protected page: Page;
 
-  protected data: AuthorData;
+  protected abstract data: AuthorData;
 
   public get biographyData(): AuthorData {
     return this.data;
@@ -29,7 +30,6 @@ export default abstract class BaseBiography {
 
   protected constructor(page: Page) {
     this.page = page;
-    this.data = {};
   }
 
   public static async create<T extends BaseBiography>(this: new (page: Page) => T, page: Page): Promise<T> {
@@ -59,10 +59,10 @@ export default abstract class BaseBiography {
     );
 
     const matches = sectionHTML.matchAll(labelRegex);
-    const results: Record<string, string> = {};
+    const results: Partial<Record<keyof AuthorData, string>> = {};
 
     for (const match of matches) {
-      const key = match[1].toLowerCase();
+      const key = match[1].toLowerCase() as keyof AuthorData;
       const rawValue = match[2] || "";
       const trimmedValue = rawValue
         .replace(/&nbsp;/g, "")
@@ -82,7 +82,7 @@ export default abstract class BaseBiography {
       results[key] = normalizedValue || "";
     }
 
-    return results;
+    return results as Partial<AuthorData>;
   }
 
   protected normalizeBiography(bio: string): string {
