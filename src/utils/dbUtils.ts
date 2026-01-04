@@ -7,9 +7,12 @@ const shouldRemove = (value: any) => {
   // remove undefined values
   if (value === undefined) return true;
 
-  // remove empty/whitespace strings
+  // remove empty trimmed strings and values used as
+  // placeholders for missing data in Doollee sources
   if (typeof value === "string") {
-    return value.trim() === "";
+    const isEmpty = value.trim() === "";
+    const isPlaceholder = value.trim() === "-" || value.trim().toLowerCase() === "n/a";
+    return isEmpty || isPlaceholder;
   }
 
   // remove empty arrays

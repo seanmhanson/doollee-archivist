@@ -1,8 +1,9 @@
-import type { Document } from "mongodb";
-import type { Metadata } from "./metadata";
-import { requiredMetadataFields, metadataProperties } from "./metadata";
+import type { ObjectId } from "mongodb";
 
-export type PlayData = Metadata & {
+export type PlayData = {
+  _id?: ObjectId;
+  scrapedAt?: Date;
+  sourceUrl?: string;
   playId: string; // the id used by doollee, not our internal id
   title: string;
   altTitle?: string;
@@ -33,37 +34,3 @@ export type PlayData = Metadata & {
 export type ProductionData = PlayData["firstProduction"];
 export type PublicationData = PlayData["firstPublished"];
 export type PartsData = PlayData["partsText"];
-
-export const PlaySchema: Document = {
-  bsonType: "object",
-  required: [...requiredMetadataFields, "playId", "title"],
-  additionalProperties: false,
-  properties: {
-    ...metadataProperties,
-    playId: { bsonType: "string" },
-    title: { bsonType: "string" },
-    altTitle: { bsonType: "string" },
-    adaptingAuthor: { bsonType: "string" },
-    originalAuthor: { bsonType: "string" },
-    synopsis: { bsonType: "string" },
-    notes: { bsonType: "string" },
-    firstProduction: {
-      location: { bsonType: "string" },
-      year: { bsonType: "string" },
-    },
-    organizations: { bsonType: "string" },
-    firstPublished: {
-      publisher: { bsonType: "string" },
-      year: { bsonType: "string" },
-    },
-    isbn: { bsonType: "string" },
-    music: { bsonType: "string" },
-    genres: { bsonType: "string" },
-    partsText: {
-      maleParts: { bsonType: "number" },
-      femaleParts: { bsonType: "number" },
-      otherParts: { bsonType: "number" },
-    },
-    reference: { bsonType: "string" },
-  },
-};
