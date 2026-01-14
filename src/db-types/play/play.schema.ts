@@ -1,6 +1,6 @@
 import type { Document } from "mongodb";
 
-export const PlaySchema: Document = {
+const PlaySchema: Document = {
   bsonType: "object",
   required: ["_id", "scrapedAt", "sourceUrl", "playId", "title"],
   additionalProperties: false,
@@ -35,3 +35,5 @@ export const PlaySchema: Document = {
     reference: { bsonType: "string" },
   },
 };
+
+export default PlaySchema;
