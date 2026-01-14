@@ -1,13 +1,9 @@
-import dotenv from "dotenv";
 import { MongoClient, Db, Collection } from "mongodb";
 import type { CreateIndexesOptions } from "mongodb";
 
+import config from "#/core/Config";
 import authorSchema from "../db-types/author/author.schema";
 import playSchema from "../db-types/play/play.schema";
-
-dotenv.config();
-const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017";
-const DB_NAME = process.env.DB_NAME || "doollee-archive";
 
 const COLLECTIONS = [
   { name: "plays", $jsonSchema: playSchema },
@@ -30,7 +26,7 @@ export default class DatabaseService {
   private client: MongoClient | null = null;
   private db: Db | null = null;
 
-  constructor(private mongoUri: string = MONGO_URI, private dbName: string = DB_NAME) {
+  constructor(private mongoUri: string = config.mongoUri, private dbName: string = config.dbName) {
     if (!mongoUri || !dbName) {
       throw new Error("MongoDB URI and database name are required");
     }

@@ -2,6 +2,7 @@ import { promises as fs } from "fs";
 import path from "path";
 
 import WebScraper from "#/core/WebScraper";
+import config from "#/core/Config";
 
 /** page models */
 import IndexPage from "#/page-models/IndexPage";
@@ -39,8 +40,8 @@ async function main() {
       metadata: indexPage.metadata,
     };
 
-    // Rate limiting: 3 second delay to stay under 10 requests per 30 seconds
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    // Rate limiting: 3 second delay to stay under 10 requests per 30 seconds by default
+    await new Promise((resolve) => setTimeout(resolve, config.rateLimitDelay));
   }
 
   try {
