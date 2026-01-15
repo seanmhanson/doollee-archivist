@@ -36,7 +36,8 @@ class ProgressDisplay {
 
   constructor(data: UpdateDisplayDoc = {}) {
     this.data = { ...this.data, ...data };
-    this.logFile = `output/${new Date().toISOString()}.log`;
+    const timestamp = new Date().toISOString().replace(/:/g, "-");
+    this.logFile = `output/${timestamp}.log`;
     this.setupLogInterception();
   }
 

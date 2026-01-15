@@ -12,6 +12,8 @@ const COLLECTIONS = [
 
 type CollectionName = (typeof COLLECTIONS)[number]["name"];
 
+type IndexSpec = Record<string, 1 | -1>;
+
 /** TODO: Update with proper indexes and move to db-types directory */
 
 type IndexInfo = { field: string; options?: CreateIndexesOptions };
@@ -163,7 +165,7 @@ export default class DatabaseService {
     const database = await this.connect();
     console.info("⏳ Creating collections:");
 
-    for (const { name, $jsonSchema } of COLLECTIONS) {
+    for (const { name } of COLLECTIONS) {
       const exists = await database.listCollections({ name }).hasNext();
       if (exists) {
         console.info(`   - Collection '${name}' already exists`);
@@ -186,8 +188,7 @@ export default class DatabaseService {
       const indexes = indexesByCollection[collectionName as IndexCollectionName];
       for (const index of indexes) {
         try {
-          const indexSpec: any = {};
-          indexSpec[index.field] = 1; // Ascending index
+          const indexSpec: IndexSpec = { [index.field]: 1 }; // ascending index
           await collection.createIndex(indexSpec, index.options);
           console.info(`   - Created index on '${collectionName}.${index.field}'`);
         } catch (error) {

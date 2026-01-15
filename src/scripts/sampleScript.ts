@@ -79,7 +79,7 @@ async function main() {
 
     const adaptations: ObjectId[] = [];
     const playIds: ObjectId[] = [];
-    const playDooleeeIds: string[] = [];
+    const playDooleeIds: string[] = [];
 
     for (const work of worksData) {
       const play = new Play({
@@ -91,18 +91,18 @@ async function main() {
       });
 
       play.isAdaptation ? adaptations.push(play.id) : playIds.push(play.id);
-      playDooleeeIds.push(play.doolleeId);
+      playDooleeIds.push(play.doolleeId);
 
       const playDocument = play.toDocument();
       const playFilename = getPlayFilename(playDocument.title, playDocument.playId);
 
       if (config.writeTo === "db") {
         const playsCollection = await dbService.getCollection("plays");
-        const { _id, ...playDocument } = play.toDocument();
+        const { _id, ...playDocumentWithoutId } = play.toDocument();
 
         await playsCollection.findOneAndUpdate(
-          { playId: playDocument.playId },
-          { $set: playDocument, $setOnInsert: { _id } },
+          { playId: playDocumentWithoutId.playId },
+          { $set: playDocumentWithoutId, $setOnInsert: { _id } },
           { upsert: true }
         );
 
@@ -121,14 +121,14 @@ async function main() {
 
     author.addPlays(playIds);
     author.addAdaptations(adaptations);
-    author.addDoolleeIds(playDooleeeIds);
+    author.addDoolleeIds(playDooleeIds);
 
     if (config.writeTo === "db") {
       const authorsCollection = await dbService.getCollection("authors");
       const { _id, ...authorDocument } = author.toDocument();
 
       await authorsCollection.findOneAndUpdate(
-        { authorId: authorId },
+        { authorId },
         { $set: authorDocument, $setOnInsert: { _id } },
         { upsert: true }
       );
