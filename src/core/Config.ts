@@ -1,5 +1,7 @@
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ quiet: true });
+
+type WriteTo = "db" | "file" | "stage";
 
 export class Config {
   private static instance: Config;
@@ -10,6 +12,7 @@ export class Config {
     PAGE_TIMEOUT: "60000",
     ELEMENT_TIMEOUT: "30000",
     RATE_LIMIT_DELAY: "3000",
+    WRITE_TO: "db",
   };
 
   public readonly mongoUri: string;
@@ -18,15 +21,16 @@ export class Config {
   public readonly pageTimeout: number;
   public readonly elementTimeout: number;
   public readonly rateLimitDelay: number;
+  public readonly writeTo: WriteTo;
 
   private constructor() {
-    dotenv.config();
     this.mongoUri = this.required("MONGO_URI", Config.defaults.MONGO_URI);
     this.dbName = this.required("DB_NAME", Config.defaults.DB_NAME);
     this.baseUrl = this.required("BASE_URL", Config.defaults.BASE_URL);
     this.pageTimeout = parseInt(this.required("PAGE_TIMEOUT", Config.defaults.PAGE_TIMEOUT), 10);
     this.elementTimeout = parseInt(this.required("ELEMENT_TIMEOUT", Config.defaults.ELEMENT_TIMEOUT), 10);
     this.rateLimitDelay = parseInt(this.required("RATE_LIMIT_DELAY", Config.defaults.RATE_LIMIT_DELAY), 10);
+    this.writeTo = this.required("WRITE_TO", Config.defaults.WRITE_TO) as WriteTo;
   }
 
   static getInstance(): Config {
