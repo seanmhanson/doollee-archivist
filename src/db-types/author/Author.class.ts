@@ -36,12 +36,20 @@ type ParsedNameData = AuthorTypes.NameData & {
 
 export default class Author {
   private _id: ObjectId;
-  private name: string;
   private metadata: AuthorMetadata;
   private rawFields: AuthorTypes.RawFields;
   private nameData: AuthorTypes.NameData;
   private biography: AuthorTypes.Biography;
   private works: AuthorTypes.Works;
+  private name: string;
+
+  public get authorName(): string {
+    return this.name;
+  }
+
+  public get id(): ObjectId {
+    return this._id;
+  }
 
   constructor(input: AuthorTypes.Input) {
     const authorId = new ObjectId();

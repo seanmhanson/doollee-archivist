@@ -9,30 +9,34 @@ export default class PlaysList extends BaseWorksList {
   protected async extractData(): Promise<void> {
     const data = await this.scrapeData();
 
-    this.data = data.map(({ playId: playIdText, publisher, production: productionText, parts: partsText, ...rest }) => {
-      const publicationDetails = this.parsePublicationDetails(publisher, true);
-      const productionDetails = this.parseProductionDetails(productionText);
-      const playId = this.getPlayId(playIdText);
-      const parts = this.parseParts(partsText);
-      const production = {
-        location: productionDetails.location,
-        year: productionDetails.date,
-      };
-      const publication = {
-        publisher: publicationDetails.publisher,
-        year: publicationDetails.year,
-      };
-      const isbn = publicationDetails.isbn;
+    this.data = data.map(
+      ({ playId: playIdText, publisher: publishingInfo, production: productionInfo, parts: partsText, ...rest }) => {
+        const publicationDetails = this.parsePublicationDetails(publishingInfo, true);
+        const productionDetails = this.parseProductionDetails(productionInfo);
+        const playId = this.getPlayId(playIdText);
+        const parts = this.parseParts(partsText);
+        const production = {
+          location: productionDetails.location,
+          year: productionDetails.date,
+        };
+        const publication = {
+          publisher: publicationDetails.publisher,
+          year: publicationDetails.year,
+        };
+        const isbn = publicationDetails.isbn;
 
-      return {
-        playId,
-        production,
-        publication,
-        isbn,
-        parts,
-        ...rest,
-      };
-    });
+        return {
+          publishingInfo,
+          productionInfo,
+          playId,
+          production,
+          publication,
+          isbn,
+          parts,
+          ...rest,
+        };
+      }
+    );
   }
 
   protected async scrapeData() {
@@ -40,7 +44,8 @@ export default class PlaysList extends BaseWorksList {
       const containerSelector = ".gridContainer > strong";
       const playIdSelector = "#playwrightTable > a";
       const titleSelector = "#playTable";
-      const imageSelector = "#synopsisTitle > center > img";
+      const imageContainerSelector = "#synopsisTitle";
+      const imageSelector = "center > img";
       const synopsisSelector = "#synopsisName";
       const notesSelector = "#notesName";
       const productionSelector = "#producedPlace";
@@ -57,7 +62,7 @@ export default class PlaysList extends BaseWorksList {
       const data = {
         allPlayIds: container.querySelectorAll(playIdSelector),
         allTitles: container.querySelectorAll(titleSelector),
-        allImages: container.querySelectorAll(imageSelector),
+        allImages: container.querySelectorAll(imageContainerSelector),
         allSynopses: container.querySelectorAll(synopsisSelector),
         allNotes: container.querySelectorAll(notesSelector),
         allProductions: container.querySelectorAll(productionSelector),
@@ -73,10 +78,13 @@ export default class PlaysList extends BaseWorksList {
       const playCount = data.allPlayIds.length;
 
       for (let i = 0; i < playCount; i++) {
+        const imageContainer = data.allImages[i];
+        const imageElement = imageContainer.querySelector(imageSelector);
+
         results.push({
           playId: data.allPlayIds[i]?.getAttribute("name") || "",
           title: data.allTitles[i]?.textContent?.trim() || "",
-          altTitle: data.allImages[i]?.getAttribute("title")?.trim() || "",
+          altTitle: imageElement?.getAttribute("title")?.trim() || "",
           synopsis: data.allSynopses[i]?.textContent?.trim() || "",
           notes: data.allNotes[i]?.textContent?.trim() || "",
           production: data.allProductions[i]?.textContent?.trim() || "",

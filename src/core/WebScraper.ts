@@ -70,15 +70,21 @@ export default class WebScraper {
       );
     });
 
+    // handling of response errors
     this.page.on("response", (response) => {
-      if (!response.ok()) {
-        if (response.status() === 307 || response.status() === 308) {
-          return; // Ignore redirects
-        }
+      const expectedResponses = [
+        response.ok(), // 200 responses
+        response.status() === 307, // temporary redirects
+        response.status() === 308, // permanent redirects
+        response.status() === 404 && /Images-plays\/\d+\.gif$/.test(response.url()), // missing play images
+      ];
 
-        const msg = `${response.url()} - ${response.status()} ${response.statusText()}`;
-        console.log(`⚠️  Response error: ${msg}`);
+      if (expectedResponses.some((condition) => condition)) {
+        return;
       }
+
+      const msg = `${response.url()} - ${response.status()} ${response.statusText()}`;
+      console.warn(`⚠️  Response error: ${msg}`);
     });
 
     await this.page.setExtraHTTPHeaders(httpHeaders);

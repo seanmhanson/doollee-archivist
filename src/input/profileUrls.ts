@@ -10,4 +10,6 @@ const authorFixtures: { [authorName: string]: string } = {
   "MAMET David": "mamet-david",
 };
 
+
+
 export default authorFixtures;

@@ -12,10 +12,11 @@
     "build": "tsc -p tsconfig.json",
     "db:init": "ts-node -r tsconfig-paths/register src/scripts/init-db.ts",
     "db:reset": "ts-node -r tsconfig-paths/register src/scripts/reset-db.ts",
+    "clean:output": "rimraf ./output/*-authors ./output/*-plays ./output/*.log",
     "scrape:indexes": "ts-node -r tsconfig-paths/register src/scripts/scrapeIndexes.ts",
     "scrape:profiles": "ts-node -r tsconfig-paths/register src/scripts/scrapeProfiles.ts",
     "scrape:listings": "ts-node -r tsconfig-paths/register src/scripts/scrapeListings.ts",
-    "scrape:bios": "ts-node -r tsconfig-paths/register src/scripts/scrapeBios.ts",
+    "scrape:test": "ts-node -r tsconfig-paths/register src/scripts/sampleScript.ts",
     "test:rateLimiting": "ts-node -r tsconfig-paths/register src/scripts/testRateLimiting.ts"
   },
   "devDependencies": {
@@ -23,6 +24,7 @@
     "@types/node": "^24.10.1",
     "@types/yargs": "^17.0.35",
     "mongodb-memory-server": "^11.0.0",
+    "rimraf": "^6.1.2",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.3"
