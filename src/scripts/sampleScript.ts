@@ -1,26 +1,40 @@
+import { ObjectId } from "mongodb";
+
+import config from "#/core/Config";
 import WebScraper from "#/core/WebScraper";
 import ModuleWriter from "#/core/ModuleWriter";
+import DatabaseService from "#/core/DatabaseService";
 import ProfilePage from "#/page-models/ProfilePage";
 import Author from "#/db-types/author/Author.class";
 import Play from "#/db-types/play/Play.class";
-import type { ObjectId } from "mongodb";
-
-const URL_PREFIX = "https://www.doollee.com/Playwrights";
-const SAMPLE_INPUT = { "EURIPIDES ": "euripides" };
+import profileUrls from "#/input/profileUrls";
+import ProgressDisplay from "#/utils/ProgressDisplay";
 
 async function main() {
   console.debug = () => {};
-  const timestamp = new Date().toTimeString().slice(0, 8).replace(/:/g, "");
-  const authorDirectory = `${timestamp}-authors`;
-  const playDirectory = `${timestamp}-plays`;
 
+  const timestamp = new Date().toTimeString().slice(0, 8).replace(/:/g, "");
+  const totalAuthors = Object.entries(profileUrls).length;
+
+  // Setup infrastructure first (without progress display)
+  const authorModuleWriter = await ModuleWriter.create(`${timestamp}-authors`);
+  const playModuleWriter = await ModuleWriter.create(`${timestamp}-plays`);
+  const dbService = new DatabaseService(config.mongoUri, config.dbName);
   const scraper = await WebScraper.create();
-  const authorModuleWriter = await ModuleWriter.create(authorDirectory);
-  const playModuleWriter = await ModuleWriter.create(playDirectory);
+
+  const progressDisplay = new ProgressDisplay({
+    totalAuthors,
+    batchSize: totalAuthors,
+  });
 
   async function scrapeProfile([profileName, profileSlug]: [string, string]) {
-    console.log(`🔄 Scraping playwright page for ${profileName}, profile slug ${profileSlug}...`);
-    const url = `${URL_PREFIX}${profileSlug.charAt(0).toUpperCase()}/${profileSlug}.php`;
+    // all authors with leading numeric characters are indexed under "A"
+    const prefix = profileSlug.charAt(0).match(/[0-9]/) ? "A" : profileSlug.charAt(0).toUpperCase();
+    const url = `${config.baseUrl}/Playwrights${prefix}/${profileSlug}.php`;
+    const shortUrl = `/Playwrights${prefix}/${profileSlug}.php`;
+
+    console.log(`Scraping: { name: ${profileName.trim()}, url: ${shortUrl} }`);
+
     const profilePage = new ProfilePage(scraper.getPage(), { url });
     await profilePage.goto();
     await profilePage.extractPage();
@@ -37,7 +51,19 @@ async function main() {
     return `${playId}-${truncatedName}.json`;
   }
 
-  for (const [profileName, profileSlug] of Object.entries(SAMPLE_INPUT)) {
+  let bioCount = 0;
+  let playCount = 0;
+
+  for (const [profileName, profileSlug] of Object.entries(profileUrls)) {
+    const baseUrl = `${config.baseUrl}/Playwrights`;
+    const slugPrefix = profileSlug.charAt(0).toUpperCase();
+    const url = `${baseUrl}${slugPrefix}/${profileSlug}.php`;
+
+    progressDisplay.updateDisplay({
+      currentUrl: url,
+      authorCount: bioCount,
+    });
+
     const { biographyData, worksData, url: sourceUrl } = await scrapeProfile([profileName, profileSlug]);
     const scrapedAt = new Date();
     const author = new Author({
@@ -56,10 +82,6 @@ async function main() {
     const playDooleeeIds: string[] = [];
 
     for (const work of worksData) {
-      if (work.title !== "Bakkhai") {
-        continue;
-      }
-
       const play = new Play({
         ...work,
         originalAuthor,
@@ -74,22 +96,26 @@ async function main() {
       const playDocument = play.toDocument();
       const playFilename = getPlayFilename(playDocument.title, playDocument.playId);
 
-      await playModuleWriter.writeFile({
-        filename: playFilename,
-        data: playDocument,
-        stringify: true,
-        fileType: "json",
-      });
-      console.log(`✅ play data written to file: ${playFilename}`);
+      if (config.writeTo === "db") {
+        const playsCollection = await dbService.getCollection("plays");
+        const { _id, ...playDocument } = play.toDocument();
 
-      if (playDocument.title === "Bakkhai") {
+        await playsCollection.findOneAndUpdate(
+          { playId: playDocument.playId },
+          { $set: playDocument, $setOnInsert: { _id } },
+          { upsert: true }
+        );
+
+        playCount++;
+        progressDisplay.updateDisplay({ playCount });
+      } else if (config.writeTo === "file") {
         await playModuleWriter.writeFile({
-          filename: `_original-${playFilename}`,
-          data: work,
+          filename: playFilename,
+          data: playDocument,
           stringify: true,
           fileType: "json",
         });
-        console.log(`✅ SPECIAL play data written to file: SPECIAL-${playFilename}`);
+        console.log(`✅ play data written to file: ${playFilename}`);
       }
     }
 
@@ -97,19 +123,38 @@ async function main() {
     author.addAdaptations(adaptations);
     author.addDoolleeIds(playDooleeeIds);
 
-    await authorModuleWriter.writeFile({
-      filename: `${profileSlug}.json`,
-      data: author.toDocument(),
-      stringify: true,
-      fileType: "json",
-    });
+    if (config.writeTo === "db") {
+      const authorsCollection = await dbService.getCollection("authors");
+      const { _id, ...authorDocument } = author.toDocument();
 
-    console.log(`✅ bio data written to file: ${profileName}`);
+      await authorsCollection.findOneAndUpdate(
+        { authorId: authorId },
+        { $set: authorDocument, $setOnInsert: { _id } },
+        { upsert: true }
+      );
+
+      bioCount++;
+      progressDisplay.updateDisplay({
+        authorCount: bioCount,
+        totalPlays: playCount,
+      });
+      console.log(`Completed: ${profileName.trim()}, (${worksData.length} works)`);
+    } else if (config.writeTo === "file") {
+      await authorModuleWriter.writeFile({
+        filename: `${profileSlug}.json`,
+        data: author.toDocument(),
+        stringify: true,
+        fileType: "json",
+      });
+      console.log(`✅ bio data written to file: ${profileName}`);
+    }
   }
-
+  progressDisplay.complete();
   authorModuleWriter && (await authorModuleWriter.close());
   playModuleWriter && (await playModuleWriter.close());
+  dbService.close && (await dbService.close());
   scraper && (await scraper.close());
+  progressDisplay.summary();
 }
 
 main().catch(console.error);
