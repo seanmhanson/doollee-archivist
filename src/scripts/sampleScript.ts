@@ -74,7 +74,7 @@ async function main() {
       scrapedAt,
     });
 
-    const originalAuthor = author.name;
+    const originalAuthor = author.authorName;
     const authorId = author.id;
 
     const adaptations: ObjectId[] = [];
@@ -128,8 +128,8 @@ async function main() {
       const { _id, ...authorDocument } = author.toDocument();
 
       await authorsCollection.findOneAndUpdate(
-        { authorId },
-        { $set: authorDocument, $setOnInsert: { _id } },
+        { _id: authorId },
+        { $set: authorDocument },
         { upsert: true }
       );
 
@@ -150,10 +150,10 @@ async function main() {
     }
   }
   progressDisplay.complete();
-  authorModuleWriter && (await authorModuleWriter.close());
-  playModuleWriter && (await playModuleWriter.close());
-  dbService.close && (await dbService.close());
-  scraper && (await scraper.close());
+  await authorModuleWriter.close();
+  await playModuleWriter.close();
+  await dbService.close();
+  await scraper.close();
   progressDisplay.summary();
 }
 

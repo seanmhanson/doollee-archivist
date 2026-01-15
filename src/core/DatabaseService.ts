@@ -51,12 +51,12 @@ export default class DatabaseService {
     }
   }
 
-  getDatabaseInfo() {
+  async getDatabaseInfo() {
     const credentialPattern = /\/\/[^:]+:[^@]+@/;
     return {
       uri: this.mongoUri.replace(credentialPattern, "//***:***@"),
       dbName: this.dbName,
-      isConnected: this.isConnected(),
+      isConnected: await this.isConnected(),
     };
   }
 

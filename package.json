@@ -12,7 +12,7 @@
     "build": "tsc -p tsconfig.json",
     "db:init": "ts-node -r tsconfig-paths/register src/scripts/init-db.ts",
     "db:reset": "ts-node -r tsconfig-paths/register src/scripts/reset-db.ts",
-    "clean:output": "rimraf ./output/*-authors ./output/*-plays",
+    "clean:output": "rimraf ./output/*-authors ./output/*-plays ./output/*.log",
     "scrape:indexes": "ts-node -r tsconfig-paths/register src/scripts/scrapeIndexes.ts",
     "scrape:profiles": "ts-node -r tsconfig-paths/register src/scripts/scrapeProfiles.ts",
     "scrape:listings": "ts-node -r tsconfig-paths/register src/scripts/scrapeListings.ts",

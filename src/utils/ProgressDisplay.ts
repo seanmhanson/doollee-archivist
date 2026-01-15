@@ -37,7 +37,11 @@ class ProgressDisplay {
   constructor(data: UpdateDisplayDoc = {}) {
     this.data = { ...this.data, ...data };
     const timestamp = new Date().toISOString().replace(/:/g, "-");
-    this.logFile = `output/${timestamp}.log`;
+    const outputDir = "output";
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+    this.logFile = `${outputDir}/${timestamp}.log`;
     this.setupLogInterception();
   }
 

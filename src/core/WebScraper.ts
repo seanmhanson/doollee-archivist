@@ -76,7 +76,7 @@ export default class WebScraper {
         response.ok(), // 200 responses
         response.status() === 307, // temporary redirects
         response.status() === 308, // permanent redirects
-        response.status() === 404 && /Images-plays\/(\d)+\.gif$/.test(response.url()), // missing play images
+        response.status() === 404 && /Images-plays\/\d+\.gif$/.test(response.url()), // missing play images
       ];
 
       if (expectedResponses.some((condition) => condition)) {

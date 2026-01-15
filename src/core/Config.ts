@@ -30,7 +30,13 @@ export class Config {
     this.pageTimeout = parseInt(this.required("PAGE_TIMEOUT", Config.defaults.PAGE_TIMEOUT), 10);
     this.elementTimeout = parseInt(this.required("ELEMENT_TIMEOUT", Config.defaults.ELEMENT_TIMEOUT), 10);
     this.rateLimitDelay = parseInt(this.required("RATE_LIMIT_DELAY", Config.defaults.RATE_LIMIT_DELAY), 10);
-    this.writeTo = this.required("WRITE_TO", Config.defaults.WRITE_TO) as WriteTo;
+    const writeToValue = this.required("WRITE_TO", Config.defaults.WRITE_TO);
+    if (writeToValue !== "db" && writeToValue !== "file" && writeToValue !== "stage") {
+      throw new Error(
+        `Invalid value for WRITE_TO: ${writeToValue}. Allowed values are "db", "file", "stage".`
+      );
+    }
+    this.writeTo = writeToValue as WriteTo;
   }
 
   static getInstance(): Config {

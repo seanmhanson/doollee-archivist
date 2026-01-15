@@ -8,4 +8,7 @@ async function main() {
   process.exit(0);
 }
 
-main();
+main().catch((error) => {
+  console.error("Failed to initialize database:", error);
+  process.exit(1);
+});

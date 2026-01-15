@@ -41,7 +41,11 @@ export default class Author {
   private nameData: AuthorTypes.NameData;
   private biography: AuthorTypes.Biography;
   private works: AuthorTypes.Works;
-  public name: string;
+  private name: string;
+
+  public get authorName(): string {
+    return this.name;
+  }
 
   public get id(): ObjectId {
     return this._id;
