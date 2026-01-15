@@ -161,27 +161,25 @@ export default class DatabaseService {
 
   async createCollections(): Promise<void> {
     const database = await this.connect();
+    console.info("⏳ Creating collections:");
 
     for (const { name, $jsonSchema } of COLLECTIONS) {
       const exists = await database.listCollections({ name }).hasNext();
       if (exists) {
-        console.info(`ℹ️ - Collection '${name}' already exists`);
+        console.info(`   - Collection '${name}' already exists`);
         continue;
       }
 
       /** TODO: Update to strict once data is production-ready */
-      await database.createCollection(name, {
-        validator: { $jsonSchema },
-        validationAction: "warn",
-        validationLevel: "moderate",
-      });
-      console.info(`✅ - Collection '${name}' created successfully`);
+      await database.createCollection(name);
+      console.info(`   - Collection '${name}' created successfully`);
     }
-    console.info("✅ - Collection creation complete");
+    console.info("✅ Collection creation complete");
   }
 
   async createIndexes(): Promise<void> {
     const database = await this.connect();
+    console.info("⏳ Creating indexes:");
 
     for (const collectionName of Object.keys(indexesByCollection)) {
       const collection = database.collection(collectionName);
@@ -191,25 +189,24 @@ export default class DatabaseService {
           const indexSpec: any = {};
           indexSpec[index.field] = 1; // Ascending index
           await collection.createIndex(indexSpec, index.options);
-          console.info(`✅ - Created index on '${collectionName}.${index.field}'`);
-        } catch (error: any) {
-          const indexExistsError = error?.code === 85;
-          if (indexExistsError) {
-            console.info(`ℹ️ - Index '${collectionName}.${index.field}' already exists`);
-          } else {
-            console.error(`❌ - Failed to create index on '${collectionName}.${index.field}':`, error);
-            throw error;
-          }
+          console.info(`   - Created index on '${collectionName}.${index.field}'`);
+        } catch (error) {
+          console.error(`❌ - Failed to create index on '${collectionName}.${index.field}':`, error);
+          throw error;
         }
       }
     }
-
     console.info("✅ - Index creation complete");
   }
 
   async initDatabase(): Promise<void> {
+    console.info("⏳ - Initializing database...");
+    await this.connect();
+    console.info("--------------------------------");
     await this.createCollections();
+    console.info("--------------------------------");
     await this.createIndexes();
+    console.info("--------------------------------");
     console.info("✅ - Database initialization complete");
   }
 }

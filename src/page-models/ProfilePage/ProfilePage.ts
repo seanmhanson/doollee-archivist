@@ -59,7 +59,6 @@ export default class ProfilePage extends BasePage<UrlArgs, Data> {
   }): Promise<void> {
     await super.goto(options);
     this.template = await this.identifyTemplate();
-    console.log("Template type:", this.template);
 
     if (this.template === "standard") {
       this.biographyComponent = await StandardBiography.create(this.page);

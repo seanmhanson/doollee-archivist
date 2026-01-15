@@ -53,8 +53,6 @@ export default class AdaptationsList extends BaseWorksList {
         production,
       };
     });
-
-    console.log(`${this.data.length} adaptations processed.`);
   }
 
   protected async scrapeTableData() {
