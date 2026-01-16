@@ -8,7 +8,7 @@ import ProfilePage from "#/page-models/ProfilePage";
 import Author from "#/db-types/author/Author.class";
 import Play from "#/db-types/play/Play.class";
 import profileUrls from "#/input/profileUrls";
-import ProgressDisplay from "#/utils/ProgressDisplay";
+import ProgressDisplay from "#/scripts/main/ProgressDisplay";
 
 async function main() {
   console.debug = () => {};
@@ -127,11 +127,7 @@ async function main() {
       const authorsCollection = await dbService.getCollection("authors");
       const { _id, ...authorDocument } = author.toDocument();
 
-      await authorsCollection.findOneAndUpdate(
-        { _id: authorId },
-        { $set: authorDocument },
-        { upsert: true }
-      );
+      await authorsCollection.findOneAndUpdate({ _id: authorId }, { $set: authorDocument }, { upsert: true });
 
       bioCount++;
       progressDisplay.updateDisplay({
