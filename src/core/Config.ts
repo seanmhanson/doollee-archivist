@@ -1,11 +1,12 @@
 import dotenv from "dotenv";
 dotenv.config({ quiet: true });
 
-type WriteTo = "db" | "file" | "stage";
+const WRITE_TO_VALUES = ["db", "file", "stage"] as const;
+type WriteTo = (typeof WRITE_TO_VALUES)[number];
 
 export class Config {
   private static instance: Config;
-  static defaults = {
+  public static defaults: Record<string, string> = {
     MONGO_URI: "mongodb://localhost:27017",
     DB_NAME: "doollee-archive",
     BASE_URL: "https://www.doollee.com",
@@ -13,6 +14,12 @@ export class Config {
     ELEMENT_TIMEOUT: "30000",
     RATE_LIMIT_DELAY: "3000",
     WRITE_TO: "db",
+    BATCH_SIZE: "250",
+    MAX_BATCHES: "0",
+    TAIL_LENGTH: "3",
+    AUTHOR_LIST_PATH: "input/authors",
+    LOG_DIRECTORY: "output/logs",
+    LOG_FILE: "",
   };
 
   public readonly mongoUri: string;
@@ -22,36 +29,78 @@ export class Config {
   public readonly elementTimeout: number;
   public readonly rateLimitDelay: number;
   public readonly writeTo: WriteTo;
+  public readonly batchSize: number;
+  public readonly maxBatches: number;
+  public readonly tailLength: number;
+  public readonly logDirectory: string;
+  public readonly logFile: string;
+  public readonly authorListPath: string;
 
   private constructor() {
-    this.mongoUri = this.required("MONGO_URI", Config.defaults.MONGO_URI);
-    this.dbName = this.required("DB_NAME", Config.defaults.DB_NAME);
-    this.baseUrl = this.required("BASE_URL", Config.defaults.BASE_URL);
-    this.pageTimeout = parseInt(this.required("PAGE_TIMEOUT", Config.defaults.PAGE_TIMEOUT), 10);
-    this.elementTimeout = parseInt(this.required("ELEMENT_TIMEOUT", Config.defaults.ELEMENT_TIMEOUT), 10);
-    this.rateLimitDelay = parseInt(this.required("RATE_LIMIT_DELAY", Config.defaults.RATE_LIMIT_DELAY), 10);
-    const writeToValue = this.required("WRITE_TO", Config.defaults.WRITE_TO);
-    if (writeToValue !== "db" && writeToValue !== "file" && writeToValue !== "stage") {
-      throw new Error(
-        `Invalid value for WRITE_TO: ${writeToValue}. Allowed values are "db", "file", "stage".`
-      );
-    }
-    this.writeTo = writeToValue as WriteTo;
+    this.mongoUri = this.getEnvOrDefault("MONGO_URI");
+    this.dbName = this.getEnvOrDefault("DB_NAME");
+    this.baseUrl = this.getEnvOrDefault("BASE_URL");
+    this.pageTimeout = this.getIntEnvOrDefault("PAGE_TIMEOUT");
+    this.elementTimeout = this.getIntEnvOrDefault("ELEMENT_TIMEOUT");
+    this.rateLimitDelay = this.getIntEnvOrDefault("RATE_LIMIT_DELAY");
+    this.batchSize = this.getIntEnvOrDefault("BATCH_SIZE");
+    this.maxBatches = this.getIntEnvOrDefault("MAX_BATCHES");
+    this.logDirectory = this.getEnvOrDefault("LOG_DIRECTORY");
+    this.writeTo = this.getWriteTo();
+    this.tailLength = this.getTailLength();
+    this.logFile = this.getLogFile();
+    this.authorListPath = this.getEnvOrDefault("AUTHOR_LIST_PATH");
   }
 
-  static getInstance(): Config {
+  private getEnvOrDefault(key: keyof typeof Config.defaults): string {
+    const value = process.env[key] || Config.defaults[key];
+    if (!value) {
+      throw new Error(`Missing required configuration for ${key}`);
+    }
+    return value;
+  }
+
+  private getIntEnvOrDefault(key: keyof typeof Config.defaults): number {
+    const valueStr = this.getEnvOrDefault(key);
+    const valueInt = parseInt(valueStr, 10);
+    if (isNaN(valueInt)) {
+      throw new Error(`Invalid integer value for ${key}: ${valueStr}`);
+    }
+    return valueInt;
+  }
+
+  private getWriteTo(): WriteTo {
+    const writeToValue = this.getEnvOrDefault("WRITE_TO");
+    if (!WRITE_TO_VALUES.includes(writeToValue as WriteTo)) {
+      throw new Error(`Invalid value for WRITE_TO: ${writeToValue}. Allowed values are "db", "file", "stage".`);
+    }
+    return writeToValue as WriteTo;
+  }
+
+  private getTailLength(): number {
+    const tailLengthValue = this.getIntEnvOrDefault("TAIL_LENGTH");
+    if (tailLengthValue < 1 || tailLengthValue > 50) {
+      throw new Error(`Invalid value for TAIL_LENGTH: ${tailLengthValue}. Allowed range is 1 to 50.`);
+    }
+    return tailLengthValue;
+  }
+
+  private getLogFile(): string {
+    const logFileValue = this.getEnvOrDefault("LOG_FILE");
+    if (logFileValue === "") {
+      return logFileValue;
+    }
+    if (!logFileValue.endsWith(".log")) {
+      throw new Error(`Invalid value for LOG_FILE: ${logFileValue}. Log file must have a .log extension.`);
+    }
+    return logFileValue;
+  }
+
+  public static getInstance(): Config {
     if (!Config.instance) {
       Config.instance = new Config();
     }
     return Config.instance;
-  }
-
-  private required(key: string, defaultValue?: string): string {
-    const value = process.env[key] || defaultValue;
-    if (!value) {
-      throw new Error(`Configuration environment variable ${key} is not set`);
-    }
-    return value;
   }
 }
 

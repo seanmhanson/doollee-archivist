@@ -65,7 +65,7 @@ export default class DatabaseService {
     return database.collection(name);
   }
 
-  async isConnected(): Promise<boolean> {
+  public async isConnected(): Promise<boolean> {
     if (!this.client || !this.db) {
       return false;
     }

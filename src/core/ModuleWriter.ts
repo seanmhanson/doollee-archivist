@@ -29,6 +29,11 @@ class ModuleWriter {
   private moduleName: string = "";
   private outputDir: string = "";
   private filenames: string[] = [];
+  private isReadyFlag: boolean = false;
+
+  public get isReady() {
+    return this.isReadyFlag;
+  }
 
   private constructor() {}
 
@@ -42,6 +47,7 @@ class ModuleWriter {
     this.moduleName = moduleName;
     this.outputDir = path.resolve(`output/${this.moduleName}`);
     await fs.mkdir(this.outputDir, { recursive: true });
+    this.isReadyFlag = true;
   }
 
   private validateFilename({ filename, fileType }: ValidateFilenameArgs) {
@@ -51,9 +57,7 @@ class ModuleWriter {
 
     const extension = filename.split(".").pop();
     if (extension && fileType && extension !== fileType) {
-      throw Error(
-        `Filename extension .${extension} does not match specified fileType ${fileType}`
-      );
+      throw Error(`Filename extension .${extension} does not match specified fileType ${fileType}`);
     }
   }
 
@@ -63,9 +67,7 @@ class ModuleWriter {
     const isJson = extension && extension === "json";
 
     if (!extension || (!isTypescript && !isJson)) {
-      throw Error(
-        "When fileType is not specified, filename must have a .json or .ts extension"
-      );
+      throw Error("When fileType is not specified, filename must have a .json or .ts extension");
     }
 
     return isTypescript ? "ts" : "json";
@@ -77,9 +79,7 @@ class ModuleWriter {
     }
 
     if (!stringify && typeof data !== "string") {
-      throw Error(
-        `Data must be a string; use the option 'stringify' to write object data`
-      );
+      throw Error(`Data must be a string; use the option 'stringify' to write object data`);
     }
   }
 
@@ -105,24 +105,16 @@ class ModuleWriter {
   }
 
   public async writeFile(options: Options) {
-    const { filename, data, fileType, stringify } =
-      this.validateOptions(options);
-    const stringInput = stringify
-      ? JSON.stringify(data, null, 2)
-      : (data as string);
+    const { filename, data, fileType, stringify } = this.validateOptions(options);
+    const stringInput = stringify ? JSON.stringify(data, null, 2) : (data as string);
     const fullFileName = `${filename}.${fileType}`;
     const outputPath = path.join(this.outputDir, `${fullFileName}`);
-    const fileContent =
-      fileType === "ts" ? `export default ${stringInput};` : stringInput;
+    const fileContent = fileType === "ts" ? `export default ${stringInput};` : stringInput;
 
     try {
       await fs.writeFile(outputPath, fileContent, "utf8");
     } catch (error) {
-      throw Error(
-        `Error writing file ${outputPath}: ${
-          error instanceof Error ? error.message : String(error)
-        }`
-      );
+      throw Error(`Error writing file ${outputPath}: ${error instanceof Error ? error.message : String(error)}`);
     }
 
     this.filenames.push(fullFileName);
@@ -162,11 +154,7 @@ class ModuleWriter {
     try {
       await fs.writeFile(outputPath, indexFileContent, "utf8");
     } catch (error) {
-      throw Error(
-        `Error writing index file: ${
-          error instanceof Error ? error.message : String(error)
-        }`
-      );
+      throw Error(`Error writing index file: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -176,11 +164,9 @@ class ModuleWriter {
     }
 
     if (verbose) {
-      console.log(
-        ` 📦 Module created with ${this.filenames.length} files written to ` +
-          `output/${this.moduleName}`
-      );
+      console.log(` 📦 Module created with ${this.filenames.length} files written to ` + `output/${this.moduleName}`);
     }
+    this.isReadyFlag = false;
   }
 }
 

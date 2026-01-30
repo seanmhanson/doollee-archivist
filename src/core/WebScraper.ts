@@ -25,12 +25,13 @@ export default class WebScraper {
   private browser: Browser | null = null;
   private page: Page | null = null;
 
+  public isConnected(): boolean {
+    return this.browser?.isConnected() || false;
+  }
+
   private constructor() {}
 
-  static async create({
-    headless = true,
-    slowMo = 50,
-  }: BrowserOptions = {}): Promise<WebScraper> {
+  static async create({ headless = true, slowMo = 50 }: BrowserOptions = {}): Promise<WebScraper> {
     console.log("--------------------------------");
     console.log("  🏁 Creating a WebScraper Instance...");
     const instance = new WebScraper();
