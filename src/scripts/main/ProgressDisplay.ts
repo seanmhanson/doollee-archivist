@@ -10,6 +10,9 @@ import type {
   DisplayData,
 } from "#/scripts/main/ProgressDisplay.types";
 import { defaults } from "#/scripts/main/ProgressDisplay.types";
+import debounce from "#/utils/debounce";
+
+const RENDER_DEBOUNCE_MS = 200;
 
 class ProgressDisplay {
   private globalStats: GlobalStats = defaults.globalStats;
@@ -25,8 +28,60 @@ class ProgressDisplay {
     warn: console.warn,
   };
 
+  private debouncedRender!: () => void;
+  private forceRender!: () => void;
+  private clearDebounce!: () => void;
+
+  // ============================================================================
+  // Public Interface
+  // ============================================================================
+
   public get isReady() {
     return this.isReadyFlag;
+  }
+
+  public update(data: DisplayData = {}, forceUpdate = false) {
+    this.updateData(data);
+
+    if (forceUpdate) {
+      return this.forceRender();
+    }
+    return this.debouncedRender();
+  }
+
+  public close() {
+    Object.assign(console, this.originalConsole);
+    this.clearDebounce();
+    this.isReadyFlag = false;
+  }
+
+  // ============================================================================
+  // Initialization & Setup
+  // ============================================================================
+
+  constructor() {
+    this.initializeLogging();
+    this.initializeDebouncing();
+    this.isReadyFlag = true;
+  }
+
+  private initializeLogging() {
+    this.loggingStats = {
+      ...this.loggingStats,
+      logDirectory: config.logDirectory,
+      logFile: config.logFile,
+      tailLength: config.tailLength,
+    };
+    this.globalStats.startTime = new Date();
+    this.setupLogFile();
+    this.setupLogInterception();
+  }
+
+  private initializeDebouncing() {
+    const { debouncedFn, forcedFn, clear } = debounce(() => this.render(), RENDER_DEBOUNCE_MS);
+    this.debouncedRender = debouncedFn;
+    this.forceRender = forcedFn;
+    this.clearDebounce = clear;
   }
 
   private updateData(data: DisplayData = {}) {
@@ -36,20 +91,6 @@ class ProgressDisplay {
     this.currentStats = { ...this.currentStats, ...currentStats };
     this.authorStats = { ...this.authorStats, ...authorStats };
     this.playStats = { ...this.playStats, ...playStats };
-  }
-
-  constructor() {
-    this.loggingStats = {
-      ...this.loggingStats,
-      logDirectory: config.logDirectory,
-      logFile: config.logFile,
-      tailLength: config.tailLength,
-    };
-
-    this.globalStats.startTime = new Date();
-    this.setupLogFile();
-    this.setupLogInterception();
-    this.isReadyFlag = true;
   }
 
   private setupLogFile() {
@@ -67,6 +108,10 @@ class ProgressDisplay {
       this.loggingStats.logFile = `${outputDir}/${timestamp}.log`;
     }
   }
+
+  // ============================================================================
+  // Utility Methods
+  // ============================================================================
 
   private toPaddedString(num: number, length: number, padChar: string = "0"): string {
     return num.toString().padStart(length, padChar);
@@ -130,18 +175,16 @@ class ProgressDisplay {
       logToFile("warn", message);
     };
 
-    process.on("exit", () => this.complete());
+    process.on("exit", () => this.close());
     process.on("SIGINT", () => {
-      this.complete();
+      this.close();
       process.exit();
     });
   }
 
-  public update(data: DisplayData = {}, forceUpdate = false) {
-    this.updateData(data);
-    // add logic for debouncing
-    this.render();
-  }
+  // ============================================================================
+  // Rendering Methods - Body
+  // ============================================================================
 
   private render() {
     // clear the screen and redraw the display
@@ -151,7 +194,7 @@ class ProgressDisplay {
         `${this.renderglobalStatsSection()}\n\n` +
         `${this.rendercurrentStatsSection()}\n` +
         `${this.renderOutputDataSection()}\n\n` +
-        `${this.renderLoggingSection()}`
+        `${this.renderLoggingSection()}`,
     );
   }
 
@@ -243,20 +286,124 @@ class ProgressDisplay {
     );
   }
 
-  public close() {
-    Object.assign(console, this.originalConsole);
-    this.isReadyFlag = false;
+  // ============================================================================
+  // Rendering Methods - Summary
+  // ============================================================================
+
+  private renderSummary() {
+    // clear the screen and redraw the display
+    process.stdout.write("\x1b[2J\x1b[H");
+    process.stdout.write(`${this.renderSummaryHeader()}\n`);
+
+    process.stdout.write("\x1b[2J\x1b[H");
+    process.stdout.write(
+      `${this.renderSummaryHeader()}\n` +
+        `${this.renderSummaryStatsSection()}\n\n` +
+        `${this.renderOutputSummary()}\n` +
+        `${this.renderReviewSummary()}\n\n`,
+    );
   }
 
-  // public summary() {
-  //   // TODO: Update with more useful stats, lists of errors, etc.
-  //   const { totalAuthors, totalPlays } = this.data;
-  //   process.stdout.write("\x1b[2J\x1b[H");
-  //   process.stdout.write(`\nProcessing complete\n`);
-  //   process.stdout.write(`        Authors Processed: ${totalAuthors}\n`);
-  //   process.stdout.write(`        Plays Processed:   ${totalPlays}\n`);
-  //   process.stdout.write(`        Log file: ${this.logFile}\n`);
-  // }
+  private renderSummaryHeader() {
+    return (
+      `╒═══════════════════════════════════════════════════════════════════════╕\n` +
+      `│ Doollee Archivist - Scraping Complete                                 │\n` +
+      `╘═══════════════════════════════════════════════════════════════════════╛`
+    );
+  }
+
+  private getRuntime(startTime: number, endTime: number): string {
+    const HOUR = 3600000;
+    const MINUTE = 60000;
+    const SECOND = 1000;
+    const diff = endTime - startTime;
+
+    return (
+      `${this.toPaddedString(Math.floor(diff / HOUR), 2)}:` +
+      `${this.toPaddedString(Math.floor((diff % HOUR) / MINUTE), 2)}:` +
+      `${this.toPaddedString(Math.floor((diff % MINUTE) / SECOND), 2)}`
+    );
+  }
+
+  private getSuccessRate(successCount: number, skipCount: number): string {
+    if (successCount + skipCount === 0) {
+      return "100.0";
+    }
+    return ((successCount / (successCount + skipCount)) * 100).toFixed(1);
+  }
+
+  private renderSummaryStatsSection() {
+    const startTime = this.globalStats.startTime?.getTime();
+    const endTime = this.globalStats.endTime?.getTime();
+    const runtime = startTime && endTime ? this.getRuntime(startTime, endTime) : "N/A";
+
+    const batchCount = this.currentStats.completedBatchCount; // TODO
+    const authorCount = this.authorStats.totalAuthorsWritten;
+    const playCount = this.playStats.totalPlaysWritten;
+    const adaptationCount = ""; // TODO
+
+    const authorsSkipped = this.authorStats.totalAuthorsSkipped;
+    const playsSkipped = this.playStats.totalPlaysSkipped;
+
+    const authorSuccessRate = this.getSuccessRate(authorCount, authorsSkipped);
+    const playSuccessRate = this.getSuccessRate(playCount, playsSkipped);
+    return (
+      `SUMMARY STATISTICS\n` +
+      `├─ Total Runtime:         ${runtime}\n` +
+      `├─ Authors Processed:     ${authorCount} authors across ${batchCount} batches\n` +
+      `├─ Plays Catalogued:      ${playCount} plays (including ${adaptationCount} adaptations)\n` +
+      `├─ Author Success Rate:   ${authorSuccessRate}% (${authorsSkipped} authors skipped due to errors)\n` +
+      `└─ Play Success Rate:     ${playSuccessRate}% (${playsSkipped} plays skipped due to errors)\n`
+    );
+  }
+
+  private renderOutputSummary() {
+    const outputType = config.writeTo;
+
+    let outputLocationLine = "";
+    if (outputType === "db") {
+      outputLocationLine = `Database:   Connected to MongoDB cluster`;
+    }
+    if (outputType === "file") {
+      outputLocationLine = `Files:     ./output/2026-02-02T15-23-41/`;
+    }
+
+    // TODO optional:
+    // number of files written (?)
+    // log size (?)
+
+    return `OUTPUT LOCATIONS\n` + `┌─ ${outputLocationLine}\n` + `└─ Logs:      ./${this.loggingStats.logFile}`;
+  }
+
+  private renderReviewSummary() {
+    const outputType = config.writeTo;
+    const flaggedAuthors = this.authorStats.totalAuthorsFlagged;
+    const flaggedPlays = this.playStats.totalPlaysFlagged;
+    const scrapeErrors = 0; // TODO
+    const validationErrors = 0; // TODO
+    const writeErrors = 0; // TODO
+    const otherErrors = 0; // TODO
+    const reviewFilePath = ""; // TODO
+
+    let writeErrorLine = "";
+    if (outputType === "file") {
+      writeErrorLine = `Write Errors:      ${writeErrors} errors encountered when writing files`;
+    }
+    if (outputType === "db") {
+      writeErrorLine = `Write Errors:      ${writeErrors} errors encountered when inserting documents`;
+    }
+
+    return (
+      `REVIEW REQUIRED\n` +
+      `┌─ Flagged Authors:   ${flaggedAuthors} authors need manual review\n` +
+      `├─ Flagged Plays:     ${flaggedPlays} plays need verification\n` +
+      `├─ Scrape Errors:     ${scrapeErrors} biography sections failed extraction\n` +
+      `├─ Validation Errors: ${validationErrors} authors had incomplete required fields\n` +
+      `├─ ${writeErrorLine}\n` +
+      `├─ Other Errors:      ${otherErrors} other errors encountered\n` +
+      `└─ Review File:       ${reviewFilePath}\n`
+    );
+  }
 }
 
 export default ProgressDisplay;

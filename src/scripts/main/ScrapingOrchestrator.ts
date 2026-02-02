@@ -68,6 +68,7 @@ class ScrapingOrchestrator {
     doolleeIdAccumulator: [],
     authorReference: {},
     currentAuthor: undefined,
+    currentPlay: undefined,
     currentPlays: [],
     profileSlug: "",
     profileName: "",
@@ -98,8 +99,8 @@ class ScrapingOrchestrator {
 
         for (const play of this.state.currentPlays) {
           this.beginPlay();
-          await this.createPlay(play);
           try {
+            this.createPlay(play);
             await this.writePlay();
           } catch (error) {
             this.errorHandler(error);
@@ -328,12 +329,14 @@ class ScrapingOrchestrator {
    * Creates a Play instance from the provided play data and updates the orchestrator state accordingly,
    * @param playData the scraped data of the play to be created
    */
-  private async createPlay(playData: PlayData) {
+  private createPlay(playData: PlayData) {
     if (!this.isPopulatedAuthorReference(this.state.authorReference)) {
       throw new PlayProcessingError("Author reference data is incomplete when creating play.");
     }
 
     const play = new Play({ ...playData, ...this.state.authorReference });
+    this.state.currentPlay = play;
+
     play.isAdaptation ? this.state.adaptationAccumulator.push(play.id) : this.state.playAccumulator.push(play.id);
     this.state.doolleeIdAccumulator.push(play.doolleeId);
   }
@@ -414,7 +417,7 @@ class ScrapingOrchestrator {
           .toLowerCase()
           .replace(/\s+/g, "-")
           .replace(/[^a-z0-9\-]/g, "");
-        const filename = `${id}-${truncatedName}.json`;
+        filename = `${id}-${truncatedName}.json`;
         await this.services.playModuleWriter.writeFile({
           stringify: true,
           fileType: "json",
@@ -458,72 +461,43 @@ class ScrapingOrchestrator {
    * @param error the error object thrown during processing
    */
   private async errorHandler(error: unknown) {
-    const isSetupError = error instanceof SetupError;
-    const isScrapingError = error instanceof ScrapingError;
-    const isWritePlayError = error instanceof WritePlayError;
-    const isWriteAuthorError = error instanceof WriteAuthorError;
-    const isPlayProcessingError = error instanceof PlayProcessingError;
-    const isAuthorProcessingError = error instanceof AuthorProcessingError;
-    const isUnexpectedError = ![
-      isSetupError,
-      isScrapingError,
-      isWriteAuthorError,
-      isAuthorProcessingError,
-      isWritePlayError,
-      isPlayProcessingError,
-    ].some(Boolean);
-
-    const incrementAuthors = () => {
-      this.authorStats.totalAuthorsSkipped++;
-      this.authorStats.batchAuthorsSkipped++;
-    };
-
-    const incrementPlays = () => {
-      this.playStats.totalPlaysSkipped++;
-      this.playStats.batchPlaysSkipped++;
-    };
-
-    // fatal errors
-
-    if (isUnexpectedError) {
-      console.error("Unexpected error encountered:", error);
-      throw error;
-    }
-
-    if (isSetupError) {
+    if (error instanceof SetupError) {
       console.error("Fatal setup error encountered. Terminating process.");
       await this.teardown();
       process.exit(1);
     }
 
-    // recoverable errors
+    const skipAuthor = async (reason: string) => {
+      console.warn(`Skipping author ${this.state.profileName} due to ${reason}`);
+      this.authorStats.totalAuthorsSkipped++;
+      this.authorStats.batchAuthorsSkipped++;
+      await this.updateDisplay({ forceUpdate: true });
+    };
 
-    if (isScrapingError) {
-      console.warn(`Skipping author ${this.state.profileName} due to scraping error.`);
-      incrementAuthors();
+    const skipPlay = async (reason: string) => {
+      console.warn(`Skipping play due to ${reason}`);
+      this.playStats.totalPlaysSkipped++;
+      this.playStats.batchPlaysSkipped++;
+      await this.updateDisplay({ forceUpdate: true });
+    };
+
+    const errorActions = {
+      [ScrapingError.name]: async () => await skipAuthor("scraping error"),
+      [WriteAuthorError.name]: async () => await skipAuthor("writing error"),
+      [AuthorProcessingError.name]: async () => await skipAuthor("processing error"),
+      [WritePlayError.name]: async () => await skipPlay("writing error"),
+      [PlayProcessingError.name]: async () => await skipPlay("processing error"),
+    };
+
+    const errorName = error?.constructor.name || "UnknownError";
+    const action = errorActions[errorName];
+    if (action) {
+      await action();
+      return;
     }
 
-    if (isWritePlayError) {
-      console.warn(`Skipping writing play for ${this.state.profileName} due to writing error.`);
-      incrementPlays();
-    }
-
-    if (isWriteAuthorError) {
-      console.warn(`Skipping writing author bio for ${this.state.profileName} due to writing error.`);
-      incrementAuthors();
-    }
-
-    if (isPlayProcessingError) {
-      console.warn(`Skipping play for ${this.state.profileName} due to processing error.`);
-      incrementPlays();
-    }
-
-    if (isAuthorProcessingError) {
-      console.warn(`Skipping author ${this.state.profileName} due to processing error.`);
-      incrementAuthors();
-    }
-
-    await this.updateDisplay({ forceUpdate: true });
+    console.error("Unexpected error encountered:", error);
+    throw error;
   }
 
   /**

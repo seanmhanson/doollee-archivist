@@ -16,6 +16,7 @@ type CurrentStats = {
   currentBatchIndex: number;
   currentAuthorIndex: number;
   currentPlayIndex: number;
+  completedBatchCount?: number;
   authorsByBatchCount: number;
   playsByAuthorCount: number;
   firstAuthorName?: string;
@@ -27,6 +28,7 @@ const currentStats: CurrentStats = {
   currentBatchIndex: 0,
   currentAuthorIndex: 0,
   currentPlayIndex: 0,
+  completedBatchCount: 0,
   authorsByBatchCount: 0,
   playsByAuthorCount: 0,
   firstAuthorName: "",
