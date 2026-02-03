@@ -72,7 +72,7 @@ export class Config {
   private getWriteTo(): WriteTo {
     const writeToValue = this.getEnvOrDefault("WRITE_TO");
     if (!WRITE_TO_VALUES.includes(writeToValue as WriteTo)) {
-      throw new Error(`Invalid value for WRITE_TO: ${writeToValue}. Allowed values are "db", "file", "stage".`);
+      throw new Error(`Invalid value for WRITE_TO: ${writeToValue}. Allowed values are "db", "file".`);
     }
     return writeToValue as WriteTo;
   }

@@ -3,6 +3,8 @@ type GlobalStats = {
   endTime?: Date;
   globalBatchSize: number;
   globalBatchCount: number;
+  completedBatchCount: number;
+  totalAdaptations: number;
 };
 
 const globalStats: GlobalStats = {
@@ -10,13 +12,14 @@ const globalStats: GlobalStats = {
   endTime: undefined,
   globalBatchSize: 0,
   globalBatchCount: 0,
+  completedBatchCount: 0,
+  totalAdaptations: 0,
 };
 
 type CurrentStats = {
   currentBatchIndex: number;
   currentAuthorIndex: number;
   currentPlayIndex: number;
-  completedBatchCount?: number;
   authorsByBatchCount: number;
   playsByAuthorCount: number;
   firstAuthorName?: string;
@@ -28,7 +31,6 @@ const currentStats: CurrentStats = {
   currentBatchIndex: 0,
   currentAuthorIndex: 0,
   currentPlayIndex: 0,
-  completedBatchCount: 0,
   authorsByBatchCount: 0,
   playsByAuthorCount: 0,
   firstAuthorName: "",
@@ -97,12 +99,29 @@ type DisplayData = {
   playStats?: Partial<PlayStats>;
 };
 
+type ErrorStats = {
+  scrapeErrors: number;
+  writeErrors: number;
+  processErrors: number;
+  otherErrors: number;
+  networkErrors: number;
+};
+
+const errorStats: ErrorStats = {
+  scrapeErrors: 0,
+  writeErrors: 0,
+  processErrors: 0,
+  otherErrors: 0,
+  networkErrors: 0,
+};
+
 export const defaults = {
   globalStats,
   currentStats,
   authorStats,
   playStats,
   loggingStats,
+  errorStats,
 };
 
-export type { GlobalStats, AuthorStats, PlayStats, LoggingStats, CurrentStats, DisplayData };
+export type { GlobalStats, AuthorStats, PlayStats, LoggingStats, CurrentStats, DisplayData, ErrorStats };

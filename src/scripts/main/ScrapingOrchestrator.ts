@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { MongoNetworkError, MongoOperationTimeoutError, ObjectId } from "mongodb";
 
 import config from "#/core/Config";
 import WebScraper from "#/core/WebScraper";
@@ -9,9 +9,9 @@ import Play from "#/db-types/play/Play.class";
 import ProgressDisplay from "#/scripts/main/ProgressDisplay";
 import ProfilePage from "#/page-models/ProfilePage";
 import { defaults } from "./ProgressDisplay.types";
-import type { Input } from "#/db-types/author/author.types";
+import type { AuthorDocument, Input } from "#/db-types/author/author.types";
 import type { PlayData } from "#/db-types/play";
-import type { GlobalStats, PlayStats, AuthorStats, CurrentStats } from "./ProgressDisplay.types";
+import type { GlobalStats, PlayStats, AuthorStats, CurrentStats, ErrorStats } from "./ProgressDisplay.types";
 import {
   ScrapingError,
   PlayProcessingError,
@@ -20,6 +20,7 @@ import {
   WritePlayError,
   AuthorProcessingError,
 } from "./ScrapingError";
+import { PlayDocument } from "#/db-types/play/play.types";
 
 type AuthorListIndex = { [letter: string]: { [authorName: string]: string } };
 
@@ -61,6 +62,7 @@ class ScrapingOrchestrator {
   private currentStats: CurrentStats = defaults.currentStats;
   private authorStats: AuthorStats = defaults.authorStats;
   private playStats: PlayStats = defaults.playStats;
+  private errorStats: ErrorStats = defaults.errorStats;
   private state: State = {
     batches: [],
     playAccumulator: [],
@@ -117,6 +119,8 @@ class ScrapingOrchestrator {
         }
         await this.updateDisplay();
       } // end authors loop
+
+      this.endBatch();
     } // end batches loop
 
     this.globalStats.endTime = new Date();
@@ -272,22 +276,51 @@ class ScrapingOrchestrator {
   }
 
   /**
+   * Marks the end of processing for the current batch, updating the completed batch count,
+   * given that no error was thrown requiring the batch to be aborted.
+   */
+  private endBatch() {
+    this.globalStats.completedBatchCount++;
+  }
+  /**
    * Scrapes the author's profile page to extract their biography and list of works.
    * @returns scraped author data including biography, works, and source URL
    * @throws {ScrapingError} If there is an error during scraping. Recoverable Error (skip current author)
-   * @throws {Error} If there is an unexpected error during scraping, such as a network failure. Fatal Error.
    */
   private async scrapeAuthor(): Promise<AuthorData> {
     const profileUrl = `${config.baseUrl}${this.currentStats.currentAuthorUrl}`.trim();
-    try {
-      const profilePage = new ProfilePage(this.services.scraper.getPage(), { url: profileUrl });
-      await profilePage.goto();
-      await profilePage.extractPage();
+    let profilePage;
 
+    try {
+      profilePage = new ProfilePage(this.services.scraper.getPage(), { url: profileUrl });
+    } catch (initializationError) {
+      this.incrementErrorStats("otherErrors");
+      throw new ScrapingError(
+        `Failed to initialize ProfilePage for author: ${this.state.profileName} at ${profileUrl}`,
+        initializationError,
+      );
+    }
+
+    try {
+      await profilePage.goto();
+    } catch (gotoError) {
+      this.incrementErrorStats("networkErrors");
+      throw new ScrapingError(
+        `Failed to navigate to author profile: ${this.state.profileName} at ${profileUrl}`,
+        gotoError,
+      );
+    }
+
+    try {
+      await profilePage.extractPage();
       const { biographyData, worksData, url } = profilePage;
       return { biographyData, worksData, url };
-    } catch (error) {
-      throw new ScrapingError(`Failed to scrape author profile: ${this.state.profileName} at ${profileUrl}`, error);
+    } catch (scrapeError) {
+      this.incrementErrorStats("scrapeErrors");
+      throw new ScrapingError(
+        `Failed to scrape author profile: ${this.state.profileName} at ${profileUrl}`,
+        scrapeError,
+      );
     }
   }
 
@@ -301,6 +334,7 @@ class ScrapingOrchestrator {
   private createAuthor({ biographyData, worksData, url: sourceUrl }: AuthorData) {
     if (!biographyData || !worksData || !sourceUrl) {
       const url = sourceUrl || this.state.profileSlug;
+      this.incrementErrorStats("processErrors");
       throw new AuthorProcessingError(`Incomplete author data scraped for author: ${this.state.profileName} at ${url}`);
     }
 
@@ -331,6 +365,7 @@ class ScrapingOrchestrator {
    */
   private createPlay(playData: PlayData) {
     if (!this.isPopulatedAuthorReference(this.state.authorReference)) {
+      this.incrementErrorStats("processErrors");
       throw new PlayProcessingError("Author reference data is incomplete when creating play.");
     }
 
@@ -347,44 +382,51 @@ class ScrapingOrchestrator {
    */
   private async writeAuthor() {
     if (!this.state.currentAuthor) {
+      this.incrementErrorStats("processErrors");
       throw new AuthorProcessingError("Current author data is undefined at the time of writing");
     }
 
     const document = this.state.currentAuthor.toDocument();
     const authorId = this.state.currentAuthor.id;
 
-    try {
-      if (config.writeTo === "db") {
+    if (config.writeTo === "db") {
+      try {
         const authorsCollection = await this.services.dbService.getCollection("authors");
         const { _id, ...authorDocument } = document;
         await authorsCollection.findOneAndUpdate({ _id: authorId }, { $set: authorDocument }, { upsert: true });
-      } else if (config.writeTo === "file") {
+      } catch (dbError) {
+        if (this.isDbNetworkError(dbError)) {
+          this.incrementErrorStats("networkErrors");
+        } else {
+          this.incrementErrorStats("writeErrors");
+        }
+        const message = this.getWriteErrorMessage(document);
+        throw new WriteAuthorError(message, dbError);
+      }
+    }
+
+    if (config.writeTo === "file") {
+      try {
         await this.services.authorModuleWriter.writeFile({
           filename: `${this.state.profileSlug}.json`,
           stringify: true,
           fileType: "json",
           data: document,
         });
+      } catch (fileWriteError) {
+        this.incrementErrorStats("writeErrors");
+        const message = this.getWriteErrorMessage(document);
+        throw new WriteAuthorError(message, fileWriteError);
       }
+    }
 
-      const { needsReview } = document.metadata;
-      if (needsReview) {
-        this.authorStats.totalAuthorsFlagged++;
-        this.authorStats.batchAuthorsFlagged++;
-      } else {
-        this.authorStats.totalAuthorsWritten++;
-        this.authorStats.batchAuthorsWritten++;
-      }
-    } catch (error) {
-      const target = config.writeTo === "db" ? "database" : `file ${this.state.profileSlug}.json`;
-      const message =
-        `Error writing author to ${target}:\n` +
-        `Document ID: ${document._id}\n` +
-        `Name: ${document.name}\n` +
-        `Source URL: ${document.metadata.sourceUrl}\n` +
-        `Scraped At: ${document.metadata.scrapedAt}\n`;
-
-      throw new WriteAuthorError(message, error);
+    const { needsReview } = document.metadata;
+    if (needsReview) {
+      this.authorStats.totalAuthorsFlagged++;
+      this.authorStats.batchAuthorsFlagged++;
+    } else {
+      this.authorStats.totalAuthorsWritten++;
+      this.authorStats.batchAuthorsWritten++;
     }
   }
 
@@ -394,55 +436,62 @@ class ScrapingOrchestrator {
    */
   private async writePlay() {
     if (!this.state.currentPlay) {
+      this.incrementErrorStats("processErrors");
       throw new PlayProcessingError("Current play data is undefined at the time of writing");
     }
 
     const document = this.state.currentPlay.toDocument();
 
-    let filename = "";
-    try {
-      if (config.writeTo === "db") {
+    if (config.writeTo === "db") {
+      try {
         const playsCollection = await this.services.dbService.getCollection("plays");
         const { _id, ...documentWithoutId } = document;
         await playsCollection.findOneAndUpdate(
           { playId: documentWithoutId.playId },
           { $set: documentWithoutId, $setOnInsert: { _id } },
-          { upsert: true }
+          { upsert: true },
         );
-      } else if (config.writeTo === "file") {
-        const { title, playId } = document;
-        const id = playId.padStart(6, "0") || "0000000";
-        const truncatedName = title
-          .substring(0, 16)
-          .toLowerCase()
-          .replace(/\s+/g, "-")
-          .replace(/[^a-z0-9\-]/g, "");
-        filename = `${id}-${truncatedName}.json`;
+      } catch (dbError) {
+        if (this.isDbNetworkError(dbError)) {
+          this.incrementErrorStats("networkErrors");
+        } else {
+          this.incrementErrorStats("writeErrors");
+        }
+        const message = this.getWriteErrorMessage(document);
+        throw new WritePlayError(message, dbError);
+      }
+    }
+
+    if (config.writeTo === "file") {
+      const { title, playId } = document;
+      const id = playId.padStart(6, "0") || "0000000";
+      const truncatedName = title
+        .substring(0, 16)
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9\-]/g, "");
+      const filename = `${id}-${truncatedName}.json`;
+      try {
         await this.services.playModuleWriter.writeFile({
           stringify: true,
           fileType: "json",
           data: document,
           filename,
         });
+      } catch (fileWriteError) {
+        this.incrementErrorStats("writeErrors");
+        const message = this.getWriteErrorMessage(document);
+        throw new WritePlayError(message, fileWriteError);
       }
+    }
 
-      const { needsReview } = document.metadata;
-      if (needsReview) {
-        this.playStats.totalPlaysFlagged++;
-        this.playStats.batchPlaysFlagged++;
-      } else {
-        this.playStats.totalPlaysWritten++;
-        this.playStats.batchPlaysWritten++;
-      }
-    } catch (error) {
-      const target = config.writeTo === "db" ? "database" : `file ${filename}`;
-      const message =
-        `Error writing play to ${target}:\n` +
-        `Document ID: ${document._id}\n` +
-        `Title: ${document.title}\n` +
-        `Source URL: ${document.metadata.sourceUrl}\n` +
-        `Scraped At: ${document.metadata.scrapedAt}\n`;
-      throw new WritePlayError(message, error);
+    const { needsReview } = document.metadata;
+    if (needsReview) {
+      this.playStats.totalPlaysFlagged++;
+      this.playStats.batchPlaysFlagged++;
+    } else {
+      this.playStats.totalPlaysWritten++;
+      this.playStats.batchPlaysWritten++;
     }
   }
 
@@ -496,6 +545,7 @@ class ScrapingOrchestrator {
       return;
     }
 
+    this.incrementErrorStats("otherErrors");
     console.error("Unexpected error encountered:", error);
     throw error;
   }
@@ -512,8 +562,57 @@ class ScrapingOrchestrator {
         authorStats: this.authorStats,
         playStats: this.playStats,
       },
-      forceUpdate
+      forceUpdate,
     );
+  }
+
+  private isDbNetworkError(error: unknown) {
+    // OperationTimeoutError isn't strictly a network error, but we treat it as such given
+    // our minimal usage of the database
+    return error instanceof MongoNetworkError || error instanceof MongoOperationTimeoutError;
+  }
+
+  private getWriteErrorMessage(document: AuthorDocument | PlayDocument): string {
+    const isAuthor = "name" in document;
+    const isPlay = "title" in document;
+
+    const documentIdLine = `Document ID: ${document._id}`;
+    const sourceUrlLine = `Source URL: ${document.metadata.sourceUrl}`;
+    const scrapedAtLine = `Scraped At: ${document.metadata.scrapedAt}`;
+
+    // this is a safeguard and should never happen, but if it does, we will return a message
+    // that does not rely on type-specific fields and allow the caller to handle it appropriately
+    if (!isAuthor && !isPlay) {
+      const summaryLine =
+        config.writeTo === "db"
+          ? `No identifiable document type provided when writing to database:`
+          : `No identifiable document type provided when writing to file ${this.state.profileSlug}.json:`;
+      return `${summaryLine}\n` + `    ${documentIdLine}\n` + `    ${sourceUrlLine}\n` + `    ${scrapedAtLine}`;
+    }
+
+    const documentType = isAuthor ? "author" : "play";
+    const summaryLine =
+      config.writeTo === "db"
+        ? `Error writing ${documentType} to database:`
+        : `Error writing ${documentType} to file ${this.state.profileSlug}.json:\n`;
+
+    const nameLine = isAuthor ? `Name: ${document.name}` : `Title: ${document.title}`;
+
+    return (
+      `${summaryLine}\n` +
+      `    ${documentIdLine}\n` +
+      `    ${nameLine}\n` +
+      `    ${sourceUrlLine}\n` +
+      `    ${scrapedAtLine}`
+    );
+  }
+
+  private incrementErrorStats(errorType: keyof ErrorStats) {
+    if (this.errorStats.hasOwnProperty(errorType)) {
+      this.errorStats[errorType]++;
+    } else {
+      this.errorStats.otherErrors++;
+    }
   }
 
   /**
