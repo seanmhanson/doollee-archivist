@@ -332,12 +332,24 @@ class ProgressDisplay {
     return ((successCount / (successCount + skipCount)) * 100).toFixed(1);
   }
 
+  private getLogFileData() {
+    const stats = fs.statSync(this.loggingStats.logFile);
+    const fileSizeInKB = (stats.size / 1024).toFixed(2);
+
+    const content = fs.readFileSync(this.loggingStats.logFile, "utf-8");
+    const lineCount = content.split("\n").length;
+
+    return {
+      fileSizeInKB,
+      lineCount,
+    };
+  }
   private renderSummaryStatsSection() {
     const startTime = this.globalStats.startTime?.getTime();
     const endTime = this.globalStats.endTime?.getTime();
     const runtime = startTime && endTime ? this.getRuntime(startTime, endTime) : "N/A";
 
-    const batchCount = this.currentStats.completedBatchCount; // TODO
+    const batchCount = this.globalStats.completedBatchCount; // TODO
     const authorCount = this.authorStats.totalAuthorsWritten;
     const playCount = this.playStats.totalPlaysWritten;
     const adaptationCount = ""; // TODO
@@ -365,14 +377,16 @@ class ProgressDisplay {
       outputLocationLine = `Database:   Connected to MongoDB cluster`;
     }
     if (outputType === "file") {
-      outputLocationLine = `Files:     ./output/2026-02-02T15-23-41/`;
+      outputLocationLine = `Files:     Directories written to ./output/`;
     }
 
-    // TODO optional:
-    // number of files written (?)
-    // log size (?)
-
-    return `OUTPUT LOCATIONS\n` + `┌─ ${outputLocationLine}\n` + `└─ Logs:      ./${this.loggingStats.logFile}`;
+    const { fileSizeInKB, lineCount } = this.getLogFileData();
+    return (
+      `OUTPUT LOCATIONS\n` +
+      `┌─ ${outputLocationLine}\n` +
+      `├─ Logs:      ./${this.loggingStats.logFile}\n` +
+      `└─ Log Size:      ${fileSizeInKB} KB (${lineCount} lines)`
+    );
   }
 
   private renderReviewSummary() {

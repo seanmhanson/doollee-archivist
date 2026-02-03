@@ -372,7 +372,13 @@ class ScrapingOrchestrator {
     const play = new Play({ ...playData, ...this.state.authorReference });
     this.state.currentPlay = play;
 
-    play.isAdaptation ? this.state.adaptationAccumulator.push(play.id) : this.state.playAccumulator.push(play.id);
+    if (play.isAdaptation) {
+      this.globalStats.totalAdaptations++;
+      this.state.adaptationAccumulator.push(play.id);
+    } else {
+      this.state.playAccumulator.push(play.id);
+    }
+
     this.state.doolleeIdAccumulator.push(play.doolleeId);
   }
 
@@ -428,6 +434,8 @@ class ScrapingOrchestrator {
       this.authorStats.totalAuthorsWritten++;
       this.authorStats.batchAuthorsWritten++;
     }
+
+    this.globalStats.filesWritten++;
   }
 
   /**
@@ -493,6 +501,7 @@ class ScrapingOrchestrator {
       this.playStats.totalPlaysWritten++;
       this.playStats.batchPlaysWritten++;
     }
+    this.globalStats.filesWritten++;
   }
 
   /**

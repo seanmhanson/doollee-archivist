@@ -5,6 +5,7 @@ type GlobalStats = {
   globalBatchCount: number;
   completedBatchCount: number;
   totalAdaptations: number;
+  filesWritten: number;
 };
 
 const globalStats: GlobalStats = {
@@ -14,6 +15,7 @@ const globalStats: GlobalStats = {
   globalBatchCount: 0,
   completedBatchCount: 0,
   totalAdaptations: 0,
+  filesWritten: 0,
 };
 
 type CurrentStats = {
