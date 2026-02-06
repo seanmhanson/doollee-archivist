@@ -79,7 +79,10 @@ type FlaggedAuthor = {
   name: string;
   url: string;
   filename: string;
+  reason: string;
+  needsReviewData?: Record<string, Record<string, string>>;
 };
+
 type FlaggedPlay = {
   profileName: string;
   title: string;
@@ -230,13 +233,20 @@ class ScrapingOrchestrator {
     await this.writeReviewFile();
   }
 
-  private async addFlaggedAuthor() {
-    const profileName = this.state.profileName;
-    const url = this.currentStats.currentAuthorUrl || "";
-    const id = this.state.currentAuthor?.id.toHexString() || "";
-    const name = this.state.currentAuthor?.authorName || "";
-    const filename = this.state.profileSlug + ".json";
-    const flaggedAuthor = { profileName, id, name, url, filename };
+  private async addFlaggedAuthor(document: AuthorDocument) {
+    const flaggedAuthor: FlaggedAuthor = {
+      profileName: this.state.profileName,
+      filename: `${this.state.profileSlug}.json`,
+      url: document.metadata.sourceUrl || this.currentStats.currentAuthorUrl || "",
+      id: document._id?.toHexString() || "",
+      name: document.name || "",
+      reason: document.metadata.needsReviewReason || "(unspecified reason)",
+    };
+
+    if (document.metadata.needsReviewData) {
+      flaggedAuthor.needsReviewData = document.metadata.needsReviewData;
+    }
+
     this.reviewState.flaggedEntries.authors.push(flaggedAuthor);
     await this.writeReviewFile();
   }
@@ -320,8 +330,8 @@ class ScrapingOrchestrator {
   private async getBatches() {
     const { batchSize, maxBatches, authorListPath } = config;
     const letters: string[] = [];
-    const firstLetter = `A`.charCodeAt(0);
-    const lastLetter = `Z`.charCodeAt(0);
+    const firstLetter = `B`.charCodeAt(0);
+    const lastLetter = `B`.charCodeAt(0);
     const exception = `V`.charCodeAt(0);
     for (let i = firstLetter; i <= lastLetter; i++) {
       if (i === exception) {
@@ -330,11 +340,12 @@ class ScrapingOrchestrator {
       letters.push(String.fromCharCode(i));
     }
 
-    let authorListIndex: AuthorListIndex;
+    let authorListIndex: AuthorListIndex = {};
     try {
-      authorListIndex = await import(`${authorListPath}/index`);
+      const imported = await import(`#/input/authors/index`);
+      authorListIndex = imported.default;
     } catch (error) {
-      throw new SetupError(`Failed to load author list index from path: ${authorListPath}/index`, error);
+      throw new SetupError(`Failed to load author list index from path: #/input/authors/index`, error);
     }
 
     try {
@@ -578,7 +589,11 @@ class ScrapingOrchestrator {
       try {
         const authorsCollection = await this.services.dbService.getCollection("authors");
         const { _id, ...authorDocument } = document;
-        await authorsCollection.findOneAndUpdate({ _id: authorId }, { $set: authorDocument }, { upsert: true });
+        await authorsCollection.findOneAndUpdate(
+          { _id: authorId },
+          { $set: authorDocument, $setOnInsert: { _id } },
+          { upsert: true },
+        );
       } catch (dbError) {
         if (this.isDbNetworkError(dbError)) {
           this.incrementErrorStats("networkErrors");
@@ -609,7 +624,7 @@ class ScrapingOrchestrator {
     if (needsReview) {
       this.authorStats.totalAuthorsFlagged++;
       this.authorStats.batchAuthorsFlagged++;
-      await this.addFlaggedAuthor();
+      await this.addFlaggedAuthor(document);
     } else {
       this.authorStats.totalAuthorsWritten++;
       this.authorStats.batchAuthorsWritten++;
@@ -700,16 +715,32 @@ class ScrapingOrchestrator {
       process.exit(1);
     }
 
-    const skipAuthor = async (reason: string) => {
-      console.warn(`Skipping author ${this.state.profileName} due to ${reason}`);
+    const skipAuthor = async (reason: string, error?: unknown) => {
+      console.warn(
+        `(${this.currentStats.currentAuthorUrl}) - Skipping author ${this.state.profileName} due to ${reason}`,
+      );
+      if (error) {
+        console.error(`(${this.currentStats.currentAuthorUrl}) - Error details:`, error);
+        // If it's one of our custom errors with a cause, also log the original error
+        if (error && typeof error === "object" && "cause" in error && error.cause) {
+          console.error(`(${this.currentStats.currentAuthorUrl}) - Original error cause:`, error.cause);
+        }
+      }
       this.authorStats.totalAuthorsSkipped++;
       this.authorStats.batchAuthorsSkipped++;
       await this.addSkippedAuthor(reason);
       await this.updateDisplay({ forceUpdate: true });
     };
 
-    const skipPlay = async (reason: string) => {
-      console.warn(`Skipping play due to ${reason}`);
+    const skipPlay = async (reason: string, error?: unknown) => {
+      console.warn(`(${this.currentStats.currentAuthorUrl}) - Skipping play due to ${reason}`);
+      if (error) {
+        console.error(`(${this.currentStats.currentAuthorUrl}) - Error details:`, error);
+        // If it's one of our custom errors with a cause, also log the original error
+        if (error && typeof error === "object" && "cause" in error && error.cause) {
+          console.error(`(${this.currentStats.currentAuthorUrl}) - Original error cause:`, error.cause);
+        }
+      }
       this.playStats.totalPlaysSkipped++;
       this.playStats.batchPlaysSkipped++;
       await this.addSkippedPlay(reason);
@@ -717,11 +748,11 @@ class ScrapingOrchestrator {
     };
 
     const errorActions = {
-      [ScrapingError.name]: async () => await skipAuthor("scraping error"),
-      [WriteAuthorError.name]: async () => await skipAuthor("writing error"),
-      [AuthorProcessingError.name]: async () => await skipAuthor("processing error"),
-      [WritePlayError.name]: async () => await skipPlay("writing error"),
-      [PlayProcessingError.name]: async () => await skipPlay("processing error"),
+      [ScrapingError.name]: async () => await skipAuthor("scraping error", error),
+      [WriteAuthorError.name]: async () => await skipAuthor("writing error", error),
+      [AuthorProcessingError.name]: async () => await skipAuthor("processing error", error),
+      [WritePlayError.name]: async () => await skipPlay("writing error", error),
+      [PlayProcessingError.name]: async () => await skipPlay("processing error", error),
     };
 
     const errorName = error?.constructor.name || "UnknownError";

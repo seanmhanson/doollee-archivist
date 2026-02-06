@@ -12,6 +12,8 @@ type ParsedNameData = AuthorTypes.NameData & {
   name: string;
   isOrganization?: boolean;
   needsReview: boolean;
+  needsReviewReason?: string;
+  needsReviewData?: Record<string, Record<string, string>>;
 };
 
 /**
@@ -53,7 +55,7 @@ export default class Author {
 
   constructor(input: AuthorTypes.Input) {
     const authorId = new ObjectId();
-    const { name, needsReview, ...nameData } = this.parseName(input);
+    const { name, needsReview, needsReviewReason, needsReviewData, ...nameData } = this.parseName(input);
 
     this._id = authorId;
     this.name = name;
@@ -64,6 +66,8 @@ export default class Author {
       scrapedAt: input.scrapedAt,
       sourceUrl: input.sourceUrl,
       needsReview: needsReview,
+      needsReviewReason: needsReviewReason,
+      needsReviewData: needsReviewData,
     };
 
     this.rawFields = {
@@ -106,16 +110,18 @@ export default class Author {
    *  require manual review.
    */
   private parseOrganization({ listingName, headingName, altName = "" }: AuthorTypes.RawFields): ParsedNameData {
-    const lowercaseListing = listingName.normalize("NFC").toLocaleLowerCase();
-    const lowercaseHeading = headingName.normalize("NFC").toLocaleLowerCase();
-    const lowercaseAltName = altName.normalize("NFC").toLocaleLowerCase();
+    const lowercaseListing = listingName.normalize("NFC").toLocaleLowerCase().trim();
+    const lowercaseHeading = headingName.normalize("NFC").toLocaleLowerCase().trim();
+    const lowercaseAltName = altName.normalize("NFC").toLocaleLowerCase().trim();
 
     const listingInAllCaps = isAllCaps(listingName);
     const matchesHeading = lowercaseListing === lowercaseHeading;
     const matchesAlt = altName ? lowercaseListing === lowercaseAltName : true;
     const orgName = altName.length > 0 ? altName : toTitleCase(listingName);
     const isOrganization = listingInAllCaps && matchesHeading && matchesAlt;
+
     const needsReview = listingName.split(" ").length === 1;
+    const needsReviewReason = needsReview ? "Single word organization name" : undefined;
 
     return {
       name: orgName,
@@ -123,6 +129,7 @@ export default class Author {
       firstName: orgName,
       isOrganization,
       needsReview,
+      needsReviewReason,
     };
   }
 
@@ -158,7 +165,20 @@ export default class Author {
     const sameMiddleNames = stringArraysEqual(headingMiddleNames, listingMiddleNames);
     const sameFirstNames = stringArraysEqual([headingFirstName], [listingFirstName]);
     const sameLastNames = stringArraysEqual([listingLastName], [headingLastName]);
-    const needsReview = !(sameSuffixes && sameMiddleNames && sameFirstNames && sameLastNames);
+
+    let needsReview = false;
+    let needsReviewReason;
+    let needsReviewData;
+    if (!(sameSuffixes && sameMiddleNames && sameFirstNames && sameLastNames)) {
+      needsReview = true;
+      needsReviewReason = "Author's listing and heading names are inconsistent.";
+      needsReviewData = {
+        ...this.prepareFlaggedNameData("First Name", [headingFirstName], [listingFirstName]),
+        ...this.prepareFlaggedNameData("Middle Name(s)", headingMiddleNames, listingMiddleNames),
+        ...this.prepareFlaggedNameData("Last Name", [headingLastName], [listingLastName]),
+        ...this.prepareFlaggedNameData("Suffix(es)", headingSuffixes, listingSuffixes),
+      };
+    }
 
     const firstName = toTitleCase(headingNames[0]);
     const lastName = toTitleCase(listingNames[0]);
@@ -176,6 +196,22 @@ export default class Author {
       middleName,
       suffix,
       needsReview,
+      needsReviewReason,
+      needsReviewData,
+    };
+  }
+
+  private prepareFlaggedNameData(label: string, headingValues: string[], listingValues: string[]) {
+    const matching = stringArraysEqual(headingValues, listingValues);
+    if (matching) {
+      return {};
+    }
+
+    return {
+      [label]: {
+        heading: headingValues.join(" ") || "<empty>",
+        listing: listingValues.join(" ") || "<empty>",
+      },
     };
   }
 
@@ -226,6 +262,8 @@ export default class Author {
     const prunedDocument = dbUtils.removeEmptyFields(document);
     if (!prunedDocument.metadata.needsReview) {
       delete prunedDocument.metadata.needsReview;
+      delete prunedDocument.metadata.needsReviewReason;
+      delete prunedDocument.metadata.needsReviewData;
     }
     if (!prunedDocument.nameData.isOrganization) {
       delete prunedDocument.nameData.isOrganization;
