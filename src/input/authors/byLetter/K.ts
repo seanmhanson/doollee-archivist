@@ -2362,7 +2362,7 @@ export default {
   "KURUVILLA Sunil": "kuruvilla-sunil",
   "KUSANGA Eiji": "kusanga-eiji",
   "KUSHNER Anna": "kushner-anna",
-  "KUSHNER Brian "Dyalekt"": "kushner-brian-dyalekt",
+  "KUSHNER Brian 'Dyalekt'": "kushner-brian-dyalekt",
   "KUSHNER Ellen": "kushner-ellen",
   "KUSHNER Martin H": "kushner-martin-h",
   "KUSHNER Michele Aldin": "kushner-michele-aldin",

@@ -1943,7 +1943,7 @@ export default {
   "FREESTONE Elizabeth": "freestone-elizabeth",
   "FREI Nicki": "frei-nicki",
   "FREIBACH Shir": "freibach-shir",
-  "FREIBERGER Jack "Fry"": "freiberger-jack",
+  "FREIBERGER Jack 'Fry'": "freiberger-jack",
   "FREIBURG Johanna": "freiburg-johanna",
   "FREIDERICI Kathy": "freiderici-kathy",
   "FREIDLICH Max W": "freidlich-max-w",

@@ -294,7 +294,7 @@ export default {
   "LANDGREN Mia": "landgren-mia",
   "LANDI Damian": "landi-damian",
   "LANDI Paolo Emilio": "landi-paolo-emilio",
-  "LANDIS C Kay "Andy"": "landis-c-kay",
+  "LANDIS C Kay 'Andy'": "landis-c-kay",
   "LANDIS Cynthia": "landis-cynthia",
   "LANDIS Joseph C": "landis-joseph-c",
   "LANDIS Paul": "landis-paul",

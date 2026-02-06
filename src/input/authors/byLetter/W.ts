@@ -589,7 +589,7 @@ export default {
   "WASHINGTON Ajene": "washington-ajene",
   "WASHINGTON Charles L B": "washington-charles-l-b",
   "WASHINGTON Denise": "washington-denise",
-  "WASHINGTON Derek "Duck"": "washington-derek",
+  "WASHINGTON Derek 'Duck'": "washington-derek",
   "WASHINGTON Erwin": "washington-erwin",
   "WASHINGTON Ned": "washington-ned",
   "WASHINGTON Sam": "washington-sam",

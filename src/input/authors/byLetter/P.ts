@@ -1087,7 +1087,7 @@ export default {
   "PERRET Matthew": "perret-matthew",
   "PERRICONE M Lennon": "perricone-m-lennon",
   "PERRIE JR Michael": "perrie-jr-michael",
-  "PERRIN Dian "MJ"": "perrin-dian",
+  "PERRIN Dian 'MJ'": "perrin-dian",
   "PERRIN Gregory S": "perrin-gregory-s",
   "PERRIN Mil": "perrin-mil",
   "PERRIN Nat": "perrin-nat",

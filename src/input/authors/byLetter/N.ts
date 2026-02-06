@@ -958,7 +958,7 @@ export default {
   "NUGENT J C": "nugent-j-c",
   "NUGENT John D": "nugent-john-d",
   "NUGENT Kate": "nugent-kate",
-  "NUGENT Tommy "Rev Nuge"": "nugent-tommy",
+  "NUGENT Tommy 'Rev Nuge'": "nugent-tommy",
   "NULTY Ian": "nulty-ian",
   "NULTY Louise": "nulty-louise",
   "NUMEROFF Laura Joffe": "numeroff-laura-joffe",

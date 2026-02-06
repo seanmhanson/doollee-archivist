@@ -355,7 +355,7 @@ export default {
   "TAYLOR Robert": "taylor-robert",
   "TAYLOR Robert Leland": "taylor-robert-leland",
   "TAYLOR Rod": "taylor-rod",
-  "TAYLOR Rodney "Rhoda"": "taylor-rodney-rhoda",
+  "TAYLOR Rodney 'Rhoda'": "taylor-rodney-rhoda",
   "TAYLOR Ron": "taylor-ron",
   "TAYLOR Roslyn": "taylor-roslyn",
   "TAYLOR Russell": "taylor-russell",

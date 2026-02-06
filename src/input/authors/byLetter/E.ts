@@ -870,7 +870,7 @@ export default {
   "ESCOBEDO Dennis": "escobedo-dennis",
   "ESCOTT Colin": "escott-colin",
   "ESCUDE I GALLES Beth": "escude-i-galles-beth",
-  "ESCUDERO Roi "Bubi"": "escudero-roi-bubi",
+  "ESCUDERO Roi 'Bubi'": "escudero-roi-bubi",
   "ESCUETA Mel": "escueta-mel",
   "ESGUERRA Diane": "esguerra-diane",
   "ESHAQ Mike": "eshaq-mike",
