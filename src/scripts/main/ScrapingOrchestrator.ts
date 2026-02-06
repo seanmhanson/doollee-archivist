@@ -1,4 +1,5 @@
 import { MongoNetworkError, MongoOperationTimeoutError, ObjectId } from "mongodb";
+import { promises as fs } from "fs";
 
 import config from "#/core/Config";
 import WebScraper from "#/core/WebScraper";
@@ -21,6 +22,8 @@ import {
   AuthorProcessingError,
 } from "./ScrapingError";
 import { PlayDocument } from "#/db-types/play/play.types";
+import path from "path";
+import { profile } from "console";
 
 type AuthorListIndex = { [letter: string]: { [authorName: string]: string } };
 
@@ -56,6 +59,54 @@ type State = {
   profileName: string;
 };
 
+type SkippedAuthor = {
+  profileName: string;
+  url: string;
+  reason: string;
+};
+
+type SkippedPlay = {
+  profileName: string;
+  url: string;
+  id?: string;
+  title?: string;
+  reason: string;
+};
+
+type FlaggedAuthor = {
+  profileName: string;
+  id: string;
+  name: string;
+  url: string;
+  filename: string;
+};
+type FlaggedPlay = {
+  profileName: string;
+  title: string;
+  id: string;
+  authorName: string;
+  authorId: string;
+  url: string;
+  filename: string;
+};
+
+type SkippedEntries = {
+  authors: SkippedAuthor[];
+  plays: SkippedPlay[];
+};
+
+type FlaggedEntries = {
+  authors: FlaggedAuthor[];
+  plays: FlaggedPlay[];
+};
+
+type ReviewState = {
+  filePath: string;
+  hasError: boolean;
+  skippedEntries: SkippedEntries;
+  flaggedEntries: FlaggedEntries;
+};
+
 class ScrapingOrchestrator {
   private services: Services;
   private globalStats: GlobalStats = defaults.globalStats;
@@ -63,6 +114,12 @@ class ScrapingOrchestrator {
   private authorStats: AuthorStats = defaults.authorStats;
   private playStats: PlayStats = defaults.playStats;
   private errorStats: ErrorStats = defaults.errorStats;
+  private reviewState: ReviewState = {
+    filePath: "",
+    hasError: false,
+    skippedEntries: { authors: [], plays: [] },
+    flaggedEntries: { authors: [], plays: [] },
+  };
   private state: State = {
     batches: [],
     playAccumulator: [],
@@ -125,6 +182,7 @@ class ScrapingOrchestrator {
 
     this.globalStats.endTime = new Date();
     this.services.progressDisplay.close();
+    await this.writeReviewFile();
     await this.teardown();
   }
 
@@ -140,6 +198,117 @@ class ScrapingOrchestrator {
     this.globalStats.globalBatchSize = config.batchSize;
     this.globalStats.globalBatchCount = this.state.batches.length;
     await this.checkDependencies();
+    await this.setupReviewWriter();
+  }
+
+  private async setupReviewWriter() {
+    const timestamp = this.globalStats.startTime?.toISOString().replace(/[:.-]/g, "_");
+    this.reviewState.filePath = `output/review-queue/review-${timestamp}.json`;
+    const dir = path.dirname(this.reviewState.filePath);
+    await fs.mkdir(dir, { recursive: true });
+  }
+
+  // review before using
+
+  private async addSkippedAuthor(reason: string = "other") {
+    const profileName = this.state.profileName;
+    const url = this.currentStats.currentAuthorUrl || "";
+
+    const skippedAuthor = { profileName, url, reason };
+    this.reviewState.skippedEntries.authors.push(skippedAuthor);
+    await this.writeReviewFile();
+  }
+
+  private async addSkippedPlay(reason: string = "other") {
+    const profileName = this.state.profileName;
+    const url = this.currentStats.currentAuthorUrl || "";
+    const playId = this.state.currentPlay?.doolleeId;
+    const title = this.state.currentPlay?.title;
+
+    const skippedPlay = { profileName, url, id: playId, title, reason };
+    this.reviewState.skippedEntries.plays.push(skippedPlay);
+    await this.writeReviewFile();
+  }
+
+  private async addFlaggedAuthor() {
+    const profileName = this.state.profileName;
+    const url = this.currentStats.currentAuthorUrl || "";
+    const id = this.state.currentAuthor?.id.toHexString() || "";
+    const name = this.state.currentAuthor?.authorName || "";
+    const filename = this.state.profileSlug + ".json";
+    const flaggedAuthor = { profileName, id, name, url, filename };
+    this.reviewState.flaggedEntries.authors.push(flaggedAuthor);
+    await this.writeReviewFile();
+  }
+
+  private async addFlaggedPlay() {
+    const profileName = this.state.profileName;
+    const title = this.state.currentPlay?.title || "";
+    const id = this.state.currentPlay?.doolleeId || "";
+    const url = this.currentStats.currentAuthorUrl || "";
+    const filename = this.getPlayFilename(title, id);
+
+    let authorName = "";
+    let authorId = "";
+    if (this.state.currentAuthor) {
+      authorName = this.state.currentAuthor.authorName;
+      authorId = this.state.currentAuthor.id.toHexString();
+    } else {
+      const authorReference = this.state.authorReference;
+      if (this.isPopulatedAuthorReference(authorReference)) {
+        authorName = authorReference.originalAuthor;
+        authorId = authorReference.authorId.toHexString();
+      }
+    }
+
+    const flaggedPlay = {
+      profileName,
+      title,
+      id,
+      authorName,
+      authorId,
+      url,
+      filename,
+    };
+
+    this.reviewState.flaggedEntries.plays.push(flaggedPlay);
+    await this.writeReviewFile();
+  }
+
+  private async writeReviewFile() {
+    if (!this.reviewState.filePath) {
+      this.reviewState.hasError = true;
+      return;
+    }
+
+    const skippedAuthorCount = this.reviewState.skippedEntries.authors.length;
+    const skippedPlayCount = this.reviewState.skippedEntries.plays.length;
+    const flaggedAuthorCount = this.reviewState.flaggedEntries.authors.length;
+    const flaggedPlayCount = this.reviewState.flaggedEntries.plays.length;
+    const reviewData = {
+      metadata: {
+        createdAt: this.globalStats.startTime,
+        lastUpdated: new Date(),
+        plays: {
+          skipped: skippedPlayCount,
+          flagged: flaggedPlayCount,
+          totalForReview: skippedPlayCount + flaggedPlayCount,
+        },
+        authors: {
+          skipped: skippedAuthorCount,
+          flagged: flaggedAuthorCount,
+          totalForReview: skippedAuthorCount + flaggedAuthorCount,
+        },
+      },
+      skippedEntries: this.reviewState.skippedEntries,
+      flaggedEntries: this.reviewState.flaggedEntries,
+    };
+
+    try {
+      await fs.writeFile(this.reviewState.filePath, JSON.stringify(reviewData, null, 2));
+    } catch (error) {
+      this.reviewState.hasError = true;
+    }
   }
 
   /**
@@ -382,6 +551,16 @@ class ScrapingOrchestrator {
     this.state.doolleeIdAccumulator.push(play.doolleeId);
   }
 
+  private getPlayFilename(title: string, playId: string) {
+    const id = playId.padStart(6, "0") || "0000000";
+    const truncatedName = title
+      .substring(0, 16)
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9\-]/g, "");
+    return `${id}-${truncatedName}.json`;
+  }
+
   /**
    * Writes the current author data to the configured output (database or file).
    * @throws {WriteAuthorError} If there is an error during writing. Recoverable Error (skip current author)
@@ -430,6 +609,7 @@ class ScrapingOrchestrator {
     if (needsReview) {
       this.authorStats.totalAuthorsFlagged++;
       this.authorStats.batchAuthorsFlagged++;
+      await this.addFlaggedAuthor();
     } else {
       this.authorStats.totalAuthorsWritten++;
       this.authorStats.batchAuthorsWritten++;
@@ -472,13 +652,7 @@ class ScrapingOrchestrator {
 
     if (config.writeTo === "file") {
       const { title, playId } = document;
-      const id = playId.padStart(6, "0") || "0000000";
-      const truncatedName = title
-        .substring(0, 16)
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/[^a-z0-9\-]/g, "");
-      const filename = `${id}-${truncatedName}.json`;
+      const filename = this.getPlayFilename(title, playId);
       try {
         await this.services.playModuleWriter.writeFile({
           stringify: true,
@@ -497,6 +671,7 @@ class ScrapingOrchestrator {
     if (needsReview) {
       this.playStats.totalPlaysFlagged++;
       this.playStats.batchPlaysFlagged++;
+      await this.addFlaggedPlay();
     } else {
       this.playStats.totalPlaysWritten++;
       this.playStats.batchPlaysWritten++;
@@ -529,6 +704,7 @@ class ScrapingOrchestrator {
       console.warn(`Skipping author ${this.state.profileName} due to ${reason}`);
       this.authorStats.totalAuthorsSkipped++;
       this.authorStats.batchAuthorsSkipped++;
+      await this.addSkippedAuthor(reason);
       await this.updateDisplay({ forceUpdate: true });
     };
 
@@ -536,6 +712,7 @@ class ScrapingOrchestrator {
       console.warn(`Skipping play due to ${reason}`);
       this.playStats.totalPlaysSkipped++;
       this.playStats.batchPlaysSkipped++;
+      await this.addSkippedPlay(reason);
       await this.updateDisplay({ forceUpdate: true });
     };
 

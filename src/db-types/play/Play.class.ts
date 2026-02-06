@@ -11,16 +11,16 @@ type PlayMetadata = Omit<PlayTypes.Metadata, "createdAt" | "updatedAt"> & {
 export default class Play {
   private _id: ObjectId;
   private playId: string;
-  private title: string;
   private author: string;
   private authorId?: ObjectId;
   private genres?: string;
   private adaptingAuthor?: string;
-
   private metadata: PlayMetadata;
   private rawFields: PlayTypes.RawFields;
   private publication: PlayTypes.Publication;
   private details: PlayTypes.Details;
+
+  public title: string;
 
   public get id(): ObjectId {
     return this._id;
