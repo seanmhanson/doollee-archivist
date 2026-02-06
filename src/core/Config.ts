@@ -13,9 +13,9 @@ export class Config {
     PAGE_TIMEOUT: "60000",
     ELEMENT_TIMEOUT: "30000",
     RATE_LIMIT_DELAY: "3000",
-    WRITE_TO: "db",
-    BATCH_SIZE: "250",
-    MAX_BATCHES: "0",
+    WRITE_TO: "file",
+    BATCH_SIZE: "5",
+    MAX_BATCHES: "1",
     TAIL_LENGTH: "3",
     AUTHOR_LIST_PATH: "input/authors",
     LOG_DIRECTORY: "output/logs",
@@ -54,7 +54,7 @@ export class Config {
 
   private getEnvOrDefault(key: keyof typeof Config.defaults): string {
     const value = process.env[key] || Config.defaults[key];
-    if (!value) {
+    if (!value && value !== "") {
       throw new Error(`Missing required configuration for ${key}`);
     }
     return value;

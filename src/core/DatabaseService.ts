@@ -19,7 +19,7 @@ type IndexSpec = Record<string, 1 | -1>;
 type IndexInfo = { field: string; options?: CreateIndexesOptions };
 const indexesByCollection = {
   plays: [{ field: "playId", options: { unique: true } }],
-  authors: [{ field: "authorId", options: { unique: true } }],
+  authors: [], // Authors use _id as primary key, no additional indexes needed
 } as const satisfies Record<CollectionName, IndexInfo[]>;
 
 type IndexCollectionName = keyof typeof indexesByCollection;
