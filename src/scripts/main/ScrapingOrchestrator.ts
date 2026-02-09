@@ -728,16 +728,18 @@ class ScrapingOrchestrator {
     }
 
     const skipAuthor = async (reason: string, error?: unknown) => {
-      console.warn(
-        `(${this.currentStats.currentAuthorUrl}) - Skipping author ${this.state.profileName} due to ${reason}`,
-      );
       if (error) {
-        console.error(`(${this.currentStats.currentAuthorUrl}) - Error details:`, error);
-        // If it's one of our custom errors with a cause, also log the original error
+        // Log the main error message cleanly
+        if (error && typeof error === "object" && "message" in error) {
+          console.error((error as any).message);
+        }
+
+        // Log the original cause with full detail (including getByText examples)
         if (error && typeof error === "object" && "cause" in error && error.cause) {
-          console.error(`(${this.currentStats.currentAuthorUrl}) - Original error cause:`, error.cause);
+          console.error(error.cause);
         }
       }
+
       this.authorStats.totalAuthorsSkipped++;
       this.authorStats.batchAuthorsSkipped++;
       await this.addSkippedAuthor(reason);
@@ -745,14 +747,16 @@ class ScrapingOrchestrator {
     };
 
     const skipPlay = async (reason: string, error?: unknown) => {
-      console.warn(`(${this.currentStats.currentAuthorUrl}) - Skipping play due to ${reason}`);
+      console.warn(`Skipping play due to ${reason}`);
+
       if (error) {
-        console.error(`(${this.currentStats.currentAuthorUrl}) - Error details:`, error);
+        console.error(`Error details:`, error);
         // If it's one of our custom errors with a cause, also log the original error
         if (error && typeof error === "object" && "cause" in error && error.cause) {
-          console.error(`(${this.currentStats.currentAuthorUrl}) - Original error cause:`, error.cause);
+          console.error(`Original error cause:`, error.cause);
         }
       }
+
       this.playStats.totalPlaysSkipped++;
       this.playStats.batchPlaysSkipped++;
       await this.addSkippedPlay(reason);
