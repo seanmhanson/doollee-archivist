@@ -15,16 +15,19 @@ export default class AdaptationsList extends BaseWorksList {
       // scraped values that we will add before returning
       const productionInfo = `${firstProduction} ${productionDate}`;
       const publishingInfo = publisher;
-      const publicationDetails = this.parsePublicationDetails(publisher, false);
-      const publication = {
-        publisher: publicationDetails.publisher,
-        year: publicationDetails.year,
+      const { publisher: publisherName, publicationYear } = this.parsePublicationDetails(publisher, false);
+      const isbn = this.formatISBN(adaptation.isbn);
+      const publicationDetails = {
+        publisher: publisherName,
+        publicationYear,
+        isbn,
       };
+
       const altTitle = imgAlt || "";
 
       // scraped values that we will overwrite before returning
       const playId = this.getPlayId(adaptation.playId);
-      const isbn = this.formatISBN(adaptation.isbn);
+
       const parts = this.parseParts(adaptation.parts);
       const organizations = this.formatOrganizations(adaptation.organizations);
       const displayTitle = this.formatDisplayTitle(adaptation.title);
@@ -48,11 +51,10 @@ export default class AdaptationsList extends BaseWorksList {
         publishingInfo,
         organizations,
         reference,
-        isbn,
         parts,
-        publication,
         production,
         genres,
+        ...publicationDetails,
       };
     });
   }

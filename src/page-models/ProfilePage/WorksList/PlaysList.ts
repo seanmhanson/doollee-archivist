@@ -12,6 +12,7 @@ export default class PlaysList extends BaseWorksList {
     this.data = data.map(
       ({ playId: playIdText, publisher: publishingInfo, production: productionInfo, parts: partsText, ...rest }) => {
         const publicationDetails = this.parsePublicationDetails(publishingInfo, true);
+
         const productionDetails = this.parseProductionDetails(productionInfo);
         const playId = this.getPlayId(playIdText);
         const parts = this.parseParts(partsText);
@@ -20,21 +21,15 @@ export default class PlaysList extends BaseWorksList {
           location: productionDetails.location,
           year: productionDetails.date,
         };
-        const publication = {
-          publisher: publicationDetails.publisher,
-          year: publicationDetails.year,
-        };
-        const isbn = publicationDetails.isbn;
 
         return {
           publishingInfo,
           productionInfo,
           playId,
           production,
-          publication,
-          isbn,
           parts,
           genres,
+          ...publicationDetails,
           ...rest,
         };
       }

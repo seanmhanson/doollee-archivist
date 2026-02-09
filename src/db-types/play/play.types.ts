@@ -19,41 +19,6 @@ export type RawFields = {
   productionInfo?: string;
 };
 
-export type PlayDocument = {
-  _id: ObjectId;
-  playId: string; // the id used by doollee, not our internal id
-
-  metadata: Metadata;
-  rawFields: RawFields;
-  title: string;
-  author: string;
-  authorId?: ObjectId;
-  adaptingAuthor?: string;
-  publication: {
-    publisher?: string;
-    publicationYear?: string;
-    isbn?: string;
-  };
-  genres?: string;
-
-  details: {
-    synopsis?: string;
-    notes?: string;
-    production: {
-      productionLocation?: string;
-      productionYear?: string;
-    };
-    organizations?: string;
-    music?: string;
-    partsText?: {
-      maleParts: number;
-      femaleParts: number;
-      otherParts: number;
-    };
-    reference?: string;
-  };
-};
-
 export type Publication = {
   publisher?: string;
   publicationYear?: string;
@@ -85,6 +50,44 @@ export type Parts = {
   otherParts: number;
 };
 
+
+export type PlayDocument = {
+  _id: ObjectId;
+  playId: string; // the id used by doollee, not our internal id
+
+  metadata: Metadata;
+  rawFields: RawFields;
+
+  title: string;
+  author: string;
+  authorId?: ObjectId;
+  adaptingAuthor?: string;
+  publication: {
+    publisher?: string;
+    publicationYear?: string;
+    isbn?: string;
+  };
+  genres?: string;
+
+  details: {
+    synopsis?: string;
+    notes?: string;
+    production: {
+      productionLocation?: string;
+      productionYear?: string;
+    };
+    organizations?: string;
+    music?: string;
+    partsText?: {
+      maleParts: number;
+      femaleParts: number;
+      otherParts: number;
+    };
+    reference?: string;
+  };
+};
+
+
 /**
  * Input data retreived from scraping a play page, before being transformed into
  * the Play document structure
@@ -100,17 +103,13 @@ type ExportDetails = Pick<Details, DetailsKeys>;
 export type Input = ExportRootFields &
   ExportMetadata &
   RawFields &
+  Publication &
   ExportDetails & {
     id?: PlayDocument["_id"];
     originalAuthor?: PlayDocument["author"];
-    isbn?: Publication["isbn"];
     parts?: Parts;
     production?: {
       location: Production["productionLocation"];
       year: Production["productionYear"];
-    };
-    publication?: {
-      publisher: Publication["publisher"];
-      year: Publication["publicationYear"];
     };
   };

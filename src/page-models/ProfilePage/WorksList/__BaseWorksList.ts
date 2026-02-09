@@ -3,7 +3,7 @@ import * as stringUtils from "#/utils/stringUtils";
 import { extractISBN } from "#/utils/isbnUtils";
 
 type ProductionDetails = { location: string; date: string };
-type PublicationDetails = { publisher: string; year: string; isbn?: string };
+type PublicationDetails = { publisher: string; publicationYear: string; isbn?: string };
 
 const { hasAlphanumericCharacters, normalizeWhitespace, removeAndNormalize } = stringUtils;
 
@@ -81,7 +81,7 @@ export default abstract class BaseWorksList {
     const isMissing = publicationText.includes(BaseWorksList.publisherException);
 
     if (isBlank || isMissing) {
-      return { publisher: "", year: "", ...isbn };
+      return { publisher: "", publicationYear: "", ...isbn };
     }
 
     if (includeISBN) {
@@ -97,7 +97,7 @@ export default abstract class BaseWorksList {
 
     return {
       publisher: removeAndNormalize(updatedString, ">>>"),
-      year: normalizeWhitespace(extractedDate),
+      publicationYear: normalizeWhitespace(extractedDate),
       ...isbn,
     };
   }

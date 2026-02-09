@@ -60,8 +60,8 @@ export default class Play {
     };
 
     this.publication = {
-      publisher: input.publication?.publisher,
-      publicationYear: input.publication?.year,
+      publisher: input.publisher,
+      publicationYear: input.publicationYear,
       isbn: input.isbn,
     };
 
@@ -95,8 +95,8 @@ export default class Play {
       authorId: this.authorId,
       adaptingAuthor: this.adaptingAuthor,
       genres: this.genres,
-      publication: this.publication,
       details: this.details,
+      ...this.publication,
     };
 
     // prune undefined/empty fields and manually remove fields added by this class
