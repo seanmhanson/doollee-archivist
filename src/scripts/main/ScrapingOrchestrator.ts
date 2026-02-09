@@ -328,7 +328,12 @@ class ScrapingOrchestrator {
    * @throws {SetupError} If there is an error loading or processing the author index files. Fatal error.
    */
   private async getBatches() {
-    const { batchSize, maxBatches, authorListPath } = config;
+    // const { batchSize, maxBatches } = config;
+
+    // testing
+    const batchSize = 20;
+    const maxBatches = 1;
+
     const letters: string[] = [];
     const firstLetter = `A`.charCodeAt(0);
     const lastLetter = `A`.charCodeAt(0);

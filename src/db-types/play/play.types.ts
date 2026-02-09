@@ -62,11 +62,9 @@ export type PlayDocument = {
   author: string;
   authorId?: ObjectId;
   adaptingAuthor?: string;
-  publication: {
-    publisher?: string;
-    publicationYear?: string;
-    isbn?: string;
-  };
+  publisher?: string;
+  publicationYear?: string;
+  isbn?: string;
   genres?: string;
 
   details: {
