@@ -5,8 +5,8 @@
 
   <h3>Phases:</h3>
   <div>
-    ⏳  Scrape &nbsp;&nbsp;→&nbsp;&nbsp;
-    🔳  Normalize &nbsp;&nbsp;→&nbsp;&nbsp;
+    ⌛  Scrape &nbsp;&nbsp;→&nbsp;&nbsp;
+    ⏳  Normalize &nbsp;&nbsp;→&nbsp;&nbsp;
     🔳  Database &nbsp;&nbsp;→&nbsp;&nbsp;
     🔳  Search
   </div>
