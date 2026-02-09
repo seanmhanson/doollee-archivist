@@ -11,52 +11,52 @@ export default class AdaptationsList extends BaseWorksList {
     const data = this.normalizeStringFields(await this.scrapeTableData());
 
     // destructure values we will remove before returning
-    this.data = data.map(({ production: firstProduction, productionDate, publisher, imgAlt, ...adaptation }) => {
-      // scraped values that we will add before returning
-      const productionInfo = `${firstProduction} ${productionDate}`;
-      const publishingInfo = publisher;
-      const { publisher: publisherName, publicationYear } = this.parsePublicationDetails(publisher, false);
-      const isbn = this.formatISBN(adaptation.isbn);
-      const publicationDetails = {
-        publisher: publisherName,
-        publicationYear,
-        isbn,
-      };
+    this.data = data.map(
+      ({ production: productionLocation, productionDate: productionYear, publisher, imgAlt, ...adaptation }) => {
+        // scraped values that we will add before returning
+        const productionInfo = `${productionLocation || ""} ${productionYear || ""}`.trim();
+        const publishingInfo = publisher || "";
 
-      const altTitle = imgAlt || "";
+        const productionDetails = {
+          productionLocation,
+          productionYear,
+        };
+        const publicationDetails = {
+          ...this.parsePublicationDetails(publisher, false),
+          isbn: this.formatISBN(adaptation.isbn),
+        };
 
-      // scraped values that we will overwrite before returning
-      const playId = this.getPlayId(adaptation.playId);
+        const altTitle = imgAlt || "";
 
-      const parts = this.parseParts(adaptation.parts);
-      const organizations = this.formatOrganizations(adaptation.organizations);
-      const displayTitle = this.formatDisplayTitle(adaptation.title);
-      const originalAuthor = this.parseOriginalAuthor(adaptation.notes);
-      const reference = this.formatReference(adaptation.reference);
-      const genres = this.formatGenres(adaptation.genres);
-      const production = {
-        location: firstProduction,
-        year: productionDate,
-      };
-      const adaptingAuthor = stringUtils.toTitleCase(adaptation.adaptingAuthor);
+        // scraped values that we will overwrite before returning
+        const playId = this.getPlayId(adaptation.playId);
 
-      return {
-        ...adaptation,
-        playId,
-        altTitle,
-        displayTitle,
-        originalAuthor,
-        adaptingAuthor,
-        productionInfo,
-        publishingInfo,
-        organizations,
-        reference,
-        parts,
-        production,
-        genres,
-        ...publicationDetails,
-      };
-    });
+        const parts = this.parseParts(adaptation.parts);
+        const organizations = this.formatOrganizations(adaptation.organizations);
+        const displayTitle = this.formatDisplayTitle(adaptation.title);
+        const originalAuthor = this.parseOriginalAuthor(adaptation.notes);
+        const reference = this.formatReference(adaptation.reference);
+        const genres = this.formatGenres(adaptation.genres);
+        const adaptingAuthor = stringUtils.toTitleCase(adaptation.adaptingAuthor);
+
+        return {
+          ...adaptation,
+          playId,
+          altTitle,
+          displayTitle,
+          originalAuthor,
+          adaptingAuthor,
+          productionInfo,
+          publishingInfo,
+          organizations,
+          reference,
+          parts,
+          genres,
+          ...productionDetails,
+          ...publicationDetails,
+        };
+      };,
+    );
   }
 
   protected async scrapeTableData() {
@@ -121,8 +121,8 @@ export default class AdaptationsList extends BaseWorksList {
           playId: data.allPlayIds[i]?.getAttribute("name")?.trim() || "",
           adaptingAuthor: data.allAuthors[i]?.textContent?.trim() || "",
           title: data.allTitles[i]?.textContent?.trim() || "",
-          production: data.allProductions[i]?.textContent?.trim() || "",
-          productionDate: data.allDates[i]?.textContent?.trim() || "",
+          productionLocation: data.allProductions[i]?.textContent?.trim() || "",
+          productionYear: data.allDates[i]?.textContent?.trim() || "",
           organizations: data.allOrgs[i]?.textContent?.trim() || "",
           publisher: data.allPublishers[i]?.textContent?.trim() || "",
           isbn: data.allIsbns[i]?.textContent?.trim() || "",

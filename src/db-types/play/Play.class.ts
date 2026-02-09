@@ -18,6 +18,7 @@ export default class Play {
   private metadata: PlayMetadata;
   private rawFields: PlayTypes.RawFields;
   private publication: PlayTypes.Publication;
+  private production: PlayTypes.Production;
   private details: PlayTypes.Details;
 
   public title: string;
@@ -65,13 +66,14 @@ export default class Play {
       isbn: input.isbn,
     };
 
+    this.production = {
+      productionLocation: input.productionLocation,
+      productionYear: input.productionYear,
+    };
+
     this.details = {
       synopsis: input.synopsis,
       notes: input.notes,
-      production: {
-        productionLocation: input.production?.location,
-        productionYear: input.production?.year,
-      },
       organizations: input.organizations,
       music: input.music,
       partsText: input.parts,
@@ -96,6 +98,7 @@ export default class Play {
       adaptingAuthor: this.adaptingAuthor,
       genres: this.genres,
       details: this.details,
+      ...this.production,
       ...this.publication,
     };
 

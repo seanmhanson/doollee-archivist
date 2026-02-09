@@ -2,7 +2,7 @@ import type { Page } from "playwright";
 import * as stringUtils from "#/utils/stringUtils";
 import { extractISBN } from "#/utils/isbnUtils";
 
-type ProductionDetails = { location: string; date: string };
+type ProductionDetails = { productionLocation: string; productionYear: string };
 type PublicationDetails = { publisher: string; publicationYear: string; isbn?: string };
 
 const { hasAlphanumericCharacters, normalizeWhitespace, removeAndNormalize } = stringUtils;
@@ -55,7 +55,7 @@ export default abstract class BaseWorksList {
 
   protected parseProductionDetails(productionText: string): ProductionDetails {
     if (!hasAlphanumericCharacters(productionText)) {
-      return { location: "", date: "" };
+      return { productionLocation: "", productionYear: "" };
     }
 
     // Date patterns with optional enclosing parentheses
@@ -68,8 +68,8 @@ export default abstract class BaseWorksList {
     ]);
 
     return {
-      location: removeAndNormalize(updatedString, ">>>"),
-      date: normalizeWhitespace(extractedDate),
+      productionLocation: removeAndNormalize(updatedString, ">>>"),
+      productionYear: normalizeWhitespace(extractedDate),
     };
   }
 

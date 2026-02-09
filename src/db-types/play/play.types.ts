@@ -62,18 +62,19 @@ export type PlayDocument = {
   author: string;
   authorId?: ObjectId;
   adaptingAuthor?: string;
+
   publisher?: string;
   publicationYear?: string;
   isbn?: string;
+
+  productionLocation?: string;
+  productionYear?: string;
+
   genres?: string;
 
   details: {
     synopsis?: string;
     notes?: string;
-    production: {
-      productionLocation?: string;
-      productionYear?: string;
-    };
     organizations?: string;
     music?: string;
     partsText?: {
@@ -102,12 +103,9 @@ export type Input = ExportRootFields &
   ExportMetadata &
   RawFields &
   Publication &
+  Production &
   ExportDetails & {
     id?: PlayDocument["_id"];
     originalAuthor?: PlayDocument["author"];
     parts?: Parts;
-    production?: {
-      location: Production["productionLocation"];
-      year: Production["productionYear"];
-    };
   };

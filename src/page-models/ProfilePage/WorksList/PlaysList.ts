@@ -9,31 +9,25 @@ export default class PlaysList extends BaseWorksList {
   protected async extractData(): Promise<void> {
     const data = this.normalizeStringFields(await this.scrapeData());
 
-    this.data = data.map(
-      ({ playId: playIdText, publisher: publishingInfo, production: productionInfo, parts: partsText, ...rest }) => {
-        const publicationDetails = this.parsePublicationDetails(publishingInfo, true);
+    this.data = data.map(({ playId: playIdText, publisher, production, parts: partsText, ...rest }) => {
+      const publicationDetails = this.parsePublicationDetails(publisher, true);
+      const productionDetails = this.parseProductionDetails(production);
+      const playId = this.getPlayId(playIdText);
+      const parts = this.parseParts(partsText);
+      const genres = this.formatGenres(rest.genres);
 
-        const productionDetails = this.parseProductionDetails(productionInfo);
-        const playId = this.getPlayId(playIdText);
-        const parts = this.parseParts(partsText);
-        const genres = this.formatGenres(rest.genres);
-        const production = {
-          location: productionDetails.location,
-          year: productionDetails.date,
-        };
-
-        return {
-          publishingInfo,
-          productionInfo,
-          playId,
-          production,
-          parts,
-          genres,
-          ...publicationDetails,
-          ...rest,
-        };
-      }
-    );
+      return {
+        publishingInfo: publisher,
+        productionInfo: production,
+        playId,
+        production,
+        parts,
+        genres,
+        ...publicationDetails,
+        ...productionDetails,
+        ...rest,
+      };
+    });
   }
 
   protected async scrapeData() {
