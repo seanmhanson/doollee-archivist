@@ -7,7 +7,7 @@ export default class PlaysList extends BaseWorksList {
   }
 
   protected async extractData(): Promise<void> {
-    const data = await this.scrapeData();
+    const data = this.normalizeStringFields(await this.scrapeData());
 
     this.data = data.map(
       ({ playId: playIdText, publisher: publishingInfo, production: productionInfo, parts: partsText, ...rest }) => {
@@ -15,6 +15,7 @@ export default class PlaysList extends BaseWorksList {
         const productionDetails = this.parseProductionDetails(productionInfo);
         const playId = this.getPlayId(playIdText);
         const parts = this.parseParts(partsText);
+        const genres = this.formatGenres(rest.genres);
         const production = {
           location: productionDetails.location,
           year: productionDetails.date,
@@ -33,6 +34,7 @@ export default class PlaysList extends BaseWorksList {
           publication,
           isbn,
           parts,
+          genres,
           ...rest,
         };
       }

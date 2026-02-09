@@ -30,6 +30,7 @@ export default class AdaptationsList extends BaseWorksList {
       const displayTitle = this.formatDisplayTitle(adaptation.title);
       const originalAuthor = this.parseOriginalAuthor(adaptation.notes);
       const reference = this.formatReference(adaptation.reference);
+      const genres = this.formatGenres(adaptation.genres);
       const production = {
         location: firstProduction,
         year: productionDate,
@@ -51,6 +52,7 @@ export default class AdaptationsList extends BaseWorksList {
         parts,
         publication,
         production,
+        genres,
       };
     });
   }

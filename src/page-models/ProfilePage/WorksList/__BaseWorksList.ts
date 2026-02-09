@@ -150,4 +150,20 @@ export default abstract class BaseWorksList {
       return `${acc}${divider}${capitalizedWord}`;
     }, "");
   }
+
+  protected formatGenres(genres: string): string {
+    if (!genres || genres.trim() === "") {
+      return "";
+    }
+
+    // Only apply title case and trim - preserve original structure
+    return this.toTitleCaseGenre(genres.trim());
+  }
+
+  private toTitleCaseGenre(genre: string): string {
+    return genre
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  }
 }
