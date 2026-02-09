@@ -4,24 +4,27 @@ import type { ObjectId } from "mongodb";
  * Document structure for a Play in the database.
  */
 
+
+export type Metadata = {
+  createdAt: Date;
+  updatedAt: Date;
+  scrapedAt: Date;
+  sourceUrl: string;
+  needsReview?: boolean;
+};
+
+export type RawFields = {
+  altTitle?: string;
+  publishingInfo?: string;
+  productionInfo?: string;
+};
+
 export type PlayDocument = {
   _id: ObjectId;
   playId: string; // the id used by doollee, not our internal id
 
-  metadata: {
-    createdAt: Date;
-    updatedAt: Date;
-    scrapedAt: Date;
-    sourceUrl: string;
-    needsReview?: boolean;
-  };
-
-  rawFields: {
-    altTitle?: string;
-    publishingInfo?: string;
-    productionInfo?: string;
-  };
-
+  metadata: Metadata;
+  rawFields: RawFields;
   title: string;
   author: string;
   authorId?: ObjectId;
@@ -43,27 +46,44 @@ export type PlayDocument = {
     organizations?: string;
     music?: string;
     partsText?: {
-      counts: {
-        maleParts: number;
-        femaleParts: number;
-        otherParts: number;
-      };
-      text: {
-        maleParts: string;
-        femaleParts: string;
-        otherParts: string;
-      };
+      maleParts: number;
+      femaleParts: number;
+      otherParts: number;
     };
     reference?: string;
   };
 };
 
-export type Metadata = PlayDocument["metadata"];
-export type RawFields = PlayDocument["rawFields"];
-export type Details = PlayDocument["details"];
-export type Publication = PlayDocument["publication"];
-export type Production = PlayDocument["details"]["production"];
-export type Parts = PlayDocument["details"]["partsText"];
+export type Publication = {
+  publisher?: string;
+  publicationYear?: string;
+  isbn?: string;
+};
+
+export type Production = {
+  productionLocation?: string;
+  productionYear?: string;
+};
+
+export type Details = {
+  synopsis?: string;
+  notes?: string;
+  organizations?: string;
+  music?: string;
+  partsText?: {
+    maleParts: number;
+    femaleParts: number;
+    otherParts: number;
+  };
+  reference?: string;
+  production?: Production;
+};
+
+export type Parts = {
+  maleParts: number;
+  femaleParts: number;
+  otherParts: number;
+};
 
 /**
  * Input data retreived from scraping a play page, before being transformed into
