@@ -19,7 +19,16 @@ export default class Play {
   private rawFields: PlayTypes.RawFields;
   private publication: PlayTypes.Publication;
   private production: PlayTypes.Production;
-  private details: PlayTypes.Details;
+  private synopsis?: string;
+  private notes?: string;
+  private organizations?: string;
+  private music?: string;
+  private reference?: string;
+  private partsText?: {
+    maleParts: number;
+    femaleParts: number;
+    otherParts: number;
+  };
 
   public title: string;
 
@@ -45,6 +54,10 @@ export default class Play {
     this.authorId = input.authorId;
     this.adaptingAuthor = input.adaptingAuthor;
     this.genres = input.genres;
+    this.synopsis = input.synopsis;
+    this.notes = input.notes;
+    this.organizations = input.organizations;
+    this.music = input.music;
 
     this.metadata = {
       createdAt: undefined,
@@ -71,13 +84,7 @@ export default class Play {
       productionYear: input.productionYear,
     };
 
-    this.details = {
-      synopsis: input.synopsis,
-      notes: input.notes,
-      organizations: input.organizations,
-      music: input.music,
-      partsText: input.parts,
-    };
+    this.partsText = input.parts;
   }
 
   toDocument(): PlayTypes.PlayDocument {
@@ -97,7 +104,12 @@ export default class Play {
       authorId: this.authorId,
       adaptingAuthor: this.adaptingAuthor,
       genres: this.genres,
-      details: this.details,
+      synopsis: this.synopsis,
+      notes: this.notes,
+      organizations: this.organizations,
+      music: this.music,
+      reference: this.reference,
+      partsText: this.partsText,
       ...this.production,
       ...this.publication,
     };

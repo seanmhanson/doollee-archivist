@@ -30,20 +30,6 @@ export type Production = {
   productionYear?: string;
 };
 
-export type Details = {
-  synopsis?: string;
-  notes?: string;
-  organizations?: string;
-  music?: string;
-  partsText?: {
-    maleParts: number;
-    femaleParts: number;
-    otherParts: number;
-  };
-  reference?: string;
-  production?: Production;
-};
-
 export type Parts = {
   maleParts: number;
   femaleParts: number;
@@ -72,18 +58,16 @@ export type PlayDocument = {
 
   genres?: string;
 
-  details: {
-    synopsis?: string;
-    notes?: string;
-    organizations?: string;
-    music?: string;
-    partsText?: {
-      maleParts: number;
-      femaleParts: number;
-      otherParts: number;
-    };
-    reference?: string;
+  synopsis?: string;
+  notes?: string;
+  organizations?: string;
+  music?: string;
+  partsText?: {
+    maleParts: number;
+    femaleParts: number;
+    otherParts: number;
   };
+  reference?: string;
 };
 
 
@@ -92,19 +76,26 @@ export type PlayDocument = {
  * the Play document structure
  */
 
-type RootKeys = "playId" | "title" | "adaptingAuthor" | "genres" | "authorId";
-type DetailsKeys = "synopsis" | "notes" | "organizations" | "reference" | "music";
+type RootKeys =
+  | "playId"
+  | "title"
+  | "adaptingAuthor"
+  | "genres"
+  | "authorId"
+  | "synopsis"
+  | "notes"
+  | "organizations"
+  | "reference"
+  | "music";
 type MetadataKeys = "scrapedAt" | "sourceUrl";
 type ExportRootFields = Pick<PlayDocument, RootKeys>;
 type ExportMetadata = Pick<Metadata, MetadataKeys>;
-type ExportDetails = Pick<Details, DetailsKeys>;
 
 export type Input = ExportRootFields &
   ExportMetadata &
   RawFields &
   Publication &
-  Production &
-  ExportDetails & {
+  Production & {
     id?: PlayDocument["_id"];
     originalAuthor?: PlayDocument["author"];
     parts?: Parts;
