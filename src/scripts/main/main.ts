@@ -3,17 +3,20 @@ import ModuleWriter from "#/core/ModuleWriter";
 import DatabaseService from "#/core/DatabaseService";
 import ProgressDisplay from "#/scripts/main/ProgressDisplay";
 import ScrapingOrchestrator from "#/scripts/main/ScrapingOrchestrator";
+import config from "#/core/Config";
 
 async function main() {
   const timestamp = new Date().toTimeString().slice(0, 8).replace(/:/g, "");
 
   try {
-    // Initialize all required services
-    const authorModuleWriter = await ModuleWriter.create(`${timestamp}-authors`);
-    const playModuleWriter = await ModuleWriter.create(`${timestamp}-plays`);
+    // Initialize services
     const dbService = new DatabaseService();
     const scraper = await WebScraper.create();
     const progressDisplay = new ProgressDisplay();
+
+    // Only create ModuleWriters if writing to files
+    const authorModuleWriter = config.writeTo === "file" ? await ModuleWriter.create(`${timestamp}-authors`) : null;
+    const playModuleWriter = config.writeTo === "file" ? await ModuleWriter.create(`${timestamp}-plays`) : null;
 
     // Create services object for orchestrator
     const services = {

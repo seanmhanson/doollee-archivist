@@ -41,8 +41,8 @@ type AuthorReference = {
 type Services = {
   dbService: DatabaseService;
   scraper: WebScraper;
-  authorModuleWriter: ModuleWriter;
-  playModuleWriter: ModuleWriter;
+  authorModuleWriter: ModuleWriter | null;
+  playModuleWriter: ModuleWriter | null;
   progressDisplay: ProgressDisplay;
 };
 
@@ -373,8 +373,6 @@ class ScrapingOrchestrator {
   private async checkDependencies() {
     const dbConnected = await this.services.dbService.isConnected();
     const scraperConnected = this.services.scraper.isConnected();
-    const authorWriterReady = this.services.authorModuleWriter.isReady;
-    const playWriterReady = this.services.playModuleWriter.isReady;
     const progressDisplayReady = this.services.progressDisplay.isReady;
 
     if (!dbConnected) {
@@ -391,12 +389,20 @@ class ScrapingOrchestrator {
     if (!scraperConnected) {
       throw new SetupError("WebScraper is not connected");
     }
-    if (!authorWriterReady) {
-      throw new SetupError("Author ModuleWriter is not ready");
+
+    // Only check ModuleWriter readiness when writing to files
+    if (config.writeTo === "file") {
+      const authorWriterReady = this.services.authorModuleWriter?.isReady;
+      const playWriterReady = this.services.playModuleWriter?.isReady;
+
+      if (!authorWriterReady) {
+        throw new SetupError("Author ModuleWriter is not ready");
+      }
+      if (!playWriterReady) {
+        throw new SetupError("Play ModuleWriter is not ready");
+      }
     }
-    if (!playWriterReady) {
-      throw new SetupError("Play ModuleWriter is not ready");
-    }
+
     if (!progressDisplayReady) {
       throw new SetupError("ProgressDisplay is not ready");
     }
@@ -606,6 +612,9 @@ class ScrapingOrchestrator {
     }
 
     if (config.writeTo === "file") {
+      if (!this.services.authorModuleWriter) {
+        throw new WriteAuthorError("AuthorModuleWriter is not initialized for file output");
+      }
       try {
         await this.services.authorModuleWriter.writeFile({
           filename: `${this.state.profileSlug}.json`,
@@ -666,6 +675,9 @@ class ScrapingOrchestrator {
     }
 
     if (config.writeTo === "file") {
+      if (!this.services.playModuleWriter) {
+        throw new WritePlayError("PlayModuleWriter is not initialized for file output");
+      }
       const { title, playId } = document;
       const filename = this.getPlayFilename(title, playId);
       try {
@@ -840,8 +852,12 @@ class ScrapingOrchestrator {
     this.services.progressDisplay.close();
     await this.services.scraper.close();
     await this.services.dbService.close();
-    await this.services.authorModuleWriter.close();
-    await this.services.playModuleWriter.close();
+    if (this.services.authorModuleWriter) {
+      await this.services.authorModuleWriter.close();
+    }
+    if (this.services.playModuleWriter) {
+      await this.services.playModuleWriter.close();
+    }
   }
 }
 
