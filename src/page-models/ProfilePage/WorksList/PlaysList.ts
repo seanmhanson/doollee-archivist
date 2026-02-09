@@ -112,7 +112,10 @@ export default class PlaysList extends BaseWorksList {
     const partsTextFemale = match[2].trim();
     const partsTextOther = match[3].trim();
 
-    if (!partsTextMale && !partsTextFemale && !partsTextOther) {
+    const isEmpty = (text: string) => {
+      return !text || text === "-" || text === "0";
+    };
+    if ([partsTextMale, partsTextFemale, partsTextOther].every(isEmpty)) {
       return {};
     }
 

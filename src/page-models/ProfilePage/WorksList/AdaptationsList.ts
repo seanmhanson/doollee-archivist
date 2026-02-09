@@ -161,7 +161,10 @@ export default class AdaptationsList extends BaseWorksList {
     const partsTextFemale = femaleParts.trim();
     const partsTextOther = otherParts.trim();
 
-    if (!partsTextMale && !partsTextFemale && !partsTextOther) {
+    const isEmpty = (text: string) => {
+      return !text || text === "-" || text === "0";
+    };
+    if ([partsTextMale, partsTextFemale, partsTextOther].every(isEmpty)) {
       return {};
     }
 
