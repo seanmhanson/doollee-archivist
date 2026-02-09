@@ -45,7 +45,7 @@ export function extractISBN(text: string): ISBNResult {
   }
 
   if (totalIsbn10s) {
-    if (totalIsbn10s >= 1) {
+    if (totalIsbn10s > 1) {
       const originals = isbn10Candidates.map(([original]) => original);
       console.warn(`Multiple ISBN-10 candidates found; selecting the first one from: ` + originals.join(", "));
     }
