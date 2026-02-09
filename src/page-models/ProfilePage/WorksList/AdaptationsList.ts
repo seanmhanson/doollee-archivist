@@ -55,7 +55,7 @@ export default class AdaptationsList extends BaseWorksList {
           ...productionDetails,
           ...publicationDetails,
         };
-      };,
+      }
     );
   }
 
