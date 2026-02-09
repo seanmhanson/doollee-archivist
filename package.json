@@ -16,7 +16,8 @@
     "scrape:indexes": "ts-node -r tsconfig-paths/register src/scripts/scrapeIndexes.ts",
     "scrape:listings": "ts-node -r tsconfig-paths/register src/scripts/scrapeListings.ts",
     "scrape:all": "ts-node -r tsconfig-paths/register src/scripts/main/main.ts",
-    "test:rateLimiting": "ts-node -r tsconfig-paths/register src/scripts/testRateLimiting.ts"
+    "test:rateLimiting": "ts-node -r tsconfig-paths/register src/scripts/testRateLimiting.ts",
+    "analyze:genres": "ts-node -r tsconfig-paths/register src/scripts/normalize/analyze-genres.ts"
   },
   "devDependencies": {
     "@types/mongodb": "^4.0.7",
