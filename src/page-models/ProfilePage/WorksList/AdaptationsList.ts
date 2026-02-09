@@ -170,20 +170,30 @@ export default class AdaptationsList extends BaseWorksList {
     }
 
     return {
-      maleParts: parsedMaleParts,
-      femaleParts: parsedFemaleParts,
-      otherParts: parsedOtherParts,
+      counts: {
+        maleParts: parsedMaleParts ?? 0,
+        femaleParts: parsedFemaleParts ?? 0,
+        otherParts: parsedOtherParts ?? 0,
+      },
+      text: {
+        maleParts,
+        femaleParts,
+        otherParts,
+      },
     };
   }
 
   private parsePartsString(partsString: string): number | null {
-    const numericString = /[0-9]+/;
-    if (numericString.test(partsString)) {
-      return parseInt(partsString, 10);
-    }
-
+    if (!partsString || partsString.trim() === "") return null;
+    
     if (partsString === "-") {
       return 0;
+    }
+
+    const numericString = /[0-9]+/;
+    if (numericString.test(partsString)) {
+      const num = parseInt(partsString, 10);
+      return isNaN(num) ? null : num;
     }
 
     return null;

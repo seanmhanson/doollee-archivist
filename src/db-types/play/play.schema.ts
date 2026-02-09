@@ -1,4 +1,4 @@
-import type { Document } from "mongodb";
+import { BSONType, type Document } from "mongodb";
 
 const PlaySchema: Document = {
   bsonType: "object",
@@ -66,9 +66,24 @@ const PlaySchema: Document = {
           bsonType: "object",
           additionalProperties: false,
           properties: {
-            maleParts: { bsonType: "number" },
-            femaleParts: { bsonType: "number" },
-            otherParts: { bsonType: "number" },
+            counts: {
+              bsonType: "object",
+              additionalProperties: false,
+              properties: {
+                maleParts: { bsonType: "number" },
+                femaleParts: { bsonType: "number" },
+                otherParts: { bsonType: "number" },
+              },
+            },
+            text: {
+              bsonType: "object",
+              additionalProperties: false,
+              properties: {
+                maleParts: { bsonType: "string" },
+                femaleParts: { bsonType: "string" },
+                otherParts: { bsonType: "string" },
+              },
+            },
           },
         },
         reference: { bsonType: "string" },

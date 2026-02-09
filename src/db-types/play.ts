@@ -24,9 +24,16 @@ export type PlayData = {
   music?: string;
   genres?: string;
   partsText?: {
-    maleParts: number;
-    femaleParts: number;
-    otherParts: number;
+    counts: {
+      maleParts: number;
+      femaleParts: number;
+      otherParts: number;
+    };
+    text: {
+      maleParts: string;
+      femaleParts: string;
+      otherParts: string;
+    };
   };
   reference?: string;
 };

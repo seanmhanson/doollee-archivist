@@ -1,5 +1,6 @@
 import { MongoNetworkError, MongoOperationTimeoutError, ObjectId } from "mongodb";
 import { promises as fs } from "fs";
+import path from "path";
 
 import config from "#/core/Config";
 import WebScraper from "#/core/WebScraper";
@@ -22,8 +23,7 @@ import {
   AuthorProcessingError,
 } from "./ScrapingError";
 import { PlayDocument } from "#/db-types/play/play.types";
-import path from "path";
-import { profile } from "console";
+
 
 type AuthorListIndex = { [letter: string]: { [authorName: string]: string } };
 
@@ -330,8 +330,8 @@ class ScrapingOrchestrator {
   private async getBatches() {
     const { batchSize, maxBatches, authorListPath } = config;
     const letters: string[] = [];
-    const firstLetter = `B`.charCodeAt(0);
-    const lastLetter = `B`.charCodeAt(0);
+    const firstLetter = `A`.charCodeAt(0);
+    const lastLetter = `A`.charCodeAt(0);
     const exception = `V`.charCodeAt(0);
     for (let i = firstLetter; i <= lastLetter; i++) {
       if (i === exception) {

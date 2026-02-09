@@ -110,17 +110,35 @@ export default class PlaysList extends BaseWorksList {
       .replace(/\s+/g, " ")
       .trim();
 
-    const pattern = /Male:\s*(\d+|-)\s*Female:\s*(\d+|-)\s*Other:\s*(\d+|-)/;
+    const pattern = /Male:\s*(.+?)\s+Female:\s*(.+?)\s+Other:\s*(.+)$/;
     const match = normalizedText.match(pattern);
 
     if (!match) {
       throw new Error(`Parts text does not match expected format: ${partsText}`);
     }
 
+    const maleText = match[1].trim();
+    const femaleText = match[2].trim();
+    const otherText = match[3].trim();
+
+    // Helper function to parse numeric values
+    const parseCount = (text: string): number => {
+      if (text === "-" || text === "") return 0;
+      const num = parseInt(text, 10);
+      return isNaN(num) ? 0 : num;
+    };
+
     return {
-      maleParts: match[1] === "-" ? 0 : parseInt(match[1], 10),
-      femaleParts: match[2] === "-" ? 0 : parseInt(match[2], 10),
-      otherParts: match[3] === "-" ? 0 : parseInt(match[3], 10),
+      counts: {
+        maleParts: parseCount(maleText),
+        femaleParts: parseCount(femaleText),
+        otherParts: parseCount(otherText),
+      },
+      text: {
+        maleParts: maleText,
+        femaleParts: femaleText,
+        otherParts: otherText,
+      },
     };
   }
 }
