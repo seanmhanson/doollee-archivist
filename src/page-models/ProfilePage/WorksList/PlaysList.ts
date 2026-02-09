@@ -21,10 +21,10 @@ export default class PlaysList extends BaseWorksList {
         productionInfo: production,
         playId,
         production,
-        parts,
         genres,
         ...publicationDetails,
         ...productionDetails,
+        ...parts,
         ...rest,
       };
     });
@@ -108,28 +108,27 @@ export default class PlaysList extends BaseWorksList {
       throw new Error(`Parts text does not match expected format: ${partsText}`);
     }
 
-    const maleText = match[1].trim();
-    const femaleText = match[2].trim();
-    const otherText = match[3].trim();
+    const partsTextMale = match[1].trim();
+    const partsTextFemale = match[2].trim();
+    const partsTextOther = match[3].trim();
 
-    // Helper function to parse numeric values
-    const parseCount = (text: string): number => {
-      if (text === "-" || text === "") return 0;
-      const num = parseInt(text, 10);
-      return isNaN(num) ? 0 : num;
-    };
+    if (!partsTextMale && !partsTextFemale && !partsTextOther) {
+      return {};
+    }
+
+    const partsCountMale = this.parseCount(partsTextMale);
+    const partsCountFemale = this.parseCount(partsTextFemale);
+    const partsCountOther = this.parseCount(partsTextOther);
+    const partsCountTotal = partsCountMale + partsCountFemale + partsCountOther;
 
     return {
-      counts: {
-        maleParts: parseCount(maleText),
-        femaleParts: parseCount(femaleText),
-        otherParts: parseCount(otherText),
-      },
-      text: {
-        maleParts: maleText,
-        femaleParts: femaleText,
-        otherParts: otherText,
-      },
+      partsCountMale,
+      partsCountFemale,
+      partsCountOther,
+      partsCountTotal,
+      partsTextMale,
+      partsTextFemale,
+      partsTextOther,
     };
   }
 }

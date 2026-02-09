@@ -166,4 +166,10 @@ export default abstract class BaseWorksList {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(" ");
   }
+
+  protected parseCount = (text: string): number => {
+    if (text === "-" || text === "") return 0;
+    const num = parseInt(text, 10);
+    return isNaN(num) ? 0 : num;
+  };
 }

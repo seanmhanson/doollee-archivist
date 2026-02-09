@@ -2,6 +2,12 @@ import type { Page } from "playwright";
 import BaseWorksList from "./__BaseWorksList";
 import * as stringUtils from "#/utils/stringUtils";
 
+type UnparsedParts = {
+  maleParts: string;
+  femaleParts: string;
+  otherParts: string;
+};
+
 export default class AdaptationsList extends BaseWorksList {
   public constructor(page: Page) {
     super(page);
@@ -50,12 +56,12 @@ export default class AdaptationsList extends BaseWorksList {
           publishingInfo,
           organizations,
           reference,
-          parts,
+          ...parts,
           genres,
           ...productionDetails,
           ...publicationDetails,
         };
-      }
+      },
     );
   }
 
@@ -150,56 +156,28 @@ export default class AdaptationsList extends BaseWorksList {
     return match?.[1].trim() || "";
   }
 
-  private parseParts({
-    maleParts,
-    femaleParts,
-    otherParts,
-  }: {
-    maleParts: string;
-    femaleParts: string;
-    otherParts: string;
-  }) {
-    const parsedMaleParts = this.parsePartsString(maleParts);
-    const parsedFemaleParts = this.parsePartsString(femaleParts);
-    const parsedOtherParts = this.parsePartsString(otherParts);
+  private parseParts({ maleParts, femaleParts, otherParts }: UnparsedParts) {
+    const partsTextMale = maleParts.trim();
+    const partsTextFemale = femaleParts.trim();
+    const partsTextOther = otherParts.trim();
 
-    // If all parts are either 0, null, or both, we treat the entire
-    // parts section as missing
-    if (
-      (parsedMaleParts === 0 || parsedMaleParts === null) &&
-      (parsedFemaleParts === 0 || parsedFemaleParts === null) &&
-      (parsedOtherParts === 0 || parsedOtherParts === null)
-    ) {
+    if (!partsTextMale && !partsTextFemale && !partsTextOther) {
       return {};
     }
 
+    const partsCountMale = this.parseCount(partsTextMale);
+    const partsCountFemale = this.parseCount(partsTextFemale);
+    const partsCountOther = this.parseCount(partsTextOther);
+    const partsCountTotal = partsCountMale + partsCountFemale + partsCountOther;
+
     return {
-      counts: {
-        maleParts: parsedMaleParts ?? 0,
-        femaleParts: parsedFemaleParts ?? 0,
-        otherParts: parsedOtherParts ?? 0,
-      },
-      text: {
-        maleParts,
-        femaleParts,
-        otherParts,
-      },
+      partsCountMale,
+      partsCountFemale,
+      partsCountOther,
+      partsCountTotal,
+      partsTextMale,
+      partsTextFemale,
+      partsTextOther,
     };
-  }
-
-  private parsePartsString(partsString: string): number | null {
-    if (!partsString || partsString.trim() === "") return null;
-    
-    if (partsString === "-") {
-      return 0;
-    }
-
-    const numericString = /[0-9]+/;
-    if (numericString.test(partsString)) {
-      const num = parseInt(partsString, 10);
-      return isNaN(num) ? null : num;
-    }
-
-    return null;
   }
 }

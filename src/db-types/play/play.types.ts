@@ -4,7 +4,6 @@ import type { ObjectId } from "mongodb";
  * Document structure for a Play in the database.
  */
 
-
 export type Metadata = {
   createdAt: Date;
   updatedAt: Date;
@@ -19,24 +18,6 @@ export type RawFields = {
   productionInfo?: string;
 };
 
-export type Publication = {
-  publisher?: string;
-  publicationYear?: string;
-  isbn?: string;
-};
-
-export type Production = {
-  productionLocation?: string;
-  productionYear?: string;
-};
-
-export type Parts = {
-  maleParts: number;
-  femaleParts: number;
-  otherParts: number;
-};
-
-
 export type PlayDocument = {
   _id: ObjectId;
   playId: string; // the id used by doollee, not our internal id
@@ -48,26 +29,31 @@ export type PlayDocument = {
   author: string;
   authorId?: ObjectId;
   adaptingAuthor?: string;
-
-  publisher?: string;
-  publicationYear?: string;
-  isbn?: string;
-
-  productionLocation?: string;
-  productionYear?: string;
-
   genres?: string;
-
   synopsis?: string;
   notes?: string;
   organizations?: string;
   music?: string;
-  partsText?: {
-    maleParts: number;
-    femaleParts: number;
-    otherParts: number;
-  };
   reference?: string;
+  publisher?: string;
+  publicationYear?: string;
+  isbn?: string;
+  productionLocation?: string;
+  productionYear?: string;
+  partsCountMale?: number;
+  partsCountFemale?: number;
+  partsCountOther?: number;
+  partsCountTotal?: number;
+  partsTextMale?: string;
+  partsTextFemale?: string;
+  partsTextOther?: string;
+};
+
+/** Selected types from PlayDocument to use when typing the values maintained by the Play class */
+
+export type InitialMetadata = Omit<Metadata, "createdAt" | "updatedAt"> & {
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 
@@ -76,27 +62,19 @@ export type PlayDocument = {
  * the Play document structure
  */
 
-type RootKeys =
-  | "playId"
-  | "title"
-  | "adaptingAuthor"
-  | "genres"
-  | "authorId"
-  | "synopsis"
-  | "notes"
-  | "organizations"
-  | "reference"
-  | "music";
-type MetadataKeys = "scrapedAt" | "sourceUrl";
-type ExportRootFields = Pick<PlayDocument, RootKeys>;
-type ExportMetadata = Pick<Metadata, MetadataKeys>;
+type RequiredKeys = "playId" | "title";
+type RequiredFields = Pick<PlayDocument, RequiredKeys>;
 
-export type Input = ExportRootFields &
-  ExportMetadata &
-  RawFields &
-  Publication &
-  Production & {
-    id?: PlayDocument["_id"];
-    originalAuthor?: PlayDocument["author"];
-    parts?: Parts;
-  };
+type RequiredMetadataKeys = "scrapedAt" | "sourceUrl";
+type RequiredMetadata = Pick<Metadata, RequiredMetadataKeys>;
+
+type OmittedKeys = "_id" | "author" | "metadata" | "rawFields";
+type OptionalCoreFields = Partial<Omit<PlayDocument, OmittedKeys | RequiredKeys>>;
+type OptionalRawFields = Partial<RawFields>;
+
+type RenamedFields = {
+  id?: PlayDocument["_id"];
+  originalAuthor?: PlayDocument["author"];
+};
+
+export type Input = RequiredFields & RequiredMetadata & OptionalCoreFields & OptionalRawFields & RenamedFields;
