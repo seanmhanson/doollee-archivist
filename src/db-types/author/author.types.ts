@@ -21,18 +21,21 @@ export type AuthorDocument = {
     headingName: string;
     altName: string;
   };
+
   name: string;
   nameData: {
+    // flatten
     displayName: string;
     isOrganization: boolean;
     lastName?: string;
     firstName?: string;
-    middleName?: string[];
-    suffix?: string[];
+    middleName?: string[]; // middle names
+    suffix?: string[]; // suffixes
   };
   biography: {
-    born?: string;
-    died?: string;
+    // flatten
+    born?: string; // yearBorn
+    died?: string; // yearDied
     nationality?: string;
     email?: string;
     website?: string;
@@ -42,18 +45,15 @@ export type AuthorDocument = {
     address?: string;
     telephone?: string;
   };
-  works: {
-    plays: ObjectId[];
-    adaptations: ObjectId[];
-    doolleeIds: string[];
-  };
+  playIds: ObjectId[];
+  adaptationIds: ObjectId[];
+  doolleePlayIds: string[];
 };
 
 export type Metadata = AuthorDocument["metadata"];
 export type RawFields = AuthorDocument["rawFields"];
 export type NameData = AuthorDocument["nameData"];
 export type Biography = AuthorDocument["biography"];
-export type Works = AuthorDocument["works"];
 
 /**
  * Input data from scraping an author page, before being transformed into

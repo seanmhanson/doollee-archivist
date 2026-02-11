@@ -211,8 +211,6 @@ class ScrapingOrchestrator {
     await fs.mkdir(dir, { recursive: true });
   }
 
-  // review before using
-
   private async addSkippedAuthor(reason: string = "other") {
     const profileName = this.state.profileName;
     const url = this.currentStats.currentAuthorUrl || "";
@@ -452,6 +450,9 @@ class ScrapingOrchestrator {
     this.state.profileSlug = profileSlug;
     this.state.authorReference = {} as AuthorReference;
     this.state.currentAuthor = undefined;
+    this.state.playAccumulator = [];
+    this.state.adaptationAccumulator = [];
+    this.state.doolleeIdAccumulator = [];
     this.currentStats.currentAuthorUrl = authorUrl;
     this.currentStats.playsByAuthorCount = 0;
     this.currentStats.currentAuthorIndex++;
@@ -592,6 +593,10 @@ class ScrapingOrchestrator {
       this.incrementErrorStats("processErrors");
       throw new AuthorProcessingError("Current author data is undefined at the time of writing");
     }
+
+    this.state.currentAuthor.addPlays(this.state.playAccumulator);
+    this.state.currentAuthor.addAdaptations(this.state.adaptationAccumulator);
+    this.state.currentAuthor.addDoolleeIds(this.state.doolleeIdAccumulator);
 
     const document = this.state.currentAuthor.toDocument();
     const authorId = this.state.currentAuthor.id;

@@ -42,8 +42,11 @@ export default class Author {
   private rawFields: AuthorTypes.RawFields;
   private nameData: AuthorTypes.NameData;
   private biography: AuthorTypes.Biography;
-  private works: AuthorTypes.Works;
   private name: string;
+
+  private playIds: ObjectId[];
+  private adaptationIds: ObjectId[];
+  private doolleePlayIds: string[];
 
   public get authorName(): string {
     return this.name;
@@ -91,11 +94,9 @@ export default class Author {
       telephone: input.telephone,
     };
 
-    this.works = {
-      plays: [],
-      adaptations: [],
-      doolleeIds: [],
-    };
+    this.playIds = [];
+    this.adaptationIds = [];
+    this.doolleePlayIds = [];
   }
 
   /**
@@ -231,14 +232,15 @@ export default class Author {
   }
 
   public addPlays(playIds: ObjectId[]): void {
-    this.works.plays.push(...playIds);
+    this.playIds.push(...playIds);
   }
+
   public addAdaptations(adaptationIds: ObjectId[]): void {
-    this.works.adaptations.push(...adaptationIds);
+    this.adaptationIds.push(...adaptationIds);
   }
 
   public addDoolleeIds(doolleeIds: string[]): void {
-    this.works.doolleeIds.push(...doolleeIds);
+    this.doolleePlayIds.push(...doolleeIds);
   }
 
   public toDocument(): AuthorTypes.AuthorDocument {
@@ -255,7 +257,9 @@ export default class Author {
       name: this.name,
       nameData: this.nameData,
       biography: this.biography,
-      works: this.works,
+      playIds: this.playIds,
+      adaptationIds: this.adaptationIds,
+      doolleePlayIds: this.doolleePlayIds,
     };
 
     // prune undefined/empty fields and manually remove fields added by this class
