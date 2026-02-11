@@ -23,15 +23,12 @@ export type AuthorDocument = {
   };
 
   name: string;
-  nameData: {
-    // flatten
-    displayName: string;
-    isOrganization: boolean;
-    lastName?: string;
-    firstName?: string;
-    middleName?: string[]; // middle names
-    suffix?: string[]; // suffixes
-  };
+  displayName: string;
+  isOrganization: boolean;
+  lastName?: string;
+  firstName?: string;
+  middleNames?: string[];
+  suffixes?: string[];
   biography: {
     // flatten
     born?: string; // yearBorn
@@ -52,7 +49,6 @@ export type AuthorDocument = {
 
 export type Metadata = AuthorDocument["metadata"];
 export type RawFields = AuthorDocument["rawFields"];
-export type NameData = AuthorDocument["nameData"];
 export type Biography = AuthorDocument["biography"];
 
 /**

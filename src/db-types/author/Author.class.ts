@@ -8,12 +8,14 @@ type AuthorMetadata = Omit<AuthorTypes.Metadata, "createdAt" | "updatedAt"> & {
   updatedAt?: Date;
 };
 
-type ParsedNameData = AuthorTypes.NameData & {
+type ParsedNameData = {
   name: string;
   isOrganization?: boolean;
-  needsReview: boolean;
-  needsReviewReason?: string;
-  needsReviewData?: Record<string, Record<string, string>>;
+  displayName: string;
+  firstName?: string;
+  lastName?: string;
+  middleNames?: string[];
+  suffixes?: string[];
 };
 
 /**
@@ -40,13 +42,23 @@ export default class Author {
   private _id: ObjectId;
   private metadata: AuthorMetadata;
   private rawFields: AuthorTypes.RawFields;
-  private nameData: AuthorTypes.NameData;
   private biography: AuthorTypes.Biography;
+
   private name: string;
+  private displayName: string;
+  private isOrganization: boolean;
+  private lastName?: string;
+  private firstName?: string;
+  private middleNames?: string[];
+  private suffixes?: string[];
 
   private playIds: ObjectId[];
   private adaptationIds: ObjectId[];
   private doolleePlayIds: string[];
+
+  private needsReview: boolean = false;
+  private needsReviewReason?: string;
+  private needsReviewData?: Record<string, Record<string, string>> = {};
 
   public get authorName(): string {
     return this.name;
@@ -56,21 +68,35 @@ export default class Author {
     return this._id;
   }
 
-  constructor(input: AuthorTypes.Input) {
-    const authorId = new ObjectId();
-    const { name, needsReview, needsReviewReason, needsReviewData, ...nameData } = this.parseName(input);
+  public get nameData() {
+    return {
+      displayName: this.displayName,
+      isOrganization: this.isOrganization,
+      lastName: this.lastName,
+      firstName: this.firstName,
+      middleNames: this.middleNames,
+      suffixes: this.suffixes,
+    };
+  }
 
-    this._id = authorId;
-    this.name = name;
+  public get worksData() {
+    return {
+      plays: this.playIds,
+      adaptations: this.adaptationIds,
+      doolleeIds: this.doolleePlayIds,
+    };
+  }
+
+  constructor(input: AuthorTypes.Input) {
+    const { name, displayName, isOrganization, lastName, firstName, middleNames, suffixes } = this.parseName(input);
+
+    this._id = new ObjectId();
 
     this.metadata = {
       createdAt: undefined,
       updatedAt: undefined,
       scrapedAt: input.scrapedAt,
       sourceUrl: input.sourceUrl,
-      needsReview: needsReview,
-      needsReviewReason: needsReviewReason,
-      needsReviewData: needsReviewData,
     };
 
     this.rawFields = {
@@ -79,7 +105,13 @@ export default class Author {
       altName: input.altName,
     };
 
-    this.nameData = nameData;
+    this.name = name;
+    this.displayName = displayName;
+    this.isOrganization = !!isOrganization;
+    this.lastName = lastName;
+    this.firstName = firstName;
+    this.middleNames = middleNames;
+    this.suffixes = suffixes;
 
     this.biography = {
       born: input.born,
@@ -121,16 +153,14 @@ export default class Author {
     const orgName = altName.length > 0 ? altName : toTitleCase(listingName);
     const isOrganization = listingInAllCaps && matchesHeading && matchesAlt;
 
-    const needsReview = listingName.split(" ").length === 1;
-    const needsReviewReason = needsReview ? "Single word organization name" : undefined;
+    this.needsReview = listingName.split(" ").length === 1;
+    this.needsReviewReason = this.needsReview ? "Single word organization name" : undefined;
 
     return {
       name: orgName,
       displayName: orgName,
       firstName: orgName,
       isOrganization,
-      needsReview,
-      needsReviewReason,
     };
   }
 
@@ -167,13 +197,10 @@ export default class Author {
     const sameFirstNames = stringArraysEqual([headingFirstName], [listingFirstName]);
     const sameLastNames = stringArraysEqual([listingLastName], [headingLastName]);
 
-    let needsReview = false;
-    let needsReviewReason;
-    let needsReviewData;
     if (!(sameSuffixes && sameMiddleNames && sameFirstNames && sameLastNames)) {
-      needsReview = true;
-      needsReviewReason = "Author's listing and heading names are inconsistent.";
-      needsReviewData = {
+      this.needsReview = true;
+      this.needsReviewReason = "Author's listing and heading names are inconsistent.";
+      this.needsReviewData = {
         ...this.prepareFlaggedNameData("First Name", [headingFirstName], [listingFirstName]),
         ...this.prepareFlaggedNameData("Middle Name(s)", headingMiddleNames, listingMiddleNames),
         ...this.prepareFlaggedNameData("Last Name", [headingLastName], [listingLastName]),
@@ -183,9 +210,9 @@ export default class Author {
 
     const firstName = toTitleCase(headingNames[0]);
     const lastName = toTitleCase(listingNames[0]);
-    const middleName = headingMiddleNames.map((name) => toTitleCase(name));
-    const suffix = headingSuffixes.map((name) => toTitleCase(name));
-    const canonicalName = [firstName, ...middleName, lastName, ...suffix].join(" ");
+    const middleNames = headingMiddleNames.map((name) => toTitleCase(name));
+    const suffixes = headingSuffixes.map((name) => toTitleCase(name));
+    const canonicalName = [firstName, ...middleNames, lastName, ...suffixes].join(" ");
     const displayName = altName || canonicalName;
 
     return {
@@ -194,11 +221,8 @@ export default class Author {
       displayName,
       firstName,
       lastName,
-      middleName,
-      suffix,
-      needsReview,
-      needsReviewReason,
-      needsReviewData,
+      middleNames,
+      suffixes,
     };
   }
 
@@ -252,14 +276,15 @@ export default class Author {
         ...this.metadata,
         createdAt: this.metadata.createdAt || now,
         updatedAt: now,
+        needsReview: this.needsReview,
+        needsReviewReason: this.needsReviewReason,
+        needsReviewData: this.needsReviewData,
       },
       rawFields: this.rawFields,
       name: this.name,
-      nameData: this.nameData,
+      ...this.nameData,
+      ...this.worksData,
       biography: this.biography,
-      playIds: this.playIds,
-      adaptationIds: this.adaptationIds,
-      doolleePlayIds: this.doolleePlayIds,
     };
 
     // prune undefined/empty fields and manually remove fields added by this class
@@ -269,8 +294,8 @@ export default class Author {
       delete prunedDocument.metadata.needsReviewReason;
       delete prunedDocument.metadata.needsReviewData;
     }
-    if (!prunedDocument.nameData.isOrganization) {
-      delete prunedDocument.nameData.isOrganization;
+    if (!prunedDocument.isOrganization) {
+      delete prunedDocument.isOrganization;
     }
 
     return prunedDocument;
