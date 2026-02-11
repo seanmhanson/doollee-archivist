@@ -3,73 +3,57 @@ import type { Document } from "mongodb";
 const AuthorSchema: Document = {
   bsonType: "object",
   additionalProperties: false,
-  required: ["_id", "metadata", "rawFields", "name", "nameData", "biography", "works"],
+  required: ["_id", "metadata", "rawFields", "name", "displayName", "playIds", "adaptationIds", "doolleePlayIds"],
   properties: {
     _id: { bsonType: "objectId" },
     metadata: {
       bsonType: "object",
+      additionalProperties: false,
+      required: ["createdAt", "updatedAt", "scrapedAt", "sourceUrl"],
       properties: {
         createdAt: { bsonType: "date" },
         updatedAt: { bsonType: "date" },
         scrapedAt: { bsonType: "date" },
         sourceUrl: { bsonType: "string" },
       },
-      required: ["createdAt", "updatedAt", "scrapedAt", "sourceUrl"],
     },
     rawFields: {
       bsonType: "object",
+      additionalProperties: false,
       properties: {
         listingName: { bsonType: "string" },
         headingName: { bsonType: "string" },
         altName: { bsonType: "string" },
       },
-      required: ["listingName", "headingName"],
     },
     name: { bsonType: "string" },
-    nameData: {
-      bsonType: "object",
-      properties: {
-        displayName: { bsonType: "string" },
-        isOrganization: { bsonType: "bool" },
-        lastName: { bsonType: "string" },
-        firstName: { bsonType: "string" },
-        middleName: { bsonType: "string" },
-        suffix: { bsonType: "string" },
-      },
-      required: ["displayName", "isOrganization"],
+    displayName: { bsonType: "string" },
+    isOrganization: { bsonType: "bool" }, // default to false if not provided
+    lastName: { bsonType: "string" },
+    firstName: { bsonType: "string" },
+    middleNames: { bsonType: "array", items: { bsonType: "string" } },
+    suffixes: { bsonType: "array", items: { bsonType: "string" } },
+    yearBorn: { bsonType: "string" },
+    yearDied: { bsonType: "string" },
+    nationality: { bsonType: "string" },
+    email: { bsonType: "string" },
+    website: { bsonType: "string" },
+    literaryAgent: { bsonType: "string" },
+    biography: { bsonType: "string" },
+    research: { bsonType: "string" },
+    address: { bsonType: "string" },
+    telephone: { bsonType: "string" },
+    playIds: {
+      bsonType: "array",
+      items: { bsonType: "objectId" },
     },
-    biography: {
-      bsonType: "object",
-      properties: {
-        born: { bsonType: "string" },
-        died: { bsonType: "string" },
-        nationality: { bsonType: "string" },
-        email: { bsonType: "string" },
-        website: { bsonType: "string" },
-        literaryAgent: { bsonType: "string" },
-        biography: { bsonType: "string" },
-        research: { bsonType: "string" },
-        address: { bsonType: "string" },
-        telephone: { bsonType: "string" },
-      },
+    adaptationIds: {
+      bsonType: "array",
+      items: { bsonType: "objectId" },
     },
-    works: {
-      bsonType: "object",
-      properties: {
-        plays: {
-          bsonType: "array",
-          items: { bsonType: "objectId" },
-        },
-        adaptations: {
-          bsonType: "array",
-          items: { bsonType: "objectId" },
-        },
-        doolleeIds: {
-          bsonType: "array",
-          items: { bsonType: "string" },
-        },
-      },
-      required: ["plays", "adaptations", "doolleeIds"],
+    doolleePlayIds: {
+      bsonType: "array",
+      items: { bsonType: "string" },
     },
   },
 };
