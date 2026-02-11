@@ -1,6 +1,6 @@
 import type { Page } from "playwright";
 import BaseBiography from "./__BaseBiography";
-import type { Input as AuthorData } from "#/db-types/author/author.types";
+import type { AuthorData } from "#/db-types/author/author.types";
 
 type ScrapedData = {
   altName: string;
@@ -59,7 +59,7 @@ export default class StandardBiography extends BaseBiography {
     const lastStrongPattern = new RegExp(
       `<strong[^>]*>.*?<\\/strong>` + // bold label
         `(?:\\s*<a[^>]*>.*?<\\/a>)?`, // optional anchor tag from literary agent
-      "g" // global match flag
+      "g", // global match flag
     );
     const labelMatches = [...sectionHTML.matchAll(lastStrongPattern)];
 

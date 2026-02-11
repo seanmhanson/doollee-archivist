@@ -1,6 +1,6 @@
 import type { Page } from "playwright";
 
-import type { Input as AuthorData } from "#/db-types/author/author.types";
+import type { AuthorData } from "#/db-types/author/author.types";
 
 export default abstract class BaseBiography {
   protected static readonly labels = [
@@ -55,7 +55,7 @@ export default abstract class BaseBiography {
         `(?:<a[^>]*>)?` + // optional opening anchor tag
         `([^<]+)` + // capture text content (greedy now)
         `(?:</a>)?`, // optional closing anchor tag
-      "gi" // global, case-insensitive flag
+      "gi", // global, case-insensitive flag
     );
 
     const matches = sectionHTML.matchAll(labelRegex);

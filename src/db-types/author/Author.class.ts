@@ -1,22 +1,7 @@
 import { Document, ObjectId } from "mongodb";
-import type * as AuthorTypes from "./author.types";
+import type { AuthorDocument, InitialMetadata, AuthorNameData, RawFields, AuthorData } from "./author.types";
 import * as dbUtils from "../../utils/dbUtils";
 import { toTitleCase, removeDisambiguationSuffix, isAllCaps, stringArraysEqual } from "../../utils/stringUtils";
-
-type AuthorMetadata = Omit<AuthorTypes.Metadata, "createdAt" | "updatedAt"> & {
-  createdAt?: Date;
-  updatedAt?: Date;
-};
-
-type ParsedNameData = {
-  name: string;
-  isOrganization?: boolean;
-  displayName: string;
-  firstName?: string;
-  lastName?: string;
-  middleNames?: string[];
-  suffixes?: string[];
-};
 
 /**
  * Usage:
@@ -40,8 +25,8 @@ type ParsedNameData = {
 
 export default class Author {
   private _id: ObjectId;
-  private metadata: AuthorMetadata;
-  private rawFields: AuthorTypes.RawFields;
+  private metadata: InitialMetadata;
+  private rawFields: RawFields;
 
   private name: string;
   private displayName: string;
@@ -112,7 +97,7 @@ export default class Author {
     };
   }
 
-  constructor(input: AuthorTypes.Input) {
+  constructor(input: AuthorData) {
     const { name, displayName, isOrganization, lastName, firstName, middleNames, suffixes } = this.parseName(input);
 
     this._id = new ObjectId();
@@ -165,7 +150,7 @@ export default class Author {
    *  If the name is a single word, it may still be a mononym, and will
    *  require manual review.
    */
-  private parseOrganization({ listingName, headingName, altName = "" }: AuthorTypes.RawFields): ParsedNameData {
+  private parseOrganization({ listingName, headingName, altName = "" }: RawFields): AuthorNameData {
     const lowercaseListing = listingName.normalize("NFC").toLocaleLowerCase().trim();
     const lowercaseHeading = headingName.normalize("NFC").toLocaleLowerCase().trim();
     const lowercaseAltName = altName.normalize("NFC").toLocaleLowerCase().trim();
@@ -199,7 +184,7 @@ export default class Author {
    *  as needing manual review. String comparisons are made after normalizing
    *  for unicode and using locale-sensitive case.
    */
-  private parseAuthorName({ listingName = "", headingName = "", altName = "" }: AuthorTypes.RawFields): ParsedNameData {
+  private parseAuthorName({ listingName = "", headingName = "", altName = "" }: RawFields): AuthorNameData {
     const listingNames = listingName.split(" ");
     const headingNames = headingName.split(" ");
     const headingFirstName = headingNames[0];
@@ -263,7 +248,7 @@ export default class Author {
     };
   }
 
-  private parseName(input: AuthorTypes.Input): ParsedNameData {
+  private parseName(input: AuthorData): AuthorNameData {
     const data = {
       listingName: removeDisambiguationSuffix(input.listingName),
       headingName: removeDisambiguationSuffix(input.headingName),
@@ -290,7 +275,7 @@ export default class Author {
     this.doolleePlayIds.push(...doolleeIds);
   }
 
-  public toDocument(): AuthorTypes.AuthorDocument {
+  public toDocument(): AuthorDocument {
     const now = new Date();
 
     const document: Document = {

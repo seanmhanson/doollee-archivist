@@ -2,7 +2,7 @@ import type { Page } from "playwright";
 
 import BaseBiography from "./__BaseBiography";
 
-import type { Input as AuthorData } from "#/db-types/author/author.types";
+import type { AuthorData } from "#/db-types/author/author.types";
 
 type ScrapedData = {
   bio: string;
