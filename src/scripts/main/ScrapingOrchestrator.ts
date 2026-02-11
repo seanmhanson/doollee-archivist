@@ -29,7 +29,7 @@ type AuthorListIndex = { [letter: string]: { [authorName: string]: string } };
 
 type Batch = { [authorName: string]: string };
 
-type AuthorData = { biographyData: AuthorData; worksData: PlayInput[]; url: string };
+type PageData = { biographyData: AuthorData; worksData: PlayInput[]; url: string };
 
 type AuthorReference = {
   originalAuthor: string;
@@ -479,7 +479,7 @@ class ScrapingOrchestrator {
    * @returns scraped author data including biography, works, and source URL
    * @throws {ScrapingError} If there is an error during scraping. Recoverable Error (skip current author)
    */
-  private async scrapeAuthor(): Promise<AuthorData> {
+  private async scrapeAuthor(): Promise<PageData> {
     const profileUrl = `${config.baseUrl}${this.currentStats.currentAuthorUrl}`.trim();
     let profilePage;
 
@@ -523,7 +523,7 @@ class ScrapingOrchestrator {
    * @param worksData the scraped list of works by the author
    * @param sourceUrl the URL of the author's profile page
    */
-  private createAuthor({ biographyData, worksData, url: sourceUrl }: AuthorData) {
+  private createAuthor({ biographyData, worksData, url: sourceUrl }: PageData) {
     if (!biographyData || !worksData || !sourceUrl) {
       const url = sourceUrl || this.state.profileSlug;
       this.incrementErrorStats("processErrors");
@@ -555,7 +555,7 @@ class ScrapingOrchestrator {
    * Creates a Play instance from the provided play data and updates the orchestrator state accordingly,
    * @param playData the scraped data of the play to be created
    */
-  private createPlay(playData: PlayData) {
+  private createPlay(playData: PlayInput) {
     if (!this.isPopulatedAuthorReference(this.state.authorReference)) {
       this.incrementErrorStats("processErrors");
       throw new PlayProcessingError("Author reference data is incomplete when creating play.");
