@@ -12,7 +12,7 @@ import ProgressDisplay from "#/scripts/main/ProgressDisplay";
 import ProfilePage from "#/page-models/ProfilePage";
 import { defaults } from "./ProgressDisplay.types";
 import type { AuthorDocument, AuthorData } from "#/db-types/author/author.types";
-import type { Input as PlayInput } from "#/db-types/play/play.types";
+import type { PlayDocument, PlayData } from "#/db-types/play/play.types";
 import type { GlobalStats, PlayStats, AuthorStats, CurrentStats, ErrorStats } from "./ProgressDisplay.types";
 import {
   ScrapingError,
@@ -22,14 +22,14 @@ import {
   WritePlayError,
   AuthorProcessingError,
 } from "./ScrapingError";
-import { PlayDocument } from "#/db-types/play/play.types";
+
 
 
 type AuthorListIndex = { [letter: string]: { [authorName: string]: string } };
 
 type Batch = { [authorName: string]: string };
 
-type PageData = { biographyData: AuthorData; worksData: PlayInput[]; url: string };
+type PageData = { biographyData: AuthorData; worksData: PlayData[]; url: string };
 
 type AuthorReference = {
   originalAuthor: string;
@@ -54,7 +54,7 @@ type State = {
   authorReference: AuthorReference | {};
   currentAuthor?: Author;
   currentPlay?: Play;
-  currentPlays: PlayInput[];
+  currentPlays: PlayData[];
   profileSlug: string;
   profileName: string;
 };
@@ -555,7 +555,7 @@ class ScrapingOrchestrator {
    * Creates a Play instance from the provided play data and updates the orchestrator state accordingly,
    * @param playData the scraped data of the play to be created
    */
-  private createPlay(playData: PlayInput) {
+  private createPlay(playData: PlayData) {
     if (!this.isPopulatedAuthorReference(this.state.authorReference)) {
       this.incrementErrorStats("processErrors");
       throw new PlayProcessingError("Author reference data is incomplete when creating play.");

@@ -1,7 +1,7 @@
 import type { Page } from "playwright";
 import BaseWorksList from "./__BaseWorksList";
 import * as stringUtils from "#/utils/stringUtils";
-import type { Input as PlayData } from "#/db-types/play/play.types";
+import type { PlayData } from "#/db-types/play/play.types";
 
 type UnparsedParts = {
   maleParts: string;
