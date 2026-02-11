@@ -11,8 +11,8 @@ import Play from "#/db-types/play/Play.class";
 import ProgressDisplay from "#/scripts/main/ProgressDisplay";
 import ProfilePage from "#/page-models/ProfilePage";
 import { defaults } from "./ProgressDisplay.types";
-import type { AuthorDocument, Input } from "#/db-types/author/author.types";
-import type { PlayData } from "#/db-types/play";
+import type { AuthorDocument, Input as AuthorInput } from "#/db-types/author/author.types";
+import type { Input as PlayInput } from "#/db-types/play/play.types";
 import type { GlobalStats, PlayStats, AuthorStats, CurrentStats, ErrorStats } from "./ProgressDisplay.types";
 import {
   ScrapingError,
@@ -29,7 +29,7 @@ type AuthorListIndex = { [letter: string]: { [authorName: string]: string } };
 
 type Batch = { [authorName: string]: string };
 
-type AuthorData = { biographyData: Input; worksData: PlayData[]; url: string };
+type AuthorData = { biographyData: AuthorInput; worksData: PlayInput[]; url: string };
 
 type AuthorReference = {
   originalAuthor: string;
@@ -54,7 +54,7 @@ type State = {
   authorReference: AuthorReference | {};
   currentAuthor?: Author;
   currentPlay?: Play;
-  currentPlays: PlayData[];
+  currentPlays: PlayInput[];
   profileSlug: string;
   profileName: string;
 };

@@ -5,8 +5,8 @@ import { AdaptationBiography, StandardBiography } from "./Biography";
 import { AdaptationList, PlaysList } from "./WorksList";
 
 import type { Input as AuthorData } from "#/db-types/author/author.types";
+import type { Input as PlayData } from "#/db-types/play/play.types";
 import type { BasePageArgs } from "../__BasePage";
-import type { PlayData } from "#/db-types/play";
 
 type UrlArgs = { slug: string; letter: string };
 

@@ -1,7 +1,10 @@
 import type { Page } from "playwright";
 import BaseWorksList from "./__BaseWorksList";
+import type { Input as PlayData } from "#/db-types/play/play.types";
 
 export default class PlaysList extends BaseWorksList {
+  protected data: PlayData[] = [];
+
   public constructor(page: Page) {
     super(page);
   }
