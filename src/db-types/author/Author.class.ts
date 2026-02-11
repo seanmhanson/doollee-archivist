@@ -42,7 +42,6 @@ export default class Author {
   private _id: ObjectId;
   private metadata: AuthorMetadata;
   private rawFields: AuthorTypes.RawFields;
-  private biography: AuthorTypes.Biography;
 
   private name: string;
   private displayName: string;
@@ -51,6 +50,17 @@ export default class Author {
   private firstName?: string;
   private middleNames?: string[];
   private suffixes?: string[];
+
+  private yearBorn?: string;
+  private yearDied?: string;
+  private nationality?: string;
+  private email?: string;
+  private website?: string;
+  private literaryAgent?: string;
+  private biography?: string;
+  private research?: string;
+  private address?: string;
+  private telephone?: string;
 
   private playIds: ObjectId[];
   private adaptationIds: ObjectId[];
@@ -76,6 +86,21 @@ export default class Author {
       firstName: this.firstName,
       middleNames: this.middleNames,
       suffixes: this.suffixes,
+    };
+  }
+
+  public get biographyData() {
+    return {
+      yearBorn: this.yearBorn,
+      yearDied: this.yearDied,
+      nationality: this.nationality,
+      email: this.email,
+      website: this.website,
+      literaryAgent: this.literaryAgent,
+      biography: this.biography,
+      research: this.research,
+      address: this.address,
+      telephone: this.telephone,
     };
   }
 
@@ -113,18 +138,16 @@ export default class Author {
     this.middleNames = middleNames;
     this.suffixes = suffixes;
 
-    this.biography = {
-      born: input.born,
-      died: input.died,
-      nationality: input.nationality,
-      email: input.email,
-      website: input.website,
-      literaryAgent: input.literaryAgent,
-      biography: input.biography,
-      research: input.research,
-      address: input.address,
-      telephone: input.telephone,
-    };
+    this.yearBorn = input.yearBorn;
+    this.yearDied = input.yearDied;
+    this.nationality = input.nationality;
+    this.email = input.email;
+    this.website = input.website;
+    this.literaryAgent = input.literaryAgent;
+    this.biography = input.biography;
+    this.research = input.research;
+    this.address = input.address;
+    this.telephone = input.telephone;
 
     this.playIds = [];
     this.adaptationIds = [];
@@ -176,7 +199,7 @@ export default class Author {
    *  as needing manual review. String comparisons are made after normalizing
    *  for unicode and using locale-sensitive case.
    */
-  private parseAuthorName({ listingName, headingName, altName = "" }: AuthorTypes.RawFields): ParsedNameData {
+  private parseAuthorName({ listingName = "", headingName = "", altName = "" }: AuthorTypes.RawFields): ParsedNameData {
     const listingNames = listingName.split(" ");
     const headingNames = headingName.split(" ");
     const headingFirstName = headingNames[0];
@@ -283,8 +306,8 @@ export default class Author {
       rawFields: this.rawFields,
       name: this.name,
       ...this.nameData,
+      ...this.biographyData,
       ...this.worksData,
-      biography: this.biography,
     };
 
     // prune undefined/empty fields and manually remove fields added by this class

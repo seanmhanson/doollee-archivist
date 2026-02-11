@@ -10,8 +10,8 @@ type ScrapedData = {
 };
 
 type ParseDates = {
-  born: string;
-  died: string;
+  yearBorn: string;
+  yearDied: string;
 };
 
 export default class StandardBiography extends BaseBiography {
@@ -24,7 +24,7 @@ export default class StandardBiography extends BaseBiography {
 
   protected async extractData(): Promise<void> {
     const { altName, name, dateString, innerHTML } = await this.scrapeData();
-    const { born, died } = this.parseDates(dateString);
+    const { yearBorn, yearDied } = this.parseDates(dateString);
     const biography = this.parseBiography(innerHTML);
     const labeledContent = this.parseLabeledContent(innerHTML);
 
@@ -33,8 +33,8 @@ export default class StandardBiography extends BaseBiography {
       ...labeledContent,
       name,
       altName,
-      born,
-      died,
+      yearBorn,
+      yearDied,
       biography,
     };
   }
@@ -77,8 +77,8 @@ export default class StandardBiography extends BaseBiography {
     const match = dateString.match(datePattern);
 
     return {
-      born: match?.[1]?.trim() || "",
-      died: match?.[2]?.trim() || "",
+      yearBorn: match?.[1]?.trim() || "",
+      yearDied: match?.[2]?.trim() || "",
     };
   }
 }

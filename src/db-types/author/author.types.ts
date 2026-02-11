@@ -16,10 +16,11 @@ export type AuthorDocument = {
     needsReviewReason?: string;
     needsReviewData?: Record<string, Record<string, string>>;
   };
+
   rawFields: {
-    listingName: string;
-    headingName: string;
-    altName: string;
+    listingName?: string;
+    headingName?: string;
+    altName?: string;
   };
 
   name: string;
@@ -29,19 +30,18 @@ export type AuthorDocument = {
   firstName?: string;
   middleNames?: string[];
   suffixes?: string[];
-  biography: {
-    // flatten
-    born?: string; // yearBorn
-    died?: string; // yearDied
-    nationality?: string;
-    email?: string;
-    website?: string;
-    literaryAgent?: string;
-    biography?: string;
-    research?: string;
-    address?: string;
-    telephone?: string;
-  };
+
+  yearBorn?: string;
+  yearDied?: string;
+  nationality?: string;
+  email?: string;
+  website?: string;
+  literaryAgent?: string;
+  biography?: string;
+  research?: string;
+  address?: string;
+  telephone?: string;
+
   playIds: ObjectId[];
   adaptationIds: ObjectId[];
   doolleePlayIds: string[];
@@ -49,13 +49,30 @@ export type AuthorDocument = {
 
 export type Metadata = AuthorDocument["metadata"];
 export type RawFields = AuthorDocument["rawFields"];
-export type Biography = AuthorDocument["biography"];
 
 /**
  * Input data from scraping an author page, before being transformed into
  * the Author document structure.
  */
 
-export type Input = RawFields &
-  Biography &
-  Pick<Metadata, "scrapedAt" | "sourceUrl"> & { name: AuthorDocument["name"] };
+type RequiredKeys = "name";
+type RequiredFields = Pick<AuthorDocument, RequiredKeys>;
+
+type RequiredMetadataKeys = "scrapedAt" | "sourceUrl";
+type RequiredMetadata = Pick<Metadata, RequiredMetadataKeys>;
+
+type OptionalKeys =
+  | "yearBorn"
+  | "yearDied"
+  | "nationality"
+  | "email"
+  | "website"
+  | "literaryAgent"
+  | "biography"
+  | "research"
+  | "address"
+  | "telephone";
+type OptionalFields = Partial<Pick<AuthorDocument, OptionalKeys>>;
+type OptionalRawFields = Partial<RawFields>;
+
+export type Input = RequiredFields & RequiredMetadata & OptionalFields & OptionalRawFields;
