@@ -10,8 +10,6 @@ type UnparsedParts = {
 };
 
 export default class AdaptationsList extends BaseWorksList {
-  protected data: ScrapedPlayData[] = [];
-
   public constructor(page: Page) {
     super(page);
   }
