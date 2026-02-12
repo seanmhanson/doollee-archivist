@@ -1,4 +1,6 @@
-import { firefox, Browser, Page } from "playwright";
+import { firefox } from "playwright";
+
+import type { Browser, Page } from "playwright";
 
 const httpHeaders = {
   "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",

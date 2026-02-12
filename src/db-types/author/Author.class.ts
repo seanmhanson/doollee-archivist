@@ -1,18 +1,19 @@
-import { Document, ObjectId } from "mongodb";
 import type {
   AuthorDocument,
   InitialMetadata,
   AuthorNameData,
   RawFields,
   AuthorData,
-} from "./author.types";
-import * as dbUtils from "../../utils/dbUtils";
+} from "#/db-types/author/author.types";
+import type { Document, ObjectId } from "mongodb";
+
+import * as dbUtils from "#/utils/dbUtils";
 import {
   toTitleCase,
   removeDisambiguationSuffix,
   isAllCaps,
   stringArraysEqual,
-} from "../../utils/stringUtils";
+} from "#/utils/stringUtils";
 
 /**
  * Usage:

@@ -1,8 +1,10 @@
 import { promises as fs } from "fs";
 import path from "path";
+
+import type { Collection, Document } from "mongodb";
+
 import DatabaseService from "#/core/DatabaseService";
 import { SetupError } from "#/scripts/main/ScrapingError";
-import { Collection, Document } from "mongodb";
 
 type Services = {
   dbService: DatabaseService;

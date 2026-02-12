@@ -1,20 +1,11 @@
-import {
-  MongoNetworkError,
-  MongoOperationTimeoutError,
-  ObjectId,
-} from "mongodb";
 import { promises as fs } from "fs";
 import path from "path";
 
-import config from "#/core/Config";
-import WebScraper from "#/core/WebScraper";
-import ModuleWriter from "#/core/ModuleWriter";
-import DatabaseService from "#/core/DatabaseService";
-import Author from "#/db-types/author/Author.class";
-import Play from "#/db-types/play/Play.class";
-import ProgressDisplay from "#/scripts/main/ProgressDisplay";
-import ProfilePage from "#/page-models/ProfilePage";
-import { defaults } from "./ProgressDisplay.types";
+import { MongoNetworkError, MongoOperationTimeoutError } from "mongodb";
+
+import type DatabaseService from "#/core/DatabaseService";
+import type ModuleWriter from "#/core/ModuleWriter";
+import type WebScraper from "#/core/WebScraper";
 import type {
   AuthorDocument,
   ScrapedAuthorData,
@@ -24,13 +15,21 @@ import type {
   PlayData,
   ScrapedPlayData,
 } from "#/db-types/play/play.types";
+import type ProgressDisplay from "#/scripts/main/ProgressDisplay";
 import type {
   GlobalStats,
   PlayStats,
   AuthorStats,
   CurrentStats,
   ErrorStats,
-} from "./ProgressDisplay.types";
+} from "#/scripts/main/ProgressDisplay.types";
+import type { ObjectId } from "mongodb";
+
+import config from "#/core/Config";
+import Author from "#/db-types/author/Author.class";
+import Play from "#/db-types/play/Play.class";
+import ProfilePage from "#/page-models/ProfilePage";
+import { defaults } from "#/scripts/main/ProgressDisplay.types";
 import {
   ScrapingError,
   PlayProcessingError,
@@ -38,7 +37,7 @@ import {
   WriteAuthorError,
   WritePlayError,
   AuthorProcessingError,
-} from "./ScrapingError";
+} from "#/scripts/main/ScrapingError";
 
 type AuthorListIndex = { [letter: string]: { [authorName: string]: string } };
 

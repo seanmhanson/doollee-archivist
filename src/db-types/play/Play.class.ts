@@ -1,12 +1,14 @@
 import { ObjectId } from "mongodb";
-import type { Document } from "mongodb";
-import {
+
+import type {
   InitialMetadata,
   RawFields,
   PlayDocument,
   PlayData,
-} from "./play.types";
-import * as dbUtils from "../../utils/dbUtils";
+} from "#/db-types/play/play.types";
+import type { Document } from "mongodb";
+
+import * as dbUtils from "#/utils/dbUtils";
 
 export default class Play {
   private _id: ObjectId;

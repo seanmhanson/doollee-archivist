@@ -1,9 +1,10 @@
-import { MongoClient, Db, Collection } from "mongodb";
-import type { CreateIndexesOptions } from "mongodb";
+import { MongoClient } from "mongodb";
+
+import type { Db, Collection, CreateIndexesOptions } from "mongodb";
 
 import config from "#/core/Config";
-import authorSchema from "../db-types/author/author.schema";
-import playSchema from "../db-types/play/play.schema";
+import authorSchema from "#/db-types/author/author.schema";
+import playSchema from "#/db-types/play/play.schema";
 
 const COLLECTIONS = [
   { name: "plays", $jsonSchema: playSchema },
