@@ -3,7 +3,6 @@ import BaseWorksList from "./__BaseWorksList";
 import type { ScrapedPlayData } from "#/db-types/play/play.types";
 
 export default class PlaysList extends BaseWorksList {
-  protected data: ScrapedPlayData[] = [];
 
   public constructor(page: Page) {
     super(page);
