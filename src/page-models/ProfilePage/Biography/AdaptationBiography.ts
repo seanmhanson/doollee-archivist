@@ -2,7 +2,7 @@ import type { Page } from "playwright";
 
 import BaseBiography from "./__BaseBiography";
 
-import type { Input as AuthorData } from "#/db-types/author/author.types";
+import type { ScrapedAuthorData } from "#/db-types/author/author.types";
 
 type ScrapedData = {
   bio: string;
@@ -14,21 +14,20 @@ type ScrapedData = {
 
 type ParsedNameAndDates = {
   name: string;
-  born: string;
-  died: string;
+  yearBorn: string;
+  yearDied: string;
 };
 
 export default class AdaptationBiography extends BaseBiography {
-  protected data: AuthorData;
+  protected data = {} as ScrapedAuthorData;
 
   public constructor(page: Page) {
     super(page);
-    this.data = {} as AuthorData;
   }
 
   protected async extractData(): Promise<void> {
     const { bio, dateString, imageSrc, imageAlt, innerHTML } = await this.scrapeData();
-    const { name, born, died } = this.parseAdaptationNameAndDates(dateString);
+    const { name, yearBorn, yearDied } = this.parseAdaptationNameAndDates(dateString);
     const hasNoImage = imageSrc === "" || imageSrc.includes("/Images-playwrights/Blank");
     const altName = hasNoImage ? "" : imageAlt;
 
@@ -40,8 +39,8 @@ export default class AdaptationBiography extends BaseBiography {
       ...labeledContents,
       name,
       altName,
-      born,
-      died,
+      yearBorn,
+      yearDied,
       biography,
     };
   }
@@ -76,8 +75,8 @@ export default class AdaptationBiography extends BaseBiography {
 
     return {
       name: match ? dateString.replace(datePattern, "").trim() : dateString,
-      born: match?.[1]?.trim() || "",
-      died: match?.[2]?.trim() || "",
+      yearBorn: match?.[1]?.trim() || "",
+      yearDied: match?.[2]?.trim() || "",
     };
   }
 }

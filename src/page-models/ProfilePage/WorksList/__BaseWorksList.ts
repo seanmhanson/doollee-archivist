@@ -1,6 +1,7 @@
 import type { Page } from "playwright";
 import * as stringUtils from "#/utils/stringUtils";
 import { extractISBN } from "#/utils/isbnUtils";
+import type { ScrapedPlayData } from "#/db-types/play/play.types";
 
 type ProductionDetails = { productionLocation: string; productionYear: string };
 type PublicationDetails = { publisher: string; publicationYear: string; isbn?: string };
@@ -12,7 +13,7 @@ export default abstract class BaseWorksList {
 
   protected page: Page;
 
-  protected data: any[];
+  protected data: ScrapedPlayData[] = [];
 
   public get worksData() {
     return this.data;

@@ -1,13 +1,13 @@
 import { ObjectId } from "mongodb";
 import type { Document } from "mongodb";
-import * as Plays from "./play.types";
+import { InitialMetadata, RawFields, PlayDocument, PlayData } from "./play.types";
 import * as dbUtils from "../../utils/dbUtils";
 
 export default class Play {
   private _id: ObjectId;
   private playId: string;
-  private metadata: Plays.InitialMetadata;
-  private rawFields: Plays.RawFields;
+  private metadata: InitialMetadata;
+  private rawFields: RawFields;
   private author: string;
   private authorId?: ObjectId;
   private genres?: string;
@@ -44,7 +44,7 @@ export default class Play {
     return !!this.adaptingAuthor;
   }
 
-  constructor(input: Plays.Input) {
+  constructor(input: PlayData) {
     this._id = new ObjectId();
     this.playId = input.playId;
 
@@ -87,7 +87,7 @@ export default class Play {
     this.partsCountTotal = input.partsCountTotal;
   }
 
-  toDocument(): Plays.PlayDocument {
+  toDocument(): PlayDocument {
     const now = new Date();
 
     const document: Document = {

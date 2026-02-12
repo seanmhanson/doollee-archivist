@@ -4,26 +4,24 @@ import type { ObjectId } from "mongodb";
  * Document structure for a Play in the database.
  */
 
-export type Metadata = {
-  createdAt: Date;
-  updatedAt: Date;
-  scrapedAt: Date;
-  sourceUrl: string;
-  needsReview?: boolean;
-};
-
-export type RawFields = {
-  altTitle?: string;
-  publishingInfo?: string;
-  productionInfo?: string;
-};
 
 export type PlayDocument = {
   _id: ObjectId;
   playId: string; // the id used by doollee, not our internal id
 
-  metadata: Metadata;
-  rawFields: RawFields;
+  metadata: {
+    createdAt: Date;
+    updatedAt: Date;
+    scrapedAt: Date;
+    sourceUrl: string;
+    needsReview?: boolean;
+  };
+
+  rawFields: {
+    altTitle?: string;
+    publishingInfo?: string;
+    productionInfo?: string;
+  };
 
   title: string;
   author: string;
@@ -49,12 +47,17 @@ export type PlayDocument = {
   partsTextOther?: string;
 };
 
-/** Selected types from PlayDocument to use when typing the values maintained by the Play class */
+/**
+ * Helper types for working with play data prior to writing to the database
+ * or for specific subsets of the PlayDocument fields.
+ */
 
-export type InitialMetadata = Omit<Metadata, "createdAt" | "updatedAt"> & {
-  createdAt?: Date;
-  updatedAt?: Date;
-};
+export type Metadata = PlayDocument["metadata"];
+export type RawFields = PlayDocument["rawFields"];
+
+type OptionalInitialMetadataKeys = "createdAt" | "updatedAt";
+export type InitialMetadata = Omit<Metadata, OptionalInitialMetadataKeys> &
+  Partial<Pick<Metadata, OptionalInitialMetadataKeys>>;
 
 
 /**
@@ -77,4 +80,5 @@ type RenamedFields = {
   originalAuthor?: PlayDocument["author"];
 };
 
-export type Input = RequiredFields & RequiredMetadata & OptionalCoreFields & OptionalRawFields & RenamedFields;
+export type ScrapedPlayData = RequiredFields & OptionalCoreFields & OptionalRawFields & RenamedFields;
+export type PlayData = RequiredFields & RequiredMetadata & OptionalCoreFields & OptionalRawFields & RenamedFields;

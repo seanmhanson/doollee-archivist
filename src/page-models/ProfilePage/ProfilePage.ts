@@ -4,15 +4,15 @@ import BasePage from "../__BasePage";
 import { AdaptationBiography, StandardBiography } from "./Biography";
 import { AdaptationList, PlaysList } from "./WorksList";
 
-import type { Input as AuthorData } from "#/db-types/author/author.types";
+import type { ScrapedAuthorData } from "#/db-types/author/author.types";
+import type { ScrapedPlayData } from "#/db-types/play/play.types";
 import type { BasePageArgs } from "../__BasePage";
-import type { PlayData } from "#/db-types/play";
 
 type UrlArgs = { slug: string; letter: string };
 
 type Data = {
-  biography: AuthorData;
-  works: PlayData[];
+  biography: ScrapedAuthorData;
+  works: ScrapedPlayData[];
 };
 
 type TemplateType = "standard" | "adaptations" | null;
@@ -30,15 +30,15 @@ export default class ProfilePage extends BasePage<UrlArgs, Data> {
   private worksListComponent: PlaysList | AdaptationList | null = null;
 
   public readonly data: Data = {
-    biography: {} as AuthorData,
+    biography: {} as ScrapedAuthorData,
     works: [],
   };
 
-  public get biographyData(): AuthorData {
+  public get biographyData(): ScrapedAuthorData {
     return this.data.biography;
   }
 
-  public get worksData(): PlayData[] {
+  public get worksData(): ScrapedPlayData[] {
     return this.data.works;
   }
 

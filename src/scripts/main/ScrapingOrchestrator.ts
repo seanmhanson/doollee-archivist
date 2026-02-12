@@ -11,8 +11,8 @@ import Play from "#/db-types/play/Play.class";
 import ProgressDisplay from "#/scripts/main/ProgressDisplay";
 import ProfilePage from "#/page-models/ProfilePage";
 import { defaults } from "./ProgressDisplay.types";
-import type { AuthorDocument, Input } from "#/db-types/author/author.types";
-import type { PlayData } from "#/db-types/play";
+import type { AuthorDocument, ScrapedAuthorData } from "#/db-types/author/author.types";
+import type { PlayDocument, PlayData, ScrapedPlayData } from "#/db-types/play/play.types";
 import type { GlobalStats, PlayStats, AuthorStats, CurrentStats, ErrorStats } from "./ProgressDisplay.types";
 import {
   ScrapingError,
@@ -22,14 +22,14 @@ import {
   WritePlayError,
   AuthorProcessingError,
 } from "./ScrapingError";
-import { PlayDocument } from "#/db-types/play/play.types";
+
 
 
 type AuthorListIndex = { [letter: string]: { [authorName: string]: string } };
 
 type Batch = { [authorName: string]: string };
 
-type AuthorData = { biographyData: Input; worksData: PlayData[]; url: string };
+type PageData = { biographyData: ScrapedAuthorData; worksData: ScrapedPlayData[]; url: string };
 
 type AuthorReference = {
   originalAuthor: string;
@@ -54,7 +54,7 @@ type State = {
   authorReference: AuthorReference | {};
   currentAuthor?: Author;
   currentPlay?: Play;
-  currentPlays: PlayData[];
+  currentPlays: ScrapedPlayData[];
   profileSlug: string;
   profileName: string;
 };
@@ -210,8 +210,6 @@ class ScrapingOrchestrator {
     const dir = path.dirname(this.reviewState.filePath);
     await fs.mkdir(dir, { recursive: true });
   }
-
-  // review before using
 
   private async addSkippedAuthor(reason: string = "other") {
     const profileName = this.state.profileName;
@@ -452,6 +450,9 @@ class ScrapingOrchestrator {
     this.state.profileSlug = profileSlug;
     this.state.authorReference = {} as AuthorReference;
     this.state.currentAuthor = undefined;
+    this.state.playAccumulator = [];
+    this.state.adaptationAccumulator = [];
+    this.state.doolleeIdAccumulator = [];
     this.currentStats.currentAuthorUrl = authorUrl;
     this.currentStats.playsByAuthorCount = 0;
     this.currentStats.currentAuthorIndex++;
@@ -478,7 +479,7 @@ class ScrapingOrchestrator {
    * @returns scraped author data including biography, works, and source URL
    * @throws {ScrapingError} If there is an error during scraping. Recoverable Error (skip current author)
    */
-  private async scrapeAuthor(): Promise<AuthorData> {
+  private async scrapeAuthor(): Promise<PageData> {
     const profileUrl = `${config.baseUrl}${this.currentStats.currentAuthorUrl}`.trim();
     let profilePage;
 
@@ -522,7 +523,7 @@ class ScrapingOrchestrator {
    * @param worksData the scraped list of works by the author
    * @param sourceUrl the URL of the author's profile page
    */
-  private createAuthor({ biographyData, worksData, url: sourceUrl }: AuthorData) {
+  private createAuthor({ biographyData, worksData, url: sourceUrl }: PageData) {
     if (!biographyData || !worksData || !sourceUrl) {
       const url = sourceUrl || this.state.profileSlug;
       this.incrementErrorStats("processErrors");
@@ -552,15 +553,18 @@ class ScrapingOrchestrator {
 
   /**
    * Creates a Play instance from the provided play data and updates the orchestrator state accordingly,
-   * @param playData the scraped data of the play to be created
+   * @param playData the scraped data of the play from works list (without metadata)
    */
-  private createPlay(playData: PlayData) {
+  private createPlay(playData: ScrapedPlayData) {
     if (!this.isPopulatedAuthorReference(this.state.authorReference)) {
       this.incrementErrorStats("processErrors");
       throw new PlayProcessingError("Author reference data is incomplete when creating play.");
     }
 
-    const play = new Play({ ...playData, ...this.state.authorReference });
+    // Combine scraped play data with author reference to create complete PlayData, deferring to the
+    // original author field in playData if present
+    const completePlayData: PlayData = { ...this.state.authorReference, ...playData };
+    const play = new Play(completePlayData);
     this.state.currentPlay = play;
 
     if (play.isAdaptation) {
@@ -592,6 +596,10 @@ class ScrapingOrchestrator {
       this.incrementErrorStats("processErrors");
       throw new AuthorProcessingError("Current author data is undefined at the time of writing");
     }
+
+    this.state.currentAuthor.addPlays(this.state.playAccumulator);
+    this.state.currentAuthor.addAdaptations(this.state.adaptationAccumulator);
+    this.state.currentAuthor.addDoolleeIds(this.state.doolleeIdAccumulator);
 
     const document = this.state.currentAuthor.toDocument();
     const authorId = this.state.currentAuthor.id;

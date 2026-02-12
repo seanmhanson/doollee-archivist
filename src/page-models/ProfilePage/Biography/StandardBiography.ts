@@ -1,6 +1,6 @@
 import type { Page } from "playwright";
 import BaseBiography from "./__BaseBiography";
-import type { Input as AuthorData } from "#/db-types/author/author.types";
+import type { ScrapedAuthorData } from "#/db-types/author/author.types";
 
 type ScrapedData = {
   altName: string;
@@ -10,21 +10,20 @@ type ScrapedData = {
 };
 
 type ParseDates = {
-  born: string;
-  died: string;
+  yearBorn: string;
+  yearDied: string;
 };
 
 export default class StandardBiography extends BaseBiography {
-  protected data: AuthorData;
+  protected data = {} as ScrapedAuthorData;
 
   public constructor(page: Page) {
     super(page);
-    this.data = {} as AuthorData;
   }
 
   protected async extractData(): Promise<void> {
     const { altName, name, dateString, innerHTML } = await this.scrapeData();
-    const { born, died } = this.parseDates(dateString);
+    const { yearBorn, yearDied } = this.parseDates(dateString);
     const biography = this.parseBiography(innerHTML);
     const labeledContent = this.parseLabeledContent(innerHTML);
 
@@ -33,8 +32,8 @@ export default class StandardBiography extends BaseBiography {
       ...labeledContent,
       name,
       altName,
-      born,
-      died,
+      yearBorn,
+      yearDied,
       biography,
     };
   }
@@ -59,7 +58,7 @@ export default class StandardBiography extends BaseBiography {
     const lastStrongPattern = new RegExp(
       `<strong[^>]*>.*?<\\/strong>` + // bold label
         `(?:\\s*<a[^>]*>.*?<\\/a>)?`, // optional anchor tag from literary agent
-      "g" // global match flag
+      "g", // global match flag
     );
     const labelMatches = [...sectionHTML.matchAll(lastStrongPattern)];
 
@@ -77,8 +76,8 @@ export default class StandardBiography extends BaseBiography {
     const match = dateString.match(datePattern);
 
     return {
-      born: match?.[1]?.trim() || "",
-      died: match?.[2]?.trim() || "",
+      yearBorn: match?.[1]?.trim() || "",
+      yearDied: match?.[2]?.trim() || "",
     };
   }
 }

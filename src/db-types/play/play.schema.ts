@@ -1,94 +1,57 @@
-import { BSONType, type Document } from "mongodb";
+import { type Document } from "mongodb";
 
 const PlaySchema: Document = {
   bsonType: "object",
-  required: ["_id", "metadata", "playId", "title"],
+  required: ["_id", "metadata", "playId", "title", "author"],
   additionalProperties: false,
   properties: {
     _id: { bsonType: "objectId" },
+    playId: { bsonType: "string" },
+
     metadata: {
       bsonType: "object",
-      required: ["scrapedAt", "sourceUrl"],
+      required: ["createdAt", "updatedAt", "scrapedAt", "sourceUrl"],
       additionalProperties: false,
       properties: {
+        createdAt: { bsonType: "date" },
+        updatedAt: { bsonType: "date" },
         scrapedAt: { bsonType: "date" },
         sourceUrl: { bsonType: "string" },
       },
     },
-    playId: { bsonType: "string" },
-    title: { bsonType: "string" },
+
     rawFields: {
-      bsonType: "object",
-      additionalProperties: true,
-    },
-    author: {
-      bsonType: "object",
-      additionalProperties: false,
-      properties: {
-        adaptingAuthor: { bsonType: "string" },
-        author: { bsonType: "string" },
-      },
-    },
-    publication: {
-      bsonType: "object",
-      additionalProperties: false,
-      properties: {
-        firstProduction: {
-          bsonType: "object",
-          additionalProperties: false,
-          properties: {
-            location: { bsonType: "string" },
-            year: { bsonType: "string" },
-          },
-        },
-        firstPublished: {
-          bsonType: "object",
-          additionalProperties: false,
-          properties: {
-            publisher: { bsonType: "string" },
-            year: { bsonType: "string" },
-          },
-        },
-        isbn: { bsonType: "string" },
-      },
-    },
-    details: {
       bsonType: "object",
       additionalProperties: false,
       properties: {
         altTitle: { bsonType: "string" },
-        synopsis: { bsonType: "string" },
-        notes: { bsonType: "string" },
-        organizations: { bsonType: "string" },
-        music: { bsonType: "string" },
-        genres: { bsonType: "string" },
-        partsText: {
-          bsonType: "object",
-          additionalProperties: false,
-          properties: {
-            counts: {
-              bsonType: "object",
-              additionalProperties: false,
-              properties: {
-                maleParts: { bsonType: "number" },
-                femaleParts: { bsonType: "number" },
-                otherParts: { bsonType: "number" },
-              },
-            },
-            text: {
-              bsonType: "object",
-              additionalProperties: false,
-              properties: {
-                maleParts: { bsonType: "string" },
-                femaleParts: { bsonType: "string" },
-                otherParts: { bsonType: "string" },
-              },
-            },
-          },
-        },
-        reference: { bsonType: "string" },
+        publishingInfo: { bsonType: "string" },
+        productionInfo: { bsonType: "string" },
       },
     },
+
+    title: { bsonType: "string" },
+    author: { bsonType: "string" },
+    authorId: { bsonType: "objectId" },
+    adaptingAuthor: { bsonType: "string" },
+    genres: { bsonType: "string" },
+    synopsis: { bsonType: "string" },
+    notes: { bsonType: "string" },
+    organizations: { bsonType: "string" },
+    music: { bsonType: "string" },
+    reference: { bsonType: "string" },
+    publisher: { bsonType: "string" },
+    publicationYear: { bsonType: "string" },
+    isbn: { bsonType: "string" },
+    productionLocation: { bsonType: "string" },
+    productionYear: { bsonType: "string" },
+    partsCountMale: { bsonType: "number" },
+    partsCountFemale: { bsonType: "number" },
+    partsCountOther: { bsonType: "number" },
+    partsCountTotal: { bsonType: "number" },
+    partsTextMale: { bsonType: "string" },
+    partsTextFemale: { bsonType: "string" },
+    partsTextOther: { bsonType: "string" },
   },
 };
 

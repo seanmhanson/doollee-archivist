@@ -1,7 +1,9 @@
 import type { Page } from "playwright";
 import BaseWorksList from "./__BaseWorksList";
+import type { ScrapedPlayData } from "#/db-types/play/play.types";
 
 export default class PlaysList extends BaseWorksList {
+
   public constructor(page: Page) {
     super(page);
   }
