@@ -15,6 +15,12 @@ const AuthorSchema: Document = {
         updatedAt: { bsonType: "date" },
         scrapedAt: { bsonType: "date" },
         sourceUrl: { bsonType: "string" },
+        needsReview: { bsonType: "bool" },
+        needsReviewReason: { bsonType: "string" },
+        needsReviewData: {
+          bsonType: "object",
+          additionalProperties: true,
+        },
       },
     },
     rawFields: {

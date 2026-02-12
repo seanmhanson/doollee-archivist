@@ -91,9 +91,9 @@ export default class Author {
 
   public get worksData() {
     return {
-      plays: this.playIds,
-      adaptations: this.adaptationIds,
-      doolleeIds: this.doolleePlayIds,
+      playIds: this.playIds,
+      adaptationIds: this.adaptationIds,
+      doolleePlayIds: this.doolleePlayIds,
     };
   }
 
