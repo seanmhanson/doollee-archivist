@@ -56,9 +56,9 @@ export type Metadata = AuthorDocument["metadata"];
 
 export type RawFields = AuthorDocument["rawFields"];
 
-type optionalInitialMetadataKeys = "createdAt" | "updatedAt";
-export type InitialMetadata = Omit<Metadata, optionalInitialMetadataKeys> &
-  Partial<Pick<Metadata, optionalInitialMetadataKeys>>;
+type OptionalInitialMetadataKeys = "createdAt" | "updatedAt";
+export type InitialMetadata = Omit<Metadata, OptionalInitialMetadataKeys> &
+  Partial<Pick<Metadata, OptionalInitialMetadataKeys>>;
 
 type OptionalNameKeys = "isOrganization" | "firstName" | "lastName" | "middleNames" | "suffixes";
 type RequiredNameKeys = "name" | "displayName";

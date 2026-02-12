@@ -55,9 +55,9 @@ export type PlayDocument = {
 export type Metadata = PlayDocument["metadata"];
 export type RawFields = PlayDocument["rawFields"];
 
-type optionalInitialMetadataKeys = "createdAt" | "updatedAt";
-export type InitialMetadata = Omit<Metadata, optionalInitialMetadataKeys> &
-  Partial<Pick<Metadata, optionalInitialMetadataKeys>>;
+type OptionalInitialMetadataKeys = "createdAt" | "updatedAt";
+export type InitialMetadata = Omit<Metadata, OptionalInitialMetadataKeys> &
+  Partial<Pick<Metadata, OptionalInitialMetadataKeys>>;
 
 
 /**
