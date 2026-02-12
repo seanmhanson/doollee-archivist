@@ -1,0 +1,8 @@
+node_modules
+analysis
+docs
+output
+input
+src/input
+*.json
+*.md
