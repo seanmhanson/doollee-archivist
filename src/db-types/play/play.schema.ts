@@ -2,7 +2,7 @@ import { type Document } from "mongodb";
 
 const PlaySchema: Document = {
   bsonType: "object",
-  required: ["_id", "metadata", "rawFields", "playId", "title", "author"],
+  required: ["_id", "metadata", "playId", "title", "author"],
   additionalProperties: false,
   properties: {
     _id: { bsonType: "objectId" },
