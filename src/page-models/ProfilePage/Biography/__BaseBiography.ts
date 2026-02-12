@@ -3,17 +3,18 @@ import type { Page } from "playwright";
 import type { ScrapedAuthorData } from "#/db-types/author/author.types";
 
 export default abstract class BaseBiography {
-  protected static readonly labels = [
-    "Nationality",
-    "Email",
-    "Website",
-    "Literary Agent",
-    "Research",
-    "Address",
-    "Telephone",
-  ].join("|");
+  private static readonly labelMap: Record<string, keyof ScrapedAuthorData> = {
+    nationality: "nationality",
+    email: "email",
+    website: "website",
+    "literary agent": "literaryAgent",
+    research: "research",
+    address: "address",
+    telephone: "telephone",
+  };
+  private static readonly labelString = Object.keys(BaseBiography.labelMap).join("|");
 
-  protected static readonly placeholders = [
+  private static readonly placeholders = [
     "including biography, theatres, agent, synopses, cast sizes, production and published dates",
     "please send me a biography and information about this playwright",
     "i do not have a biography of this playwright",
@@ -50,7 +51,7 @@ export default abstract class BaseBiography {
      * whitespace and any optional anchor tags, capturing the text content that follows
      */
     const labelRegex = new RegExp(
-      `<strong>(${BaseBiography.labels})[^<]*</strong>` + // any of the bold label text
+      `<strong>(${BaseBiography.labelString})[^<]*</strong>` + // any of the bold label text
         `\\s*` + // optional whitespace
         `(?:<a[^>]*>)?` + // optional opening anchor tag
         `([^<]+)` + // capture text content (greedy now)
@@ -62,7 +63,14 @@ export default abstract class BaseBiography {
     const results: Partial<Record<keyof ScrapedAuthorData, string>> = {};
 
     for (const match of matches) {
-      const key = match[1].toLowerCase() as keyof ScrapedAuthorData;
+      const key = BaseBiography.labelMap[match[1].toLowerCase()];
+
+      // the current regex should guarantee this exists, provided case-insensitive matching,
+      // but we check defensively in case this should change
+      if (!key) {
+        continue;
+      }
+
       const rawValue = match[2] || "";
       const trimmedValue = rawValue
         .replace(/&nbsp;/g, "")
