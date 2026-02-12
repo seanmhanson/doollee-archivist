@@ -21,8 +21,16 @@ export default [
   // Base configs
   js.configs.recommended,
   nodePlugin.configs["flat/recommended-script"],
-  ...tseslint.configs.recommendedTypeChecked,
-  ...tseslint.configs.stylisticTypeChecked,
+
+  // TypeScript type-checked configs
+  ...tseslint.configs.recommendedTypeChecked.map((config) => ({
+    ...config,
+    files: ["src/**/*.ts"],
+  })),
+  ...tseslint.configs.stylisticTypeChecked.map((config) => ({
+    ...config,
+    files: ["src/**/*.ts"],
+  })),
 
   // Main configuration
   {
@@ -30,7 +38,7 @@ export default [
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        project: "./tsconfig.json",
+        projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
     },
