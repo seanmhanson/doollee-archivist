@@ -1,6 +1,6 @@
 import type { Page } from "playwright";
 
-import type { AuthorData } from "#/db-types/author/author.types";
+import type { ScrapedAuthorData } from "#/db-types/author/author.types";
 
 export default abstract class BaseBiography {
   protected static readonly labels = [
@@ -22,9 +22,9 @@ export default abstract class BaseBiography {
 
   protected page: Page;
 
-  protected abstract data: AuthorData;
+  protected abstract data: ScrapedAuthorData;
 
-  public get biographyData(): AuthorData {
+  public get biographyData(): ScrapedAuthorData {
     return this.data;
   }
 
@@ -44,7 +44,7 @@ export default abstract class BaseBiography {
 
   protected abstract extractData(): Promise<void>;
 
-  protected parseLabeledContent(sectionHTML: string): Partial<AuthorData> {
+  protected parseLabeledContent(sectionHTML: string): Partial<ScrapedAuthorData> {
     /**
      * Construct a case-insensitive regex that will find bolded labels, then omit
      * whitespace and any optional anchor tags, capturing the text content that follows
@@ -59,10 +59,10 @@ export default abstract class BaseBiography {
     );
 
     const matches = sectionHTML.matchAll(labelRegex);
-    const results: Partial<Record<keyof AuthorData, string>> = {};
+    const results: Partial<Record<keyof ScrapedAuthorData, string>> = {};
 
     for (const match of matches) {
-      const key = match[1].toLowerCase() as keyof AuthorData;
+      const key = match[1].toLowerCase() as keyof ScrapedAuthorData;
       const rawValue = match[2] || "";
       const trimmedValue = rawValue
         .replace(/&nbsp;/g, "")
@@ -82,7 +82,7 @@ export default abstract class BaseBiography {
       results[key] = normalizedValue || "";
     }
 
-    return results as Partial<AuthorData>;
+    return results as Partial<ScrapedAuthorData>;
   }
 
   protected normalizeBiography(bio: string): string {

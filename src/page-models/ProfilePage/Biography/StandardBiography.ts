@@ -1,6 +1,6 @@
 import type { Page } from "playwright";
 import BaseBiography from "./__BaseBiography";
-import type { AuthorData } from "#/db-types/author/author.types";
+import type { ScrapedAuthorData } from "#/db-types/author/author.types";
 
 type ScrapedData = {
   altName: string;
@@ -15,11 +15,10 @@ type ParseDates = {
 };
 
 export default class StandardBiography extends BaseBiography {
-  protected data: AuthorData;
+  protected data = {} as ScrapedAuthorData;
 
   public constructor(page: Page) {
     super(page);
-    this.data = {} as AuthorData;
   }
 
   protected async extractData(): Promise<void> {

@@ -89,4 +89,5 @@ type OptionalKeys =
 type OptionalFields = Partial<Pick<AuthorDocument, OptionalKeys>>;
 type OptionalRawFields = Partial<RawFields>;
 
+export type ScrapedAuthorData = RequiredFields & OptionalFields & OptionalRawFields;
 export type AuthorData = RequiredFields & RequiredMetadata & OptionalFields & OptionalRawFields;

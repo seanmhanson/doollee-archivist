@@ -11,7 +11,7 @@ import Play from "#/db-types/play/Play.class";
 import ProgressDisplay from "#/scripts/main/ProgressDisplay";
 import ProfilePage from "#/page-models/ProfilePage";
 import { defaults } from "./ProgressDisplay.types";
-import type { AuthorDocument, AuthorData } from "#/db-types/author/author.types";
+import type { AuthorDocument, ScrapedAuthorData } from "#/db-types/author/author.types";
 import type { PlayDocument, PlayData, ScrapedPlayData } from "#/db-types/play/play.types";
 import type { GlobalStats, PlayStats, AuthorStats, CurrentStats, ErrorStats } from "./ProgressDisplay.types";
 import {
@@ -29,7 +29,7 @@ type AuthorListIndex = { [letter: string]: { [authorName: string]: string } };
 
 type Batch = { [authorName: string]: string };
 
-type PageData = { biographyData: AuthorData; worksData: ScrapedPlayData[]; url: string };
+type PageData = { biographyData: ScrapedAuthorData; worksData: ScrapedPlayData[]; url: string };
 
 type AuthorReference = {
   originalAuthor: string;
@@ -561,8 +561,9 @@ class ScrapingOrchestrator {
       throw new PlayProcessingError("Author reference data is incomplete when creating play.");
     }
 
-    // Combine scraped play data with author reference to create complete PlayData
-    const completePlayData: PlayData = { ...playData, ...this.state.authorReference };
+    // Combine scraped play data with author reference to create complete PlayData, deferring to the
+    // original author field in playData if present
+    const completePlayData: PlayData = { ...this.state.authorReference, ...playData };
     const play = new Play(completePlayData);
     this.state.currentPlay = play;
 
