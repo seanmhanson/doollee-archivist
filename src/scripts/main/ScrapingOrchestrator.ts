@@ -12,7 +12,7 @@ import ProgressDisplay from "#/scripts/main/ProgressDisplay";
 import ProfilePage from "#/page-models/ProfilePage";
 import { defaults } from "./ProgressDisplay.types";
 import type { AuthorDocument, AuthorData } from "#/db-types/author/author.types";
-import type { PlayDocument, PlayData } from "#/db-types/play/play.types";
+import type { PlayDocument, PlayData, ScrapedPlayData } from "#/db-types/play/play.types";
 import type { GlobalStats, PlayStats, AuthorStats, CurrentStats, ErrorStats } from "./ProgressDisplay.types";
 import {
   ScrapingError,
@@ -29,7 +29,7 @@ type AuthorListIndex = { [letter: string]: { [authorName: string]: string } };
 
 type Batch = { [authorName: string]: string };
 
-type PageData = { biographyData: AuthorData; worksData: PlayData[]; url: string };
+type PageData = { biographyData: AuthorData; worksData: ScrapedPlayData[]; url: string };
 
 type AuthorReference = {
   originalAuthor: string;
@@ -54,7 +54,7 @@ type State = {
   authorReference: AuthorReference | {};
   currentAuthor?: Author;
   currentPlay?: Play;
-  currentPlays: PlayData[];
+  currentPlays: ScrapedPlayData[];
   profileSlug: string;
   profileName: string;
 };
@@ -553,15 +553,17 @@ class ScrapingOrchestrator {
 
   /**
    * Creates a Play instance from the provided play data and updates the orchestrator state accordingly,
-   * @param playData the scraped data of the play to be created
+   * @param playData the scraped data of the play from works list (without metadata)
    */
-  private createPlay(playData: PlayData) {
+  private createPlay(playData: ScrapedPlayData) {
     if (!this.isPopulatedAuthorReference(this.state.authorReference)) {
       this.incrementErrorStats("processErrors");
       throw new PlayProcessingError("Author reference data is incomplete when creating play.");
     }
 
-    const play = new Play({ ...playData, ...this.state.authorReference });
+    // Combine scraped play data with author reference to create complete PlayData
+    const completePlayData: PlayData = { ...playData, ...this.state.authorReference };
+    const play = new Play(completePlayData);
     this.state.currentPlay = play;
 
     if (play.isAdaptation) {

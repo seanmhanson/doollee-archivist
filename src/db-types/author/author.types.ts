@@ -25,7 +25,7 @@ export type AuthorDocument = {
 
   name: string;
   displayName: string;
-  isOrganization: boolean;
+  isOrganization?: boolean;
   lastName?: string;
   firstName?: string;
   middleNames?: string[];
@@ -48,7 +48,7 @@ export type AuthorDocument = {
 };
 
 /**
- * Helper types for workign with author data prior to writing to the database
+ * Helper types for working with author data prior to writing to the database
  * or for specific subsets of the AuthorDocument fields.
  */
 

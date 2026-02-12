@@ -1,7 +1,7 @@
 import type { Page } from "playwright";
 import BaseWorksList from "./__BaseWorksList";
 import * as stringUtils from "#/utils/stringUtils";
-import type { PlayData } from "#/db-types/play/play.types";
+import type { ScrapedPlayData } from "#/db-types/play/play.types";
 
 type UnparsedParts = {
   maleParts: string;
@@ -10,7 +10,7 @@ type UnparsedParts = {
 };
 
 export default class AdaptationsList extends BaseWorksList {
-  protected data: PlayData[] = [];
+  protected data: ScrapedPlayData[] = [];
 
   public constructor(page: Page) {
     super(page);

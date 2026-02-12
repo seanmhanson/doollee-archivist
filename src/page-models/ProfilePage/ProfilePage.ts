@@ -5,14 +5,14 @@ import { AdaptationBiography, StandardBiography } from "./Biography";
 import { AdaptationList, PlaysList } from "./WorksList";
 
 import type { AuthorData } from "#/db-types/author/author.types";
-import type { PlayData } from "#/db-types/play/play.types";
+import type { ScrapedPlayData } from "#/db-types/play/play.types";
 import type { BasePageArgs } from "../__BasePage";
 
 type UrlArgs = { slug: string; letter: string };
 
 type Data = {
   biography: AuthorData;
-  works: PlayData[];
+  works: ScrapedPlayData[];
 };
 
 type TemplateType = "standard" | "adaptations" | null;
@@ -38,7 +38,7 @@ export default class ProfilePage extends BasePage<UrlArgs, Data> {
     return this.data.biography;
   }
 
-  public get worksData(): PlayData[] {
+  public get worksData(): ScrapedPlayData[] {
     return this.data.works;
   }
 

@@ -28,7 +28,7 @@ const AuthorSchema: Document = {
     },
     name: { bsonType: "string" },
     displayName: { bsonType: "string" },
-    isOrganization: { bsonType: "bool" }, // default to false if not provided
+    isOrganization: { bsonType: "bool" },
     lastName: { bsonType: "string" },
     firstName: { bsonType: "string" },
     middleNames: { bsonType: "array", items: { bsonType: "string" } },

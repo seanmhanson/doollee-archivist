@@ -80,4 +80,5 @@ type RenamedFields = {
   originalAuthor?: PlayDocument["author"];
 };
 
+export type ScrapedPlayData = RequiredFields & OptionalCoreFields & OptionalRawFields & RenamedFields;
 export type PlayData = RequiredFields & RequiredMetadata & OptionalCoreFields & OptionalRawFields & RenamedFields;

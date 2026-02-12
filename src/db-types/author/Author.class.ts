@@ -30,7 +30,7 @@ export default class Author {
 
   private name: string;
   private displayName: string;
-  private isOrganization: boolean;
+  private isOrganization?: boolean;
   private lastName?: string;
   private firstName?: string;
   private middleNames?: string[];
@@ -150,7 +150,7 @@ export default class Author {
    *  If the name is a single word, it may still be a mononym, and will
    *  require manual review.
    */
-  private parseOrganization({ listingName, headingName, altName = "" }: RawFields): AuthorNameData {
+  private parseOrganization({ listingName = "", headingName = "", altName = "" }: RawFields): AuthorNameData {
     const lowercaseListing = listingName.normalize("NFC").toLocaleLowerCase().trim();
     const lowercaseHeading = headingName.normalize("NFC").toLocaleLowerCase().trim();
     const lowercaseAltName = altName.normalize("NFC").toLocaleLowerCase().trim();
