@@ -54,7 +54,16 @@ async function testRateLimit() {
   console.log("🔍 Testing rate limits for doollee.com...\n");
   console.log("🦊 Launching Firefox with SSL error handling...");
 
-  const { headless, testUrls, delays, firefoxUserPrefs, contextOptions, httpHeaders, viewport, slowMo } = testConfig;
+  const {
+    headless,
+    testUrls,
+    delays,
+    firefoxUserPrefs,
+    contextOptions,
+    httpHeaders,
+    viewport,
+    slowMo,
+  } = testConfig;
   const browser = await firefox.launch({ headless, slowMo, firefoxUserPrefs });
 
   const context = await browser.newContext(contextOptions);
@@ -95,9 +104,12 @@ async function testRateLimit() {
         metrics.push(metric);
 
         const statusIcon = status === 200 ? "✅" : "❌";
-        const timeIcon = responseTime > 10000 ? "🐌" : responseTime > 5000 ? "⏳" : "⚡";
+        const timeIcon =
+          responseTime > 10000 ? "🐌" : responseTime > 5000 ? "⏳" : "⚡";
 
-        console.log(`${statusIcon} ${timeIcon} ${status} - ${responseTime}ms - ${url.split("/").pop()}`);
+        console.log(
+          `${statusIcon} ${timeIcon} ${status} - ${responseTime}ms - ${url.split("/").pop()}`,
+        );
 
         // Check for signs of rate limiting or server stress
         if (status === 429) {
@@ -124,15 +136,23 @@ async function testRateLimit() {
     }
 
     // Analyze this delay's performance
-    const delayMetrics = metrics.filter((m) => m.delay === delay && m.status === 200);
+    const delayMetrics = metrics.filter(
+      (m) => m.delay === delay && m.status === 200,
+    );
     if (delayMetrics.length > 0) {
-      const average = delayMetrics.reduce((sum, m) => sum + m.responseTime, 0) / delayMetrics.length;
+      const average =
+        delayMetrics.reduce((sum, m) => sum + m.responseTime, 0) /
+        delayMetrics.length;
       const max = Math.max(...delayMetrics.map((m) => m.responseTime));
       const min = Math.min(...delayMetrics.map((m) => m.responseTime));
-      const median = delayMetrics.sort((a, b) => a.responseTime - b.responseTime)[Math.floor(delayMetrics.length / 2)]
-        .responseTime;
+      const median = delayMetrics.sort(
+        (a, b) => a.responseTime - b.responseTime,
+      )[Math.floor(delayMetrics.length / 2)].responseTime;
       const variance =
-        delayMetrics.reduce((sum, m) => sum + Math.pow(m.responseTime - average, 2), 0) / delayMetrics.length;
+        delayMetrics.reduce(
+          (sum, m) => sum + Math.pow(m.responseTime - average, 2),
+          0,
+        ) / delayMetrics.length;
       const stdDev = Math.sqrt(variance);
 
       console.log("📈 Statistics for this delay:");
@@ -180,10 +200,17 @@ async function testRateLimit() {
       const delayMetrics = successfulMetrics.filter((m) => m.delay === delay);
       if (delayMetrics.length === 0) return null;
 
-      const avgTime = delayMetrics.reduce((sum, m) => sum + m.responseTime, 0) / delayMetrics.length;
+      const avgTime =
+        delayMetrics.reduce((sum, m) => sum + m.responseTime, 0) /
+        delayMetrics.length;
       const successRate = (delayMetrics.length / testUrls.length) * 100;
 
-      return { delay, avgTime: Math.round(avgTime), successRate: Math.round(successRate), count: delayMetrics.length };
+      return {
+        delay,
+        avgTime: Math.round(avgTime),
+        successRate: Math.round(successRate),
+        count: delayMetrics.length,
+      };
     })
     .filter((group) => group !== null);
 
@@ -191,25 +218,37 @@ async function testRateLimit() {
   console.log("─".repeat(50));
 
   delayGroups.forEach((group: DelayGroup) => {
-    const timeIcon = group.avgTime > 5000 ? "🐌" : group.avgTime > 2000 ? "⏳" : "⚡";
-    const successIcon = group.successRate === 100 ? "✅" : group.successRate > 75 ? "⚠️" : "❌";
+    const timeIcon =
+      group.avgTime > 5000 ? "🐌" : group.avgTime > 2000 ? "⏳" : "⚡";
+    const successIcon =
+      group.successRate === 100 ? "✅" : group.successRate > 75 ? "⚠️" : "❌";
     console.log(
-      `${group.delay}ms\t\t${timeIcon} ${group.avgTime}ms\t\t${successIcon} ${group.successRate}%\t\t${group.count}/${testUrls.length}`
+      `${group.delay}ms\t\t${timeIcon} ${group.avgTime}ms\t\t${successIcon} ${group.successRate}%\t\t${group.count}/${testUrls.length}`,
     );
   });
 
   // Recommendations
   console.log("\n💡 RECOMMENDATIONS:");
-  const bestDelay = delayGroups.filter((g) => g.successRate === 100).sort((a, b) => a.avgTime - b.avgTime)[0];
+  const bestDelay = delayGroups
+    .filter((g) => g.successRate === 100)
+    .sort((a, b) => a.avgTime - b.avgTime)[0];
 
   if (bestDelay) {
-    console.log(`✅ Recommended delay: ${bestDelay.delay}ms (100% success, ${bestDelay.avgTime}ms avg)`);
-    console.log(`⚡ For 55,000 pages: ~${Math.round((55000 * bestDelay.delay) / 1000 / 60 / 60)} hours total`);
+    console.log(
+      `✅ Recommended delay: ${bestDelay.delay}ms (100% success, ${bestDelay.avgTime}ms avg)`,
+    );
+    console.log(
+      `⚡ For 55,000 pages: ~${Math.round((55000 * bestDelay.delay) / 1000 / 60 / 60)} hours total`,
+    );
   } else {
-    console.log("⚠️  All delays showed issues - use 3000ms+ and monitor carefully");
+    console.log(
+      "⚠️  All delays showed issues - use 3000ms+ and monitor carefully",
+    );
   }
 
-  console.log("\n🏛️  Remember: This is cultural preservation - be respectful to the server!");
+  console.log(
+    "\n🏛️  Remember: This is cultural preservation - be respectful to the server!",
+  );
 }
 
 // Run the test

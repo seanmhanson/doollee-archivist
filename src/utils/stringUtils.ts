@@ -17,7 +17,10 @@ type SearchAndRemoveResult = [matchedString: string, updatedString: string];
  * the updated string removes the full match (with optional values)
  * Ex: "(2020)" returns "2020" and removes "(2020)" from the string
  */
-export function searchForAndRemove(input: string, patterns: RegExp[]): SearchAndRemoveResult {
+export function searchForAndRemove(
+  input: string,
+  patterns: RegExp[],
+): SearchAndRemoveResult {
   for (const pattern of patterns) {
     const match = input.match(pattern);
     if (match) {
@@ -27,7 +30,9 @@ export function searchForAndRemove(input: string, patterns: RegExp[]): SearchAnd
   return ["", input];
 }
 
-export function checkScrapedString(scrapedString: string | null | undefined): string {
+export function checkScrapedString(
+  scrapedString: string | null | undefined,
+): string {
   // null-check values:
   if (scrapedString === null || scrapedString === undefined) return "";
 

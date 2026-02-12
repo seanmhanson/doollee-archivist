@@ -1,4 +1,8 @@
-import { MongoNetworkError, MongoOperationTimeoutError, ObjectId } from "mongodb";
+import {
+  MongoNetworkError,
+  MongoOperationTimeoutError,
+  ObjectId,
+} from "mongodb";
 import { promises as fs } from "fs";
 import path from "path";
 
@@ -11,9 +15,22 @@ import Play from "#/db-types/play/Play.class";
 import ProgressDisplay from "#/scripts/main/ProgressDisplay";
 import ProfilePage from "#/page-models/ProfilePage";
 import { defaults } from "./ProgressDisplay.types";
-import type { AuthorDocument, ScrapedAuthorData } from "#/db-types/author/author.types";
-import type { PlayDocument, PlayData, ScrapedPlayData } from "#/db-types/play/play.types";
-import type { GlobalStats, PlayStats, AuthorStats, CurrentStats, ErrorStats } from "./ProgressDisplay.types";
+import type {
+  AuthorDocument,
+  ScrapedAuthorData,
+} from "#/db-types/author/author.types";
+import type {
+  PlayDocument,
+  PlayData,
+  ScrapedPlayData,
+} from "#/db-types/play/play.types";
+import type {
+  GlobalStats,
+  PlayStats,
+  AuthorStats,
+  CurrentStats,
+  ErrorStats,
+} from "./ProgressDisplay.types";
 import {
   ScrapingError,
   PlayProcessingError,
@@ -23,13 +40,15 @@ import {
   AuthorProcessingError,
 } from "./ScrapingError";
 
-
-
 type AuthorListIndex = { [letter: string]: { [authorName: string]: string } };
 
 type Batch = { [authorName: string]: string };
 
-type PageData = { biographyData: ScrapedAuthorData; worksData: ScrapedPlayData[]; url: string };
+type PageData = {
+  biographyData: ScrapedAuthorData;
+  worksData: ScrapedPlayData[];
+  url: string;
+};
 
 type AuthorReference = {
   originalAuthor: string;
@@ -205,7 +224,9 @@ class ScrapingOrchestrator {
   }
 
   private async setupReviewWriter() {
-    const timestamp = this.globalStats.startTime?.toISOString().replace(/[:.-]/g, "_");
+    const timestamp = this.globalStats.startTime
+      ?.toISOString()
+      .replace(/[:.-]/g, "_");
     this.reviewState.filePath = `output/review-queue/review-${timestamp}.json`;
     const dir = path.dirname(this.reviewState.filePath);
     await fs.mkdir(dir, { recursive: true });
@@ -235,7 +256,8 @@ class ScrapingOrchestrator {
     const flaggedAuthor: FlaggedAuthor = {
       profileName: this.state.profileName,
       filename: `${this.state.profileSlug}.json`,
-      url: document.metadata.sourceUrl || this.currentStats.currentAuthorUrl || "",
+      url:
+        document.metadata.sourceUrl || this.currentStats.currentAuthorUrl || "",
       id: document._id?.toHexString() || "",
       name: document.name || "",
       reason: document.metadata.needsReviewReason || "(unspecified reason)",
@@ -313,7 +335,10 @@ class ScrapingOrchestrator {
     };
 
     try {
-      await fs.writeFile(this.reviewState.filePath, JSON.stringify(reviewData, null, 2));
+      await fs.writeFile(
+        this.reviewState.filePath,
+        JSON.stringify(reviewData, null, 2),
+      );
     } catch (error) {
       this.reviewState.hasError = true;
     }
@@ -348,12 +373,17 @@ class ScrapingOrchestrator {
       const imported = await import(`#/input/authors/index`);
       authorListIndex = imported.default;
     } catch (error) {
-      throw new SetupError(`Failed to load author list index from path: #/input/authors/index`, error);
+      throw new SetupError(
+        `Failed to load author list index from path: #/input/authors/index`,
+        error,
+      );
     }
 
     try {
       letterLoop: for (const letter of letters) {
-        const authorEntriesByLetter = Object.entries(authorListIndex[letter] || {});
+        const authorEntriesByLetter = Object.entries(
+          authorListIndex[letter] || {},
+        );
         for (let i = 0; i < authorEntriesByLetter.length; i += batchSize) {
           if (maxBatches > 0 && this.state.batches.length >= maxBatches) {
             break letterLoop; // exit both loops if we hit the provided batch limit
@@ -365,7 +395,10 @@ class ScrapingOrchestrator {
         }
       }
     } catch (error) {
-      throw new SetupError(`Error preparing batches from author list data`, error);
+      throw new SetupError(
+        `Error preparing batches from author list data`,
+        error,
+      );
     }
   }
 
@@ -480,11 +513,14 @@ class ScrapingOrchestrator {
    * @throws {ScrapingError} If there is an error during scraping. Recoverable Error (skip current author)
    */
   private async scrapeAuthor(): Promise<PageData> {
-    const profileUrl = `${config.baseUrl}${this.currentStats.currentAuthorUrl}`.trim();
+    const profileUrl =
+      `${config.baseUrl}${this.currentStats.currentAuthorUrl}`.trim();
     let profilePage;
 
     try {
-      profilePage = new ProfilePage(this.services.scraper.getPage(), { url: profileUrl });
+      profilePage = new ProfilePage(this.services.scraper.getPage(), {
+        url: profileUrl,
+      });
     } catch (initializationError) {
       this.incrementErrorStats("otherErrors");
       throw new ScrapingError(
@@ -527,7 +563,9 @@ class ScrapingOrchestrator {
     if (!biographyData || !worksData || !sourceUrl) {
       const url = sourceUrl || this.state.profileSlug;
       this.incrementErrorStats("processErrors");
-      throw new AuthorProcessingError(`Incomplete author data scraped for author: ${this.state.profileName} at ${url}`);
+      throw new AuthorProcessingError(
+        `Incomplete author data scraped for author: ${this.state.profileName} at ${url}`,
+      );
     }
 
     const headingName = biographyData.name;
@@ -558,12 +596,17 @@ class ScrapingOrchestrator {
   private createPlay(playData: ScrapedPlayData) {
     if (!this.isPopulatedAuthorReference(this.state.authorReference)) {
       this.incrementErrorStats("processErrors");
-      throw new PlayProcessingError("Author reference data is incomplete when creating play.");
+      throw new PlayProcessingError(
+        "Author reference data is incomplete when creating play.",
+      );
     }
 
     // Combine scraped play data with author reference to create complete PlayData, deferring to the
     // original author field in playData if present
-    const completePlayData: PlayData = { ...this.state.authorReference, ...playData };
+    const completePlayData: PlayData = {
+      ...this.state.authorReference,
+      ...playData,
+    };
     const play = new Play(completePlayData);
     this.state.currentPlay = play;
 
@@ -594,7 +637,9 @@ class ScrapingOrchestrator {
   private async writeAuthor() {
     if (!this.state.currentAuthor) {
       this.incrementErrorStats("processErrors");
-      throw new AuthorProcessingError("Current author data is undefined at the time of writing");
+      throw new AuthorProcessingError(
+        "Current author data is undefined at the time of writing",
+      );
     }
 
     this.state.currentAuthor.addPlays(this.state.playAccumulator);
@@ -606,7 +651,8 @@ class ScrapingOrchestrator {
 
     if (config.writeTo === "db") {
       try {
-        const authorsCollection = await this.services.dbService.getCollection("authors");
+        const authorsCollection =
+          await this.services.dbService.getCollection("authors");
         const { _id, ...authorDocument } = document;
         await authorsCollection.findOneAndUpdate(
           { _id: authorId },
@@ -626,7 +672,9 @@ class ScrapingOrchestrator {
 
     if (config.writeTo === "file") {
       if (!this.services.authorModuleWriter) {
-        throw new WriteAuthorError("AuthorModuleWriter is not initialized for file output");
+        throw new WriteAuthorError(
+          "AuthorModuleWriter is not initialized for file output",
+        );
       }
       try {
         await this.services.authorModuleWriter.writeFile({
@@ -662,14 +710,17 @@ class ScrapingOrchestrator {
   private async writePlay() {
     if (!this.state.currentPlay) {
       this.incrementErrorStats("processErrors");
-      throw new PlayProcessingError("Current play data is undefined at the time of writing");
+      throw new PlayProcessingError(
+        "Current play data is undefined at the time of writing",
+      );
     }
 
     const document = this.state.currentPlay.toDocument();
 
     if (config.writeTo === "db") {
       try {
-        const playsCollection = await this.services.dbService.getCollection("plays");
+        const playsCollection =
+          await this.services.dbService.getCollection("plays");
         const { _id, ...documentWithoutId } = document;
         await playsCollection.findOneAndUpdate(
           { playId: documentWithoutId.playId },
@@ -689,7 +740,9 @@ class ScrapingOrchestrator {
 
     if (config.writeTo === "file") {
       if (!this.services.playModuleWriter) {
-        throw new WritePlayError("PlayModuleWriter is not initialized for file output");
+        throw new WritePlayError(
+          "PlayModuleWriter is not initialized for file output",
+        );
       }
       const { title, playId } = document;
       const filename = this.getPlayFilename(title, playId);
@@ -724,7 +777,9 @@ class ScrapingOrchestrator {
    * @param obj a partial AuthorReference object, possibly missing fields
    * @returns a boolean indicating if the object is a complete AuthorReference
    */
-  private isPopulatedAuthorReference(obj: Partial<AuthorReference>): obj is AuthorReference {
+  private isPopulatedAuthorReference(
+    obj: Partial<AuthorReference>,
+  ): obj is AuthorReference {
     const { originalAuthor, authorId, scrapedAt, sourceUrl } = obj;
     return !!(originalAuthor && authorId && scrapedAt && sourceUrl);
   }
@@ -748,7 +803,12 @@ class ScrapingOrchestrator {
         }
 
         // Log the original cause with full detail (including getByText examples)
-        if (error && typeof error === "object" && "cause" in error && error.cause) {
+        if (
+          error &&
+          typeof error === "object" &&
+          "cause" in error &&
+          error.cause
+        ) {
           console.error(error.cause);
         }
       }
@@ -765,7 +825,12 @@ class ScrapingOrchestrator {
       if (error) {
         console.error(`Error details:`, error);
         // If it's one of our custom errors with a cause, also log the original error
-        if (error && typeof error === "object" && "cause" in error && error.cause) {
+        if (
+          error &&
+          typeof error === "object" &&
+          "cause" in error &&
+          error.cause
+        ) {
           console.error(`Original error cause:`, error.cause);
         }
       }
@@ -777,11 +842,15 @@ class ScrapingOrchestrator {
     };
 
     const errorActions = {
-      [ScrapingError.name]: async () => await skipAuthor("scraping error", error),
-      [WriteAuthorError.name]: async () => await skipAuthor("writing error", error),
-      [AuthorProcessingError.name]: async () => await skipAuthor("processing error", error),
+      [ScrapingError.name]: async () =>
+        await skipAuthor("scraping error", error),
+      [WriteAuthorError.name]: async () =>
+        await skipAuthor("writing error", error),
+      [AuthorProcessingError.name]: async () =>
+        await skipAuthor("processing error", error),
       [WritePlayError.name]: async () => await skipPlay("writing error", error),
-      [PlayProcessingError.name]: async () => await skipPlay("processing error", error),
+      [PlayProcessingError.name]: async () =>
+        await skipPlay("processing error", error),
     };
 
     const errorName = error?.constructor.name || "UnknownError";
@@ -815,10 +884,15 @@ class ScrapingOrchestrator {
   private isDbNetworkError(error: unknown) {
     // OperationTimeoutError isn't strictly a network error, but we treat it as such given
     // our minimal usage of the database
-    return error instanceof MongoNetworkError || error instanceof MongoOperationTimeoutError;
+    return (
+      error instanceof MongoNetworkError ||
+      error instanceof MongoOperationTimeoutError
+    );
   }
 
-  private getWriteErrorMessage(document: AuthorDocument | PlayDocument): string {
+  private getWriteErrorMessage(
+    document: AuthorDocument | PlayDocument,
+  ): string {
     const isAuthor = "name" in document;
     const isPlay = "title" in document;
 
@@ -833,7 +907,12 @@ class ScrapingOrchestrator {
         config.writeTo === "db"
           ? `No identifiable document type provided when writing to database:`
           : `No identifiable document type provided when writing to file ${this.state.profileSlug}.json:`;
-      return `${summaryLine}\n` + `    ${documentIdLine}\n` + `    ${sourceUrlLine}\n` + `    ${scrapedAtLine}`;
+      return (
+        `${summaryLine}\n` +
+        `    ${documentIdLine}\n` +
+        `    ${sourceUrlLine}\n` +
+        `    ${scrapedAtLine}`
+      );
     }
 
     const documentType = isAuthor ? "author" : "play";
@@ -842,7 +921,9 @@ class ScrapingOrchestrator {
         ? `Error writing ${documentType} to database:`
         : `Error writing ${documentType} to file ${this.state.profileSlug}.json:\n`;
 
-    const nameLine = isAuthor ? `Name: ${document.name}` : `Title: ${document.title}`;
+    const nameLine = isAuthor
+      ? `Name: ${document.name}`
+      : `Title: ${document.title}`;
 
     return (
       `${summaryLine}\n` +

@@ -31,7 +31,10 @@ export default class WebScraper {
 
   private constructor() {}
 
-  static async create({ headless = true, slowMo = 50 }: BrowserOptions = {}): Promise<WebScraper> {
+  static async create({
+    headless = true,
+    slowMo = 50,
+  }: BrowserOptions = {}): Promise<WebScraper> {
     console.log("--------------------------------");
     console.log("  🏁 Creating a WebScraper Instance...");
     const instance = new WebScraper();
@@ -67,7 +70,7 @@ export default class WebScraper {
       console.log(
         `❌ Request failed: ${request.url()}`,
         `   Method: ${request.method()}`,
-        `   Failure: ${errorText || "Unknown error"}`
+        `   Failure: ${errorText || "Unknown error"}`,
       );
     });
 
@@ -77,8 +80,10 @@ export default class WebScraper {
         response.ok(), // 200 responses
         response.status() === 307, // temporary redirects
         response.status() === 308, // permanent redirects
-        response.status() === 404 && /Images-plays\/\d+\.gif$/.test(response.url()), // missing play images
-        response.status() === 404 && /Images-playwrights\//.test(response.url()), // missing playwright images
+        response.status() === 404 &&
+          /Images-plays\/\d+\.gif$/.test(response.url()), // missing play images
+        response.status() === 404 &&
+          /Images-playwrights\//.test(response.url()), // missing playwright images
       ];
 
       if (expectedResponses.some((condition) => condition)) {

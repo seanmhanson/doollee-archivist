@@ -11,7 +11,8 @@ const shouldRemove = (value: any) => {
   // placeholders for missing data in Doollee sources
   if (typeof value === "string") {
     const isEmpty = value.trim() === "";
-    const isPlaceholder = value.trim() === "-" || value.trim().toLowerCase() === "n/a";
+    const isPlaceholder =
+      value.trim() === "-" || value.trim().toLowerCase() === "n/a";
     return isEmpty || isPlaceholder;
   }
 
@@ -40,7 +41,9 @@ const shouldRemove = (value: any) => {
  */
 export function removeEmptyFields(obj: any): any {
   if (Array.isArray(obj)) {
-    const arr = obj.map((item) => removeEmptyFields(item)).filter((item) => !shouldRemove(item));
+    const arr = obj
+      .map((item) => removeEmptyFields(item))
+      .filter((item) => !shouldRemove(item));
     return arr.length ? arr : undefined;
   }
   if (typeof obj === "object" && obj !== null) {

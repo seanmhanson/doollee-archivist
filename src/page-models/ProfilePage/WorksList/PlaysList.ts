@@ -3,7 +3,6 @@ import BaseWorksList from "./__BaseWorksList";
 import type { ScrapedPlayData } from "#/db-types/play/play.types";
 
 export default class PlaysList extends BaseWorksList {
-
   public constructor(page: Page) {
     super(page);
   }
@@ -11,25 +10,36 @@ export default class PlaysList extends BaseWorksList {
   protected async extractData(): Promise<void> {
     const data = this.normalizeStringFields(await this.scrapeData());
 
-    this.data = data.map(({ playId: playIdText, publisher, production, parts: partsText, ...rest }) => {
-      const publicationDetails = this.parsePublicationDetails(publisher, true);
-      const productionDetails = this.parseProductionDetails(production);
-      const playId = this.getPlayId(playIdText);
-      const parts = this.parseParts(partsText);
-      const genres = this.formatGenres(rest.genres);
-
-      return {
-        publishingInfo: publisher,
-        productionInfo: production,
-        playId,
+    this.data = data.map(
+      ({
+        playId: playIdText,
+        publisher,
         production,
-        genres,
-        ...publicationDetails,
-        ...productionDetails,
-        ...parts,
-        ...rest,
-      };
-    });
+        parts: partsText,
+        ...rest
+      }) => {
+        const publicationDetails = this.parsePublicationDetails(
+          publisher,
+          true,
+        );
+        const productionDetails = this.parseProductionDetails(production);
+        const playId = this.getPlayId(playIdText);
+        const parts = this.parseParts(partsText);
+        const genres = this.formatGenres(rest.genres);
+
+        return {
+          publishingInfo: publisher,
+          productionInfo: production,
+          playId,
+          production,
+          genres,
+          ...publicationDetails,
+          ...productionDetails,
+          ...parts,
+          ...rest,
+        };
+      },
+    );
   }
 
   protected async scrapeData() {
@@ -107,7 +117,9 @@ export default class PlaysList extends BaseWorksList {
     const match = normalizedText.match(pattern);
 
     if (!match) {
-      throw new Error(`Parts text does not match expected format: ${partsText}`);
+      throw new Error(
+        `Parts text does not match expected format: ${partsText}`,
+      );
     }
 
     const partsTextMale = match[1].trim();

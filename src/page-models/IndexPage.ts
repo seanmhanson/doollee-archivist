@@ -72,15 +72,9 @@ export default class IndexPage extends BasePage<UrlArgs, Data> {
    * @inheritDoc
    */
   public async extractPage(): Promise<void> {
-    const mainSelector = this.page.locator(
-      IndexPage.selectors.linkContainer
-    );
-    const eSelector = this.page.locator(
-      IndexPage.selectors.linkContainerE
-    );
-    const qxSelector = this.page.locator(
-      IndexPage.selectors.linkContainerQX
-    );
+    const mainSelector = this.page.locator(IndexPage.selectors.linkContainer);
+    const eSelector = this.page.locator(IndexPage.selectors.linkContainerE);
+    const qxSelector = this.page.locator(IndexPage.selectors.linkContainerQX);
     const combinedSelector = mainSelector.or(eSelector).or(qxSelector);
     await combinedSelector.waitFor();
 

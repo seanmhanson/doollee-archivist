@@ -126,4 +126,12 @@ export const defaults = {
   errorStats,
 };
 
-export type { GlobalStats, AuthorStats, PlayStats, LoggingStats, CurrentStats, DisplayData, ErrorStats };
+export type {
+  GlobalStats,
+  AuthorStats,
+  PlayStats,
+  LoggingStats,
+  CurrentStats,
+  DisplayData,
+  ErrorStats,
+};

@@ -27,11 +27,15 @@ async function main() {
     console.log(`🔄 Scraping playwrights for letter ${letter}...`);
     for (const [letterRange, url] of Object.entries(subsections)) {
       let filenameSuffix = "";
-      console.log(`   ➡️  Scraping playwright profile urls for range ${letterRange}...`);
+      console.log(
+        `   ➡️  Scraping playwright profile urls for range ${letterRange}...`,
+      );
 
       const listingPage = new ListingPage(scraper.getPage(), { url });
       await listingPage.goto();
-      const rateLimitTimeout = new Promise((resolve) => setTimeout(resolve, config.rateLimitDelay));
+      const rateLimitTimeout = new Promise((resolve) =>
+        setTimeout(resolve, config.rateLimitDelay),
+      );
 
       try {
         await listingPage.extractPage();
@@ -104,7 +108,10 @@ async function main() {
   console.log("🎭 All playwright directories processed successfully!");
   console.log("  📁 Total files written:\t", totalFiles);
   console.log("  👤 Total playwrights scraped:\t", totalPlaywrights);
-  console.log("   ⚠️ Total errors encountered:\t", Object.keys(allMetadata).length);
+  console.log(
+    "   ⚠️ Total errors encountered:\t",
+    Object.keys(allMetadata).length,
+  );
   console.log("--------------------------------");
 }
 

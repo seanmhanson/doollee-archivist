@@ -1,6 +1,11 @@
 import { ObjectId } from "mongodb";
 import type { Document } from "mongodb";
-import { InitialMetadata, RawFields, PlayDocument, PlayData } from "./play.types";
+import {
+  InitialMetadata,
+  RawFields,
+  PlayDocument,
+  PlayData,
+} from "./play.types";
 import * as dbUtils from "../../utils/dbUtils";
 
 export default class Play {

@@ -3,7 +3,16 @@ import type { Document } from "mongodb";
 const AuthorSchema: Document = {
   bsonType: "object",
   additionalProperties: false,
-  required: ["_id", "metadata", "rawFields", "name", "displayName", "playIds", "adaptationIds", "doolleePlayIds"],
+  required: [
+    "_id",
+    "metadata",
+    "rawFields",
+    "name",
+    "displayName",
+    "playIds",
+    "adaptationIds",
+    "doolleePlayIds",
+  ],
   properties: {
     _id: { bsonType: "objectId" },
     metadata: {

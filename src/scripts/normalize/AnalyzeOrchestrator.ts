@@ -40,7 +40,8 @@ class AnalyzeOrchestrator {
     }
 
     this.playsCollection = await this.services.dbService.getCollection("plays");
-    this.authorsCollection = await this.services.dbService.getCollection("authors");
+    this.authorsCollection =
+      await this.services.dbService.getCollection("authors");
   }
 
   public async run() {
@@ -91,7 +92,11 @@ class AnalyzeOrchestrator {
     await this.writeToCSV(csv, "parts");
   }
 
-  private getSingleFrequencyPipeline(fieldName: string, sortByField = false, sortDescending = true) {
+  private getSingleFrequencyPipeline(
+    fieldName: string,
+    sortByField = false,
+    sortDescending = true,
+  ) {
     const groupField = `$${fieldName}`;
 
     const sortOrder = sortDescending ? -1 : 1;
@@ -112,13 +117,20 @@ class AnalyzeOrchestrator {
     sortByField = false,
     sortDescending = true,
   }: SingleFrequencyProps) {
-    const pipeline = this.getSingleFrequencyPipeline(fieldName, sortByField, sortDescending);
+    const pipeline = this.getSingleFrequencyPipeline(
+      fieldName,
+      sortByField,
+      sortDescending,
+    );
     const results = await collection.aggregate(pipeline).toArray();
     const csv = this.getSingleFrequencyCSV(results, fieldName);
     await this.writeToCSV(csv, fieldName);
   }
 
-  private getSingleFrequencyCSV(results: Document[], fieldName: string): string {
+  private getSingleFrequencyCSV(
+    results: Document[],
+    fieldName: string,
+  ): string {
     const header = `${fieldName},count`;
     const rows = results.map(({ [fieldName]: fieldValue, count }) => {
       return `${this.escapeCsvField(fieldValue)},${count}`;
@@ -129,7 +141,8 @@ class AnalyzeOrchestrator {
   private getPartsPipeline() {
     const labels = ["male", "female", "other"];
     const toKey = (label: string) => `${label}Parts`;
-    const toCapitalized = (label: string) => label.charAt(0).toUpperCase() + label.slice(1);
+    const toCapitalized = (label: string) =>
+      label.charAt(0).toUpperCase() + label.slice(1);
 
     const input = labels.map((label) => {
       return { type: label, text: `$partsText${toCapitalized(label)}` };
@@ -162,7 +175,12 @@ class AnalyzeOrchestrator {
             $filter: {
               input,
               as: "part",
-              cond: { $and: [{ $ne: ["$$part.text", null] }, { $ne: ["$$part.text", ""] }] },
+              cond: {
+                $and: [
+                  { $ne: ["$$part.text", null] },
+                  { $ne: ["$$part.text", ""] },
+                ],
+              },
             },
           },
         },
@@ -190,8 +208,11 @@ class AnalyzeOrchestrator {
       await fs.mkdir(outputDir, { recursive: true });
       await fs.writeFile(filePath, csv, "utf8");
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      throw new Error(`Failed to write CSV for ${fieldName} frequencies: ${errorMessage}`);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      throw new Error(
+        `Failed to write CSV for ${fieldName} frequencies: ${errorMessage}`,
+      );
     }
 
     this.writtenFiles.push(filePath);

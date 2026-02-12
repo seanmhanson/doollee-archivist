@@ -72,7 +72,9 @@ export class Config {
   private getWriteTo(): WriteTo {
     const writeToValue = this.getEnvOrDefault("WRITE_TO");
     if (!WRITE_TO_VALUES.includes(writeToValue as WriteTo)) {
-      throw new Error(`Invalid value for WRITE_TO: ${writeToValue}. Allowed values are "db", "file".`);
+      throw new Error(
+        `Invalid value for WRITE_TO: ${writeToValue}. Allowed values are "db", "file".`,
+      );
     }
     return writeToValue as WriteTo;
   }
@@ -80,7 +82,9 @@ export class Config {
   private getTailLength(): number {
     const tailLengthValue = this.getIntEnvOrDefault("TAIL_LENGTH");
     if (tailLengthValue < 1 || tailLengthValue > 50) {
-      throw new Error(`Invalid value for TAIL_LENGTH: ${tailLengthValue}. Allowed range is 1 to 50.`);
+      throw new Error(
+        `Invalid value for TAIL_LENGTH: ${tailLengthValue}. Allowed range is 1 to 50.`,
+      );
     }
     return tailLengthValue;
   }
@@ -91,7 +95,9 @@ export class Config {
       return logFileValue;
     }
     if (!logFileValue.endsWith(".log")) {
-      throw new Error(`Invalid value for LOG_FILE: ${logFileValue}. Log file must have a .log extension.`);
+      throw new Error(
+        `Invalid value for LOG_FILE: ${logFileValue}. Log file must have a .log extension.`,
+      );
     }
     return logFileValue;
   }

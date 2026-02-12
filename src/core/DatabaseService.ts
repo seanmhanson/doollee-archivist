@@ -28,7 +28,10 @@ export default class DatabaseService {
   private client: MongoClient | null = null;
   private db: Db | null = null;
 
-  constructor(private mongoUri: string = config.mongoUri, private dbName: string = config.dbName) {
+  constructor(
+    private mongoUri: string = config.mongoUri,
+    private dbName: string = config.dbName,
+  ) {
     if (!mongoUri || !dbName) {
       throw new Error("MongoDB URI and database name are required");
     }
@@ -99,7 +102,9 @@ export default class DatabaseService {
 
   async resetDatabase(): Promise<void> {
     if (process.env.NODE_ENV === "production") {
-      throw new Error("Database reset is not allowed in production environment");
+      throw new Error(
+        "Database reset is not allowed in production environment",
+      );
     }
 
     const database = await this.connect();
@@ -120,7 +125,9 @@ export default class DatabaseService {
       const expectedNames = new Set(COLLECTIONS.map((c) => c.name));
 
       const sameSize = collectionNames.size === expectedNames.size;
-      const sameNames = [...expectedNames].every((name) => collectionNames.has(name));
+      const sameNames = [...expectedNames].every((name) =>
+        collectionNames.has(name),
+      );
 
       return sameSize && sameNames;
     } catch (error) {
@@ -131,12 +138,18 @@ export default class DatabaseService {
 
   async hasIndexes(): Promise<boolean> {
     try {
-      for (const [collectionName, expectedIndexes] of Object.entries(indexesByCollection)) {
-        const collection = await this.getCollection(collectionName as CollectionName);
+      for (const [collectionName, expectedIndexes] of Object.entries(
+        indexesByCollection,
+      )) {
+        const collection = await this.getCollection(
+          collectionName as CollectionName,
+        );
         const indexes = await collection.listIndexes().toArray();
 
         for (const expectedIndex of expectedIndexes) {
-          const exists = indexes.some((idx) => idx.key && expectedIndex.field in idx.key);
+          const exists = indexes.some(
+            (idx) => idx.key && expectedIndex.field in idx.key,
+          );
 
           if (!exists) {
             return false;
@@ -185,14 +198,20 @@ export default class DatabaseService {
 
     for (const collectionName of Object.keys(indexesByCollection)) {
       const collection = database.collection(collectionName);
-      const indexes = indexesByCollection[collectionName as IndexCollectionName];
+      const indexes =
+        indexesByCollection[collectionName as IndexCollectionName];
       for (const index of indexes) {
         try {
           const indexSpec: IndexSpec = { [index.field]: 1 }; // ascending index
           await collection.createIndex(indexSpec, index.options);
-          console.info(`   - Created index on '${collectionName}.${index.field}'`);
+          console.info(
+            `   - Created index on '${collectionName}.${index.field}'`,
+          );
         } catch (error) {
-          console.error(`❌ - Failed to create index on '${collectionName}.${index.field}':`, error);
+          console.error(
+            `❌ - Failed to create index on '${collectionName}.${index.field}':`,
+            error,
+          );
           throw error;
         }
       }

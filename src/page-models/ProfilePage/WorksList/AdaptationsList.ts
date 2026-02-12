@@ -19,9 +19,16 @@ export default class AdaptationsList extends BaseWorksList {
 
     // destructure values we will remove before returning
     this.data = data.map(
-      ({ production: productionLocation, productionDate: productionYear, publisher, imgAlt, ...adaptation }) => {
+      ({
+        production: productionLocation,
+        productionDate: productionYear,
+        publisher,
+        imgAlt,
+        ...adaptation
+      }) => {
         // scraped values that we will add before returning
-        const productionInfo = `${productionLocation || ""} ${productionYear || ""}`.trim();
+        const productionInfo =
+          `${productionLocation || ""} ${productionYear || ""}`.trim();
         const publishingInfo = publisher || "";
 
         const productionDetails = {
@@ -39,12 +46,16 @@ export default class AdaptationsList extends BaseWorksList {
         const playId = this.getPlayId(adaptation.playId);
 
         const parts = this.parseParts(adaptation.parts);
-        const organizations = this.formatOrganizations(adaptation.organizations);
+        const organizations = this.formatOrganizations(
+          adaptation.organizations,
+        );
         const displayTitle = this.formatDisplayTitle(adaptation.title);
         const originalAuthor = this.parseOriginalAuthor(adaptation.notes);
         const reference = this.formatReference(adaptation.reference);
         const genres = this.formatGenres(adaptation.genres);
-        const adaptingAuthor = stringUtils.toTitleCase(adaptation.adaptingAuthor);
+        const adaptingAuthor = stringUtils.toTitleCase(
+          adaptation.adaptingAuthor,
+        );
 
         return {
           ...adaptation,

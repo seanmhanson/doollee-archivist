@@ -19,7 +19,9 @@
     "test:rateLimiting": "ts-node -r tsconfig-paths/register src/scripts/testRateLimiting.ts",
     "analyze:genres": "ts-node -r tsconfig-paths/register src/scripts/normalize/analyze-genres.ts",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
     "@eslint/js": "^9",

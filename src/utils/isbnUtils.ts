@@ -6,7 +6,7 @@
 
 type ISBNResult = [
   numericFormatted: string, // numeric value for database storage
-  originalFormatted: string // original value with hyphens for reference
+  originalFormatted: string, // original value with hyphens for reference
 ];
 
 export function extractISBN(text: string): ISBNResult {
@@ -39,7 +39,10 @@ export function extractISBN(text: string): ISBNResult {
   if (totalIsbn13s) {
     if (totalIsbn13s > 1) {
       const originals = isbn13Candidates.map(([original]) => original);
-      console.warn(`Multiple ISBN-13 candidates found; selecting the first one from: ` + originals.join(", "));
+      console.warn(
+        `Multiple ISBN-13 candidates found; selecting the first one from: ` +
+          originals.join(", "),
+      );
     }
     return isbn13Candidates[0]; // [formatted (numbers-only), original (with hyphens)]
   }
@@ -47,7 +50,10 @@ export function extractISBN(text: string): ISBNResult {
   if (totalIsbn10s) {
     if (totalIsbn10s > 1) {
       const originals = isbn10Candidates.map(([original]) => original);
-      console.warn(`Multiple ISBN-10 candidates found; selecting the first one from: ` + originals.join(", "));
+      console.warn(
+        `Multiple ISBN-10 candidates found; selecting the first one from: ` +
+          originals.join(", "),
+      );
     }
     return isbn10Candidates[0]; // [formatted (numbers-only), original (with hyphens)]
   }
