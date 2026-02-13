@@ -17,6 +17,8 @@ type SingleFrequencyProps = {
   sortDescending?: boolean;
 };
 
+type ResultDocument = Record<string, string> & { count: number };
+
 class AnalyzeOrchestrator {
   private services: Services;
   private playsCollection?: Collection<Document>;
@@ -25,6 +27,20 @@ class AnalyzeOrchestrator {
 
   constructor(services: Services) {
     this.services = services;
+  }
+
+  private getPlaysCollection() {
+    if (!this.playsCollection) {
+      throw new Error("Database not connected. Call connect() first.");
+    }
+    return this.playsCollection;
+  }
+
+  private getAuthorsCollection() {
+    if (!this.authorsCollection) {
+      throw new Error("Database not connected. Call connect() first.");
+    }
+    return this.authorsCollection;
   }
 
   private async connect() {
@@ -64,14 +80,14 @@ class AnalyzeOrchestrator {
 
   private async analyzeGenres() {
     await this.getSingleFrequencyTable({
-      collection: this.playsCollection!,
+      collection: this.getPlaysCollection(),
       fieldName: "genres",
     });
   }
 
   private async analyzePublishers() {
     await this.getSingleFrequencyTable({
-      collection: this.playsCollection!,
+      collection: this.getPlaysCollection(),
       fieldName: "publisher",
       sortByField: true,
     });
@@ -80,8 +96,10 @@ class AnalyzeOrchestrator {
   private async analyzeParts() {
     const pipeline = this.getPartsPipeline();
 
-    const collection = this.playsCollection!;
-    const results = await collection.aggregate(pipeline).toArray();
+    const collection = this.getPlaysCollection();
+    const results = (await collection
+      .aggregate(pipeline)
+      .toArray()) as ResultDocument[];
 
     const csv = [
       "All,Frequency,MaleParts,FemaleParts,OtherParts",
@@ -124,13 +142,15 @@ class AnalyzeOrchestrator {
       sortByField,
       sortDescending,
     );
-    const results = await collection.aggregate(pipeline).toArray();
+    const results = (await collection
+      .aggregate(pipeline)
+      .toArray()) as ResultDocument[];
     const csv = this.getSingleFrequencyCSV(results, fieldName);
     await this.writeToCSV(csv, fieldName);
   }
 
   private getSingleFrequencyCSV(
-    results: Document[],
+    results: ResultDocument[],
     fieldName: string,
   ): string {
     const header = `${fieldName},count`;

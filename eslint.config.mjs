@@ -15,6 +15,7 @@ export default [
       "**/input/**",
       "**/*.json",
       "**/*.js",
+      "eslint.config.mjs",
     ],
   },
 

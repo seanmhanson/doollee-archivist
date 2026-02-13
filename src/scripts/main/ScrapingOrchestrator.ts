@@ -69,7 +69,7 @@ type State = {
   playAccumulator: ObjectId[];
   adaptationAccumulator: ObjectId[];
   doolleeIdAccumulator: string[];
-  authorReference: AuthorReference | {};
+  authorReference?: AuthorReference;
   currentAuthor?: Author;
   currentPlay?: Play;
   currentPlays: ScrapedPlayData[];
@@ -146,7 +146,6 @@ class ScrapingOrchestrator {
     playAccumulator: [],
     adaptationAccumulator: [],
     doolleeIdAccumulator: [],
-    authorReference: {},
     currentAuthor: undefined,
     currentPlay: undefined,
     currentPlays: [],
@@ -778,8 +777,12 @@ class ScrapingOrchestrator {
    * @returns a boolean indicating if the object is a complete AuthorReference
    */
   private isPopulatedAuthorReference(
-    obj: Partial<AuthorReference>,
+    obj: Partial<AuthorReference> | undefined,
   ): obj is AuthorReference {
+    if (!obj) {
+      return false;
+    }
+
     const { originalAuthor, authorId, scrapedAt, sourceUrl } = obj;
     return !!(originalAuthor && authorId && scrapedAt && sourceUrl);
   }
