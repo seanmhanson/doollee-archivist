@@ -1,6 +1,8 @@
 <section align="center">
   <h1>Doollee Archivist</h1>
 
+  ![Linting Status](https://github.com/seanmhanson/doollee-archivist/actions/workflows/lint-and-format.yml/badge.svg?branch=main)
+
   <p>A set of scripts leveraging <a href="https://playwright.dev/" target="_blank">Playwright</a> to scrape, normalize, and preserve the playwright and play collection of Doolee.com and curate a modern online database and search interface for the works.</p>
 
   <h3>Phases:</h3>
