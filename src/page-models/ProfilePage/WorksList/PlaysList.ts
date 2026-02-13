@@ -1,6 +1,6 @@
 import type { Page } from "playwright";
-import BaseWorksList from "./__BaseWorksList";
-import type { ScrapedPlayData } from "#/db-types/play/play.types";
+
+import BaseWorksList from "#/page-models/ProfilePage/WorksList/__BaseWorksList";
 
 export default class PlaysList extends BaseWorksList {
   public constructor(page: Page) {
@@ -13,9 +13,10 @@ export default class PlaysList extends BaseWorksList {
     this.data = data.map(
       ({
         playId: playIdText,
+        parts: partsText,
+        genres: rawGenres,
         publisher,
         production,
-        parts: partsText,
         ...rest
       }) => {
         const publicationDetails = this.parsePublicationDetails(
@@ -25,7 +26,7 @@ export default class PlaysList extends BaseWorksList {
         const productionDetails = this.parseProductionDetails(production);
         const playId = this.getPlayId(playIdText);
         const parts = this.parseParts(partsText);
-        const genres = this.formatGenres(rest.genres);
+        const genres = this.formatGenres(rawGenres);
 
         return {
           publishingInfo: publisher,
@@ -43,7 +44,7 @@ export default class PlaysList extends BaseWorksList {
   }
 
   protected async scrapeData() {
-    return await this.page.evaluate(async () => {
+    return await this.page.evaluate(() => {
       const containerSelector = ".gridContainer > strong";
       const playIdSelector = "#playwrightTable > a";
       const titleSelector = "#playTable";
@@ -85,18 +86,18 @@ export default class PlaysList extends BaseWorksList {
         const imageElement = imageContainer.querySelector(imageSelector);
 
         results.push({
-          playId: data.allPlayIds[i]?.getAttribute("name") || "",
-          title: data.allTitles[i]?.textContent?.trim() || "",
-          altTitle: imageElement?.getAttribute("title")?.trim() || "",
-          synopsis: data.allSynopses[i]?.textContent?.trim() || "",
-          notes: data.allNotes[i]?.textContent?.trim() || "",
-          production: data.allProductions[i]?.textContent?.trim() || "",
-          organizations: data.allOrganizations[i]?.textContent?.trim() || "",
-          publisher: data.allPublishers[i]?.textContent?.trim() || "",
-          music: data.allMusic[i]?.textContent?.trim() || "",
-          genres: data.allGenres[i]?.textContent?.trim() || "",
-          parts: data.allParts[i]?.textContent?.trim() || "",
-          reference: data.allReferences[i]?.textContent?.trim() || "",
+          playId: data.allPlayIds[i]?.getAttribute("name") ?? "",
+          title: data.allTitles[i]?.textContent?.trim() ?? "",
+          altTitle: imageElement?.getAttribute("title")?.trim() ?? "",
+          synopsis: data.allSynopses[i]?.textContent?.trim() ?? "",
+          notes: data.allNotes[i]?.textContent?.trim() ?? "",
+          production: data.allProductions[i]?.textContent?.trim() ?? "",
+          organizations: data.allOrganizations[i]?.textContent?.trim() ?? "",
+          publisher: data.allPublishers[i]?.textContent?.trim() ?? "",
+          music: data.allMusic[i]?.textContent?.trim() ?? "",
+          genres: data.allGenres[i]?.textContent?.trim() ?? "",
+          parts: data.allParts[i]?.textContent?.trim() ?? "",
+          reference: data.allReferences[i]?.textContent?.trim() ?? "",
         });
       }
       return results;
@@ -104,7 +105,7 @@ export default class PlaysList extends BaseWorksList {
   }
 
   private parseParts(partsText: string) {
-    if (!partsText.match(/\d/)) {
+    if (!/\d/.exec(partsText)) {
       return null;
     }
 
@@ -114,7 +115,7 @@ export default class PlaysList extends BaseWorksList {
       .trim();
 
     const pattern = /Male:\s*(.+?)\s+Female:\s*(.+?)\s+Other:\s*(.+)$/;
-    const match = normalizedText.match(pattern);
+    const match = pattern.exec(normalizedText);
 
     if (!match) {
       throw new Error(

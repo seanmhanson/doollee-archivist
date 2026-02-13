@@ -1,6 +1,6 @@
+import type { PageMetadata, WaitUntilConditions } from "#/types";
 import type { Page } from "playwright";
 
-import type { PageMetadata, WaitUntilConditions } from "#/types";
 import config from "#/core/Config";
 
 /**
@@ -113,7 +113,7 @@ export default abstract class BasePage<
       }
     } catch (error) {
       console.log(`❌ Navigation failed for: ${this.url}`);
-      console.log(`   Error: ${error}`);
+      console.log("   Error:", error);
       throw error;
     }
   }
@@ -124,7 +124,7 @@ export default abstract class BasePage<
    * @returns Text content of the element or empty string if not found.
    */
   protected async getTextContent(selector: string): Promise<string> {
-    return (await this.page.locator(selector).textContent()) || "";
+    return (await this.page.locator(selector).textContent()) ?? "";
   }
 
   /**
@@ -135,7 +135,7 @@ export default abstract class BasePage<
   protected async getAllTextContents(selector: string): Promise<string[]> {
     const elements = await this.page.locator(selector).all();
     const texts = await Promise.all(
-      elements.map(async (element) => (await element.textContent()) || ""),
+      elements.map(async (element) => (await element.textContent()) ?? ""),
     );
     return texts;
   }

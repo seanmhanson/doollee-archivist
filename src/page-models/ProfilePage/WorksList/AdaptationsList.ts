@@ -1,7 +1,7 @@
 import type { Page } from "playwright";
-import BaseWorksList from "./__BaseWorksList";
+
+import BaseWorksList from "#/page-models/ProfilePage/WorksList/__BaseWorksList";
 import * as stringUtils from "#/utils/stringUtils";
-import type { ScrapedPlayData } from "#/db-types/play/play.types";
 
 type UnparsedParts = {
   maleParts: string;
@@ -20,16 +20,16 @@ export default class AdaptationsList extends BaseWorksList {
     // destructure values we will remove before returning
     this.data = data.map(
       ({
-        production: productionLocation,
-        productionDate: productionYear,
+        productionLocation,
+        productionYear,
         publisher,
         imgAlt,
         ...adaptation
       }) => {
         // scraped values that we will add before returning
         const productionInfo =
-          `${productionLocation || ""} ${productionYear || ""}`.trim();
-        const publishingInfo = publisher || "";
+          `${productionLocation ?? ""} ${productionYear ?? ""}`.trim();
+        const publishingInfo = publisher ?? "";
 
         const productionDetails = {
           productionLocation,
@@ -78,7 +78,7 @@ export default class AdaptationsList extends BaseWorksList {
   }
 
   protected async scrapeTableData() {
-    return await this.page.evaluate(async () => {
+    return await this.page.evaluate(() => {
       /** Selectors */
       const nthRow = (n: number) => `tr:nth-of-type(${n})`;
       const nthCell = (n: number) => `td:nth-of-type(${n})`;
@@ -136,24 +136,24 @@ export default class AdaptationsList extends BaseWorksList {
         const imageElement = imageContainer.querySelector(imageSelector);
 
         results.push({
-          playId: data.allPlayIds[i]?.getAttribute("name")?.trim() || "",
-          adaptingAuthor: data.allAuthors[i]?.textContent?.trim() || "",
-          title: data.allTitles[i]?.textContent?.trim() || "",
-          productionLocation: data.allProductions[i]?.textContent?.trim() || "",
-          productionYear: data.allDates[i]?.textContent?.trim() || "",
-          organizations: data.allOrgs[i]?.textContent?.trim() || "",
-          publisher: data.allPublishers[i]?.textContent?.trim() || "",
-          isbn: data.allIsbns[i]?.textContent?.trim() || "",
-          music: data.allMusic[i]?.textContent?.trim() || "",
-          genres: data.allGenres[i]?.textContent?.trim() || "",
-          notes: data.allNotes[i]?.textContent?.trim() || "",
-          imgAlt: imageElement?.getAttribute("alt")?.trim() || "",
-          synopsis: data.allSynopses[i]?.textContent?.trim() || "",
-          reference: data.allReferences[i]?.textContent?.trim() || "",
+          playId: data.allPlayIds[i]?.getAttribute("name")?.trim() ?? "",
+          adaptingAuthor: data.allAuthors[i]?.textContent?.trim() ?? "",
+          title: data.allTitles[i]?.textContent?.trim() ?? "",
+          productionLocation: data.allProductions[i]?.textContent?.trim() ?? "",
+          productionYear: data.allDates[i]?.textContent?.trim() ?? "",
+          organizations: data.allOrgs[i]?.textContent?.trim() ?? "",
+          publisher: data.allPublishers[i]?.textContent?.trim() ?? "",
+          isbn: data.allIsbns[i]?.textContent?.trim() ?? "",
+          music: data.allMusic[i]?.textContent?.trim() ?? "",
+          genres: data.allGenres[i]?.textContent?.trim() ?? "",
+          notes: data.allNotes[i]?.textContent?.trim() ?? "",
+          imgAlt: imageElement?.getAttribute("alt")?.trim() ?? "",
+          synopsis: data.allSynopses[i]?.textContent?.trim() ?? "",
+          reference: data.allReferences[i]?.textContent?.trim() ?? "",
           parts: {
-            maleParts: data.allMaleParts[i]?.textContent?.trim() || "",
-            femaleParts: data.allFemaleParts[i]?.textContent?.trim() || "",
-            otherParts: data.allOtherParts[i]?.textContent?.trim() || "",
+            maleParts: data.allMaleParts[i]?.textContent?.trim() ?? "",
+            femaleParts: data.allFemaleParts[i]?.textContent?.trim() ?? "",
+            otherParts: data.allOtherParts[i]?.textContent?.trim() ?? "",
           },
         });
       }
@@ -164,8 +164,8 @@ export default class AdaptationsList extends BaseWorksList {
 
   private parseOriginalAuthor(notesString: string): string {
     const regex = /Original Playwright\s*[-:]\s*(.+?)(;|$)/i;
-    const match = notesString.match(regex);
-    return match?.[1].trim() || "";
+    const match = regex.exec(notesString);
+    return match?.[1].trim() ?? "";
   }
 
   private parseParts({ maleParts, femaleParts, otherParts }: UnparsedParts) {

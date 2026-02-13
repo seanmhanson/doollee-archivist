@@ -1,10 +1,10 @@
-import type { Page } from "@playwright/test";
 import BasePage from "./__BasePage";
+
 import type { BasePageArgs } from "./__BasePage";
+import type { Page } from "@playwright/test";
 
 type UrlArgs = { letter: string };
-
-type Data = { [key: string]: string };
+type Data = Record<string, string>;
 
 /**
  * Scraper for top-level index pages for authors on doollee.com.

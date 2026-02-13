@@ -1,6 +1,5 @@
-import type { Page } from "playwright";
-
 import type { ScrapedAuthorData } from "#/db-types/author/author.types";
+import type { Page } from "playwright";
 
 export default abstract class BaseBiography {
   private static readonly labelMap: Record<string, keyof ScrapedAuthorData> = {
