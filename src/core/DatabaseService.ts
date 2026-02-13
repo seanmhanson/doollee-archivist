@@ -1,6 +1,11 @@
 import { MongoClient } from "mongodb";
 
-import type { Db, Collection, CreateIndexesOptions } from "mongodb";
+import type {
+  Db,
+  Collection,
+  CreateIndexesOptions,
+  IndexDescription,
+} from "mongodb";
 
 import config from "#/core/Config";
 import authorSchema from "#/db-types/author/author.schema";
@@ -145,7 +150,9 @@ export default class DatabaseService {
         const collection = await this.getCollection(
           collectionName as CollectionName,
         );
-        const indexes = await collection.listIndexes().toArray();
+        const indexes = (await collection
+          .listIndexes()
+          .toArray()) as IndexDescription[];
 
         for (const expectedIndex of expectedIndexes) {
           const exists = indexes.some(

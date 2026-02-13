@@ -28,7 +28,7 @@ export default class WebScraper {
   private page: Page | null = null;
 
   public isConnected(): boolean {
-    return this.browser?.isConnected() || false;
+    return this.browser?.isConnected() ?? false;
   }
 
   private constructor() {}
@@ -64,7 +64,7 @@ export default class WebScraper {
     // Add request debugging
     this.page.on("requestfailed", (request) => {
       const failure = request.failure();
-      const { errorText } = failure || {};
+      const { errorText } = failure ?? {};
       if (errorText === "NS_BINDING_ABORTED") {
         return; // Ignore aborted requests
       }
@@ -72,7 +72,7 @@ export default class WebScraper {
       console.log(
         `❌ Request failed: ${request.url()}`,
         `   Method: ${request.method()}`,
-        `   Failure: ${errorText || "Unknown error"}`,
+        `   Failure: ${errorText ?? "Unknown error"}`,
       );
     });
 
@@ -83,9 +83,8 @@ export default class WebScraper {
         response.status() === 307, // temporary redirects
         response.status() === 308, // permanent redirects
         response.status() === 404 &&
-          /Images-plays\/\d+\.gif$/.test(response.url()), // missing play images
-        response.status() === 404 &&
-          /Images-playwrights\//.test(response.url()), // missing playwright images
+          (response.url().includes("/Images-plays/") || // missing play images
+            response.url().includes("/Images-playwrights/")), // missing playwright images
       ];
 
       if (expectedResponses.some((condition) => condition)) {
