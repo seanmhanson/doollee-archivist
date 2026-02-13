@@ -60,7 +60,7 @@ export default [
       "@typescript-eslint/no-non-null-assertion": "warn",
 
       "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
-      "@typescript-eslint/consistent-type-imports": ["warn", { prefer: "type-imports" }],
+      "@typescript-eslint/consistent-type-imports": ["error", { prefer: "type-imports" }],
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/await-thenable": "error",
       "@typescript-eslint/no-misused-promises": "error",
@@ -98,11 +98,10 @@ export default [
     },
   },
 
-  // Relax rules for scripts
+  // Allow scripts to exit
   {
     files: ["src/scripts/**/*.ts"],
     rules: {
-      "no-console": "off",
       "n/no-process-exit": "off",
     },
   },

@@ -110,11 +110,7 @@ class ModuleWriter {
       await fs.writeFile(outputPath, fileContent, "utf8");
     } catch (error) {
       const message = `Failed to write index file at ${outputPath}`;
-
-      if (error instanceof Error) {
-        throw new Error(message, { cause: error });
-      }
-      throw new Error(`${message}: ${String(error)}`);
+      throw new Error(message, { cause: error });
     }
 
     this.filenames.push(fullFileName);
@@ -155,11 +151,7 @@ class ModuleWriter {
       await fs.writeFile(outputPath, indexFileContent, "utf8");
     } catch (error) {
       const message = `Failed to write index file at ${outputPath}`;
-
-      if (error instanceof Error) {
-        throw new Error(message, { cause: error });
-      }
-      throw new Error(`${message}: ${String(error)}`);
+      throw new Error(message, { cause: error });
     }
   }
 

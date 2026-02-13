@@ -211,11 +211,7 @@ class AnalyzeOrchestrator {
       await fs.writeFile(filePath, csv, "utf8");
     } catch (error) {
       const message = `Error writing CSV for ${fieldName} frequencies`;
-
-      if (error instanceof Error) {
-        throw new Error(message, { cause: error });
-      }
-      throw new Error(`${message}: ${String(error)}`);
+      throw new Error(message, { cause: error });
     }
 
     this.writtenFiles.push(filePath);

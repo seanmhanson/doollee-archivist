@@ -5,10 +5,10 @@ import listingUrls from "#/input/listingUrls";
 import ListingPage from "#/page-models/ListingPage";
 
 async function main() {
-  const noop = () => {
-    /* intentionally empty for local testing only */
-  };
-  console.debug = noop;
+  // intentially empty console.debug by default due to very high volume of logs
+  // and reenable if needed when running locally, though this didn't arise during use
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  console.debug = () => {};
 
   const rootDir = "profile-urls";
   const scraper = await WebScraper.create();

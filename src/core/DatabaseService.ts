@@ -198,11 +198,7 @@ export default class DatabaseService {
         } catch (error) {
           const message = `Failed to create index on '${collectionName}.${index.field}'`;
           console.error(`❌ - ${message}`);
-
-          if (error instanceof Error) {
-            throw new Error(message, { cause: error });
-          }
-          throw new Error(`${message}: ${String(error)}`);
+          throw new Error(message, { cause: error });
         }
       }
     }
