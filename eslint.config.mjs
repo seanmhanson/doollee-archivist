@@ -94,7 +94,7 @@ export default [
       "import/no-duplicates": "warn",
 
       // General
-      "no-console": ["warn", { allow: ["warn", "error"] }],
+      "no-console": "off",
       "prefer-const": "warn",
       "no-var": "error",
     },
