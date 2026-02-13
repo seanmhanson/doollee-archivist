@@ -1,10 +1,15 @@
-import type { Page } from "playwright";
-import * as stringUtils from "#/utils/stringUtils";
-import { extractISBN } from "#/utils/isbnUtils";
 import type { ScrapedPlayData } from "#/db-types/play/play.types";
+import type { Page } from "playwright";
+
+import { extractISBN } from "#/utils/isbnUtils";
+import * as stringUtils from "#/utils/stringUtils";
 
 type ProductionDetails = { productionLocation: string; productionYear: string };
-type PublicationDetails = { publisher: string; publicationYear: string; isbn?: string };
+type PublicationDetails = {
+  publisher: string;
+  publicationYear: string;
+  isbn?: string;
+};
 
 const { hasAlphanumericCharacters, normalizeWhitespace, removeAndNormalize } = stringUtils;
 
@@ -40,17 +45,19 @@ export default abstract class BaseWorksList {
     return idString?.trim() || "0000000";
   }
 
-  protected normalizeStringFields(data: any[]) {
+  protected normalizeStringFields<T extends Record<string, unknown>>(data: T[]): T[] {
     return data.map((work) => {
-      const normalizedWork: any = {};
-      for (const [key, value] of Object.entries(work)) {
-        if (typeof value === "string") {
-          normalizedWork[key] = stringUtils.checkScrapedString(value);
-        } else {
-          normalizedWork[key] = value;
-        }
-      }
-      return normalizedWork;
+      return Object.entries(work).reduce(
+        (acc, [key, value]) => {
+          if (typeof value === "string") {
+            acc[key] = stringUtils.checkScrapedString(value);
+          } else {
+            acc[key] = value;
+          }
+          return acc;
+        },
+        {} as Record<string, unknown>,
+      ) as T;
     });
   }
 
@@ -117,8 +124,8 @@ export default abstract class BaseWorksList {
   /**
    * Strips the ISBN value of any ISBN prefixes, whitespace, or dashes
    */
-  protected formatISBN(isbnString: string = ""): string {
-    return isbnString.replace(/ISBN\s*[:\-]?\s*/i, "").trim();
+  protected formatISBN(isbnString = ""): string {
+    return isbnString.replace(/ISBN\s*[:-]?\s*/i, "").trim();
   }
 
   protected formatReference(reference: string): string {

@@ -1,7 +1,16 @@
-import { Document, ObjectId } from "mongodb";
-import type { AuthorDocument, InitialMetadata, AuthorNameData, RawFields, AuthorData } from "./author.types";
-import * as dbUtils from "../../utils/dbUtils";
-import { toTitleCase, removeDisambiguationSuffix, isAllCaps, stringArraysEqual } from "../../utils/stringUtils";
+import { ObjectId } from "mongodb";
+
+import type {
+  AuthorDocument,
+  InitialMetadata,
+  AuthorNameData,
+  RawFields,
+  AuthorData,
+} from "#/db-types/author/author.types";
+import type { ObjectId as ObjectIdType } from "mongodb";
+
+import * as dbUtils from "#/utils/dbUtils";
+import { toTitleCase, removeDisambiguationSuffix, isAllCaps, stringArraysEqual } from "#/utils/stringUtils";
 
 /**
  * Usage:
@@ -24,7 +33,7 @@ import { toTitleCase, removeDisambiguationSuffix, isAllCaps, stringArraysEqual }
  */
 
 export default class Author {
-  private _id: ObjectId;
+  private _id: ObjectIdType;
   private metadata: InitialMetadata;
   private rawFields: RawFields;
 
@@ -47,11 +56,11 @@ export default class Author {
   private address?: string;
   private telephone?: string;
 
-  private playIds: ObjectId[];
-  private adaptationIds: ObjectId[];
+  private playIds: ObjectIdType[];
+  private adaptationIds: ObjectIdType[];
   private doolleePlayIds: string[];
 
-  private needsReview: boolean = false;
+  private needsReview = false;
   private needsReviewReason?: string;
   private needsReviewData?: Record<string, Record<string, string>> = {};
 
@@ -59,7 +68,7 @@ export default class Author {
     return this.name;
   }
 
-  public get id(): ObjectId {
+  public get id(): ObjectIdType {
     return this._id;
   }
 
@@ -110,7 +119,7 @@ export default class Author {
     };
 
     this.rawFields = {
-      listingName: input.listingName || name,
+      listingName: input.listingName ?? name,
       headingName: input.headingName,
       altName: input.altName,
     };
@@ -252,7 +261,7 @@ export default class Author {
     const data = {
       listingName: removeDisambiguationSuffix(input.listingName),
       headingName: removeDisambiguationSuffix(input.headingName),
-      altName: removeDisambiguationSuffix(input.altName || ""),
+      altName: removeDisambiguationSuffix(input.altName ?? ""),
     };
 
     const organizationData = this.parseOrganization(data);
@@ -263,11 +272,11 @@ export default class Author {
     return this.parseAuthorName(data);
   }
 
-  public addPlays(playIds: ObjectId[]): void {
+  public addPlays(playIds: ObjectIdType[]): void {
     this.playIds.push(...playIds);
   }
 
-  public addAdaptations(adaptationIds: ObjectId[]): void {
+  public addAdaptations(adaptationIds: ObjectIdType[]): void {
     this.adaptationIds.push(...adaptationIds);
   }
 
@@ -278,11 +287,11 @@ export default class Author {
   public toDocument(): AuthorDocument {
     const now = new Date();
 
-    const document: Document = {
+    const document: AuthorDocument = {
       _id: this._id,
       metadata: {
         ...this.metadata,
-        createdAt: this.metadata.createdAt || now,
+        createdAt: this.metadata.createdAt ?? now,
         updatedAt: now,
         needsReview: this.needsReview,
         needsReviewReason: this.needsReviewReason,
@@ -297,6 +306,10 @@ export default class Author {
 
     // prune undefined/empty fields and manually remove fields added by this class
     const prunedDocument = dbUtils.removeEmptyFields(document);
+    if (!prunedDocument) {
+      throw new Error("Failed to create author document: all fields are empty or undefined");
+    }
+
     if (!prunedDocument.metadata.needsReview) {
       delete prunedDocument.metadata.needsReview;
       delete prunedDocument.metadata.needsReviewReason;

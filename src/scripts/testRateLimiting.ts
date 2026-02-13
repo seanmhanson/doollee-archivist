@@ -5,13 +5,13 @@ import { firefox } from "playwright";
  * with minor adjustments.
  */
 
-interface RequestMetrics {
+type RequestMetrics = {
   url: string;
   status: number;
   responseTime: number;
   delay: number;
   timestamp: Date;
-}
+};
 
 type DelayGroup = {
   delay: number;
@@ -82,7 +82,7 @@ async function testRateLimit() {
         });
 
         const responseTime = Date.now() - start;
-        const status = response?.status() || 0;
+        const status = response?.status() ?? 0;
 
         const metric: RequestMetrics = {
           url,
@@ -117,8 +117,8 @@ async function testRateLimit() {
         if (i < testUrls.length - 1) {
           await new Promise((resolve) => setTimeout(resolve, delay));
         }
-      } catch (error: any) {
-        console.error(`❌ Error with ${url}:`, error.message);
+      } catch (error) {
+        console.error(`❌ Error with ${url}:`, error);
         shouldBreak = true;
       }
     }
@@ -183,7 +183,12 @@ async function testRateLimit() {
       const avgTime = delayMetrics.reduce((sum, m) => sum + m.responseTime, 0) / delayMetrics.length;
       const successRate = (delayMetrics.length / testUrls.length) * 100;
 
-      return { delay, avgTime: Math.round(avgTime), successRate: Math.round(successRate), count: delayMetrics.length };
+      return {
+        delay,
+        avgTime: Math.round(avgTime),
+        successRate: Math.round(successRate),
+        count: delayMetrics.length,
+      };
     })
     .filter((group) => group !== null);
 
@@ -194,7 +199,7 @@ async function testRateLimit() {
     const timeIcon = group.avgTime > 5000 ? "🐌" : group.avgTime > 2000 ? "⏳" : "⚡";
     const successIcon = group.successRate === 100 ? "✅" : group.successRate > 75 ? "⚠️" : "❌";
     console.log(
-      `${group.delay}ms\t\t${timeIcon} ${group.avgTime}ms\t\t${successIcon} ${group.successRate}%\t\t${group.count}/${testUrls.length}`
+      `${group.delay}ms\t\t${timeIcon} ${group.avgTime}ms\t\t${successIcon} ${group.successRate}%\t\t${group.count}/${testUrls.length}`,
     );
   });
 

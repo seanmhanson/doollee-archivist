@@ -1,6 +1,7 @@
-import type { Page, Locator } from "@playwright/test";
 import BasePage from "./__BasePage";
+
 import type { BasePageArgs } from "./__BasePage";
+import type { Page, Locator } from "@playwright/test";
 
 type UrlArgs = {
   indexLetter: string;
@@ -8,7 +9,7 @@ type UrlArgs = {
   lastLetter: string;
 };
 
-type Data = { [key: string]: string };
+type Data = Record<string, string>;
 
 /**
  * Scraper for sub-index pages for authors on doollee.com.
@@ -99,7 +100,7 @@ export default class ListingPage extends BasePage<UrlArgs, Data> {
           continue;
         }
 
-        const url = href.match(/Playwrights[A-Z]\/([a-z0-9\-\(\)]+)\.php/);
+        const url = /Playwrights[A-Z]\/([a-z0-9\-()]+)\.php/.exec(href);
         if (!url) {
           continue;
         }
@@ -128,7 +129,7 @@ export default class ListingPage extends BasePage<UrlArgs, Data> {
     }
 
     // check for the "top of page" rows, based on the first cell's link
-    const label = (await firstLink.textContent()) || "";
+    const label = (await firstLink.textContent()) ?? "";
     return label.includes("Top of Page");
   }
 }

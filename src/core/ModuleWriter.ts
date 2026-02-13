@@ -3,7 +3,7 @@ import path from "path";
 
 type Options = {
   filename: string;
-  data: Record<string, any> | string;
+  data: Record<string, unknown> | string;
   stringify?: boolean;
   fileType?: "json" | "ts";
 };
@@ -14,6 +14,7 @@ type IndexContent = {
 };
 
 type FileType = Options["fileType"];
+type InferredFileType = Exclude<FileType, undefined>;
 
 type ValidateFilenameArgs = {
   filename: Options["filename"];
@@ -26,10 +27,10 @@ type ValidateDataType = {
 };
 
 class ModuleWriter {
-  private moduleName: string = "";
-  private outputDir: string = "";
+  private moduleName = "";
+  private outputDir = "";
   private filenames: string[] = [];
-  private isReadyFlag: boolean = false;
+  private isReadyFlag = false;
 
   public get isReady() {
     return this.isReadyFlag;
@@ -61,7 +62,7 @@ class ModuleWriter {
     }
   }
 
-  private inferFileType(filename: string): FileType {
+  private inferFileType(filename: string): InferredFileType {
     const extension = filename.split(".").pop();
     const isTypescript = extension && extension === "ts";
     const isJson = extension && extension === "json";
@@ -85,20 +86,14 @@ class ModuleWriter {
 
   private validateOptions(options: Options): Options {
     const { filename, data, fileType, stringify } = options;
-    let inferredFileType = options.fileType;
+    const inferredFileType = fileType ?? this.inferFileType(filename);
 
     this.validateFilename({ filename, fileType });
-
-    if (!fileType) {
-      const inferredType = this.inferFileType(filename);
-      inferredFileType = inferredType;
-    }
-
     this.validateDataType({ stringify, data });
 
     return {
       filename: filename.replace(/\.(ts|json)$/, ""),
-      fileType: inferredFileType!,
+      fileType: inferredFileType,
       stringify,
       data,
     };
@@ -114,7 +109,8 @@ class ModuleWriter {
     try {
       await fs.writeFile(outputPath, fileContent, "utf8");
     } catch (error) {
-      throw Error(`Error writing file ${outputPath}: ${error instanceof Error ? error.message : String(error)}`);
+      const message = `Failed to write index file at ${outputPath}`;
+      throw new Error(message, { cause: error });
     }
 
     this.filenames.push(fullFileName);
@@ -136,7 +132,7 @@ class ModuleWriter {
         acc.exports.push(`  '${exportKey}': ${reference},`);
         return acc;
       },
-      { imports: [], exports: [] }
+      { imports: [], exports: [] },
     );
 
     const timestamp = new Date().toISOString();
@@ -154,11 +150,12 @@ class ModuleWriter {
     try {
       await fs.writeFile(outputPath, indexFileContent, "utf8");
     } catch (error) {
-      throw Error(`Error writing index file: ${error instanceof Error ? error.message : String(error)}`);
+      const message = `Failed to write index file at ${outputPath}`;
+      throw new Error(message, { cause: error });
     }
   }
 
-  public async close(writeIndex: boolean = true, verbose = false) {
+  public async close(writeIndex = true, verbose = false) {
     if (writeIndex) {
       await this.writeIndexFile();
     }

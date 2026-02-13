@@ -1,4 +1,6 @@
-import { firefox, Browser, Page } from "playwright";
+import { firefox } from "playwright";
+
+import type { Browser, Page } from "playwright";
 
 const httpHeaders = {
   "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
@@ -26,7 +28,7 @@ export default class WebScraper {
   private page: Page | null = null;
 
   public isConnected(): boolean {
-    return this.browser?.isConnected() || false;
+    return this.browser?.isConnected() ?? false;
   }
 
   private constructor() {}
@@ -59,7 +61,7 @@ export default class WebScraper {
     // Add request debugging
     this.page.on("requestfailed", (request) => {
       const failure = request.failure();
-      const { errorText } = failure || {};
+      const { errorText } = failure ?? {};
       if (errorText === "NS_BINDING_ABORTED") {
         return; // Ignore aborted requests
       }
@@ -67,7 +69,7 @@ export default class WebScraper {
       console.log(
         `❌ Request failed: ${request.url()}`,
         `   Method: ${request.method()}`,
-        `   Failure: ${errorText || "Unknown error"}`
+        `   Failure: ${errorText ?? "Unknown error"}`,
       );
     });
 
@@ -77,8 +79,9 @@ export default class WebScraper {
         response.ok(), // 200 responses
         response.status() === 307, // temporary redirects
         response.status() === 308, // permanent redirects
-        response.status() === 404 && /Images-plays\/\d+\.gif$/.test(response.url()), // missing play images
-        response.status() === 404 && /Images-playwrights\//.test(response.url()), // missing playwright images
+        response.status() === 404 &&
+          (response.url().includes("/Images-plays/") || // missing play images
+            response.url().includes("/Images-playwrights/")), // missing playwright images
       ];
 
       if (expectedResponses.some((condition) => condition)) {

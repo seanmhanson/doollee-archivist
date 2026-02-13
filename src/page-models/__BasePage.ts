@@ -1,6 +1,6 @@
+import type { PageMetadata, WaitUntilConditions } from "#/types";
 import type { Page } from "playwright";
 
-import type { PageMetadata, WaitUntilConditions } from "#/types";
 import config from "#/core/Config";
 
 /**
@@ -106,9 +106,8 @@ export default abstract class BasePage<Args extends object, Data extends object>
         console.debug(`✅ Successfully navigated to: ${this.url}`);
       }
     } catch (error) {
-      console.log(`❌ Navigation failed for: ${this.url}`);
-      console.log(`   Error: ${error}`);
-      throw error;
+      const message = `Navigation failed for: ${this.url}`;
+      throw new Error(message, { cause: error });
     }
   }
 
@@ -118,7 +117,7 @@ export default abstract class BasePage<Args extends object, Data extends object>
    * @returns Text content of the element or empty string if not found.
    */
   protected async getTextContent(selector: string): Promise<string> {
-    return (await this.page.locator(selector).textContent()) || "";
+    return (await this.page.locator(selector).textContent()) ?? "";
   }
 
   /**
@@ -128,7 +127,7 @@ export default abstract class BasePage<Args extends object, Data extends object>
    */
   protected async getAllTextContents(selector: string): Promise<string[]> {
     const elements = await this.page.locator(selector).all();
-    const texts = await Promise.all(elements.map(async (element) => (await element.textContent()) || ""));
+    const texts = await Promise.all(elements.map(async (element) => (await element.textContent()) ?? ""));
     return texts;
   }
 

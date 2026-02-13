@@ -1,9 +1,9 @@
-import WebScraper from "#/core/WebScraper";
-import ModuleWriter from "#/core/ModuleWriter";
+import config from "#/core/Config";
 import DatabaseService from "#/core/DatabaseService";
+import ModuleWriter from "#/core/ModuleWriter";
+import WebScraper from "#/core/WebScraper";
 import ProgressDisplay from "#/scripts/main/ProgressDisplay";
 import ScrapingOrchestrator from "#/scripts/main/ScrapingOrchestrator";
-import config from "#/core/Config";
 
 async function main() {
   const timestamp = new Date().toTimeString().slice(0, 8).replace(/:/g, "");

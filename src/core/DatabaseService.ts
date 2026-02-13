@@ -1,9 +1,10 @@
-import { MongoClient, Db, Collection } from "mongodb";
-import type { CreateIndexesOptions } from "mongodb";
+import { MongoClient } from "mongodb";
+
+import type { Db, Collection, CreateIndexesOptions, IndexDescription } from "mongodb";
 
 import config from "#/core/Config";
-import authorSchema from "../db-types/author/author.schema";
-import playSchema from "../db-types/play/play.schema";
+import authorSchema from "#/db-types/author/author.schema";
+import playSchema from "#/db-types/play/play.schema";
 
 const COLLECTIONS = [
   { name: "plays", $jsonSchema: playSchema },
@@ -28,7 +29,10 @@ export default class DatabaseService {
   private client: MongoClient | null = null;
   private db: Db | null = null;
 
-  constructor(private mongoUri: string = config.mongoUri, private dbName: string = config.dbName) {
+  constructor(
+    private mongoUri: string = config.mongoUri,
+    private dbName: string = config.dbName,
+  ) {
     if (!mongoUri || !dbName) {
       throw new Error("MongoDB URI and database name are required");
     }
@@ -133,7 +137,7 @@ export default class DatabaseService {
     try {
       for (const [collectionName, expectedIndexes] of Object.entries(indexesByCollection)) {
         const collection = await this.getCollection(collectionName as CollectionName);
-        const indexes = await collection.listIndexes().toArray();
+        const indexes = (await collection.listIndexes().toArray()) as IndexDescription[];
 
         for (const expectedIndex of expectedIndexes) {
           const exists = indexes.some((idx) => idx.key && expectedIndex.field in idx.key);
@@ -192,8 +196,9 @@ export default class DatabaseService {
           await collection.createIndex(indexSpec, index.options);
           console.info(`   - Created index on '${collectionName}.${index.field}'`);
         } catch (error) {
-          console.error(`❌ - Failed to create index on '${collectionName}.${index.field}':`, error);
-          throw error;
+          const message = `Failed to create index on '${collectionName}.${index.field}'`;
+          console.error(`❌ - ${message}`);
+          throw new Error(message, { cause: error });
         }
       }
     }

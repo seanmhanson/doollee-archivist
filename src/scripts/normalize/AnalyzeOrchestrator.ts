@@ -1,8 +1,10 @@
 import { promises as fs } from "fs";
 import path from "path";
+
+import type { Collection, Document } from "mongodb";
+
 import DatabaseService from "#/core/DatabaseService";
 import { SetupError } from "#/scripts/main/ScrapingError";
-import { Collection, Document } from "mongodb";
 
 type Services = {
   dbService: DatabaseService;
@@ -15,6 +17,8 @@ type SingleFrequencyProps = {
   sortDescending?: boolean;
 };
 
+type ResultDocument = Record<string, string> & { count: number };
+
 class AnalyzeOrchestrator {
   private services: Services;
   private playsCollection?: Collection<Document>;
@@ -23,6 +27,20 @@ class AnalyzeOrchestrator {
 
   constructor(services: Services) {
     this.services = services;
+  }
+
+  private getPlaysCollection() {
+    if (!this.playsCollection) {
+      throw new Error("Database not connected. Call connect() first.");
+    }
+    return this.playsCollection;
+  }
+
+  private getAuthorsCollection() {
+    if (!this.authorsCollection) {
+      throw new Error("Database not connected. Call connect() first.");
+    }
+    return this.authorsCollection;
   }
 
   private async connect() {
@@ -50,7 +68,7 @@ class AnalyzeOrchestrator {
     await this.analyzePublishers();
     await this.analyzeParts();
 
-    this.close();
+    await this.close();
   }
 
   private async close() {
@@ -61,14 +79,14 @@ class AnalyzeOrchestrator {
 
   private async analyzeGenres() {
     await this.getSingleFrequencyTable({
-      collection: this.playsCollection!,
+      collection: this.getPlaysCollection(),
       fieldName: "genres",
     });
   }
 
   private async analyzePublishers() {
     await this.getSingleFrequencyTable({
-      collection: this.playsCollection!,
+      collection: this.getPlaysCollection(),
       fieldName: "publisher",
       sortByField: true,
     });
@@ -77,8 +95,8 @@ class AnalyzeOrchestrator {
   private async analyzeParts() {
     const pipeline = this.getPartsPipeline();
 
-    const collection = this.playsCollection!;
-    const results = await collection.aggregate(pipeline).toArray();
+    const collection = this.getPlaysCollection();
+    const results = (await collection.aggregate(pipeline).toArray()) as ResultDocument[];
 
     const csv = [
       "All,Frequency,MaleParts,FemaleParts,OtherParts",
@@ -113,12 +131,12 @@ class AnalyzeOrchestrator {
     sortDescending = true,
   }: SingleFrequencyProps) {
     const pipeline = this.getSingleFrequencyPipeline(fieldName, sortByField, sortDescending);
-    const results = await collection.aggregate(pipeline).toArray();
+    const results = (await collection.aggregate(pipeline).toArray()) as ResultDocument[];
     const csv = this.getSingleFrequencyCSV(results, fieldName);
     await this.writeToCSV(csv, fieldName);
   }
 
-  private getSingleFrequencyCSV(results: Document[], fieldName: string): string {
+  private getSingleFrequencyCSV(results: ResultDocument[], fieldName: string): string {
     const header = `${fieldName},count`;
     const rows = results.map(({ [fieldName]: fieldValue, count }) => {
       return `${this.escapeCsvField(fieldValue)},${count}`;
@@ -142,7 +160,7 @@ class AnalyzeOrchestrator {
         acc[key] = { $sum: { $cond: [condition, 1, 0] } };
         return acc;
       },
-      {} as Record<string, any>,
+      {} as Record<string, unknown>,
     );
 
     const projections = labels.reduce(
@@ -151,7 +169,7 @@ class AnalyzeOrchestrator {
         acc[key] = 1;
         return acc;
       },
-      {} as Record<string, any>,
+      {} as Record<string, unknown>,
     );
 
     return [
@@ -162,7 +180,9 @@ class AnalyzeOrchestrator {
             $filter: {
               input,
               as: "part",
-              cond: { $and: [{ $ne: ["$$part.text", null] }, { $ne: ["$$part.text", ""] }] },
+              cond: {
+                $and: [{ $ne: ["$$part.text", null] }, { $ne: ["$$part.text", ""] }],
+              },
             },
           },
         },
@@ -190,8 +210,8 @@ class AnalyzeOrchestrator {
       await fs.mkdir(outputDir, { recursive: true });
       await fs.writeFile(filePath, csv, "utf8");
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      throw new Error(`Failed to write CSV for ${fieldName} frequencies: ${errorMessage}`);
+      const message = `Error writing CSV for ${fieldName} frequencies`;
+      throw new Error(message, { cause: error });
     }
 
     this.writtenFiles.push(filePath);

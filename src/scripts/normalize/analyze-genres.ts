@@ -1,7 +1,8 @@
 import { promises as fs } from "fs";
 import path from "path";
-import DatabaseService from "#/core/DatabaseService";
+
 import config from "#/core/Config";
+import DatabaseService from "#/core/DatabaseService";
 
 async function main() {
   const dbService = new DatabaseService(config.mongoUri, config.dbName);

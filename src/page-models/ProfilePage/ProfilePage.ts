@@ -1,12 +1,12 @@
-import type { Page } from "playwright";
-
 import BasePage from "../__BasePage";
+
 import { AdaptationBiography, StandardBiography } from "./Biography";
 import { AdaptationList, PlaysList } from "./WorksList";
 
 import type { ScrapedAuthorData } from "#/db-types/author/author.types";
 import type { ScrapedPlayData } from "#/db-types/play/play.types";
 import type { BasePageArgs } from "../__BasePage";
+import type { Page } from "playwright";
 
 type UrlArgs = { slug: string; letter: string };
 
@@ -59,7 +59,9 @@ export default class ProfilePage extends BasePage<UrlArgs, Data> {
   }): Promise<void> {
     await super.goto(options);
     this.template = await this.identifyTemplate();
+  }
 
+  public async extractPage(): Promise<void> {
     if (this.template === "standard") {
       this.biographyComponent = await StandardBiography.create(this.page);
       this.worksListComponent = await PlaysList.create(this.page);
@@ -67,9 +69,7 @@ export default class ProfilePage extends BasePage<UrlArgs, Data> {
       this.biographyComponent = await AdaptationBiography.create(this.page);
       this.worksListComponent = await AdaptationList.create(this.page);
     }
-  }
 
-  public async extractPage(): Promise<void> {
     if (this.biographyComponent) {
       Object.assign(this.data.biography, this.biographyComponent.biographyData);
     } else {

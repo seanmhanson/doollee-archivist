@@ -1,10 +1,10 @@
-import type { Page } from "@playwright/test";
 import BasePage from "./__BasePage";
+
 import type { BasePageArgs } from "./__BasePage";
+import type { Page } from "@playwright/test";
 
 type UrlArgs = { letter: string };
-
-type Data = { [key: string]: string };
+type Data = Record<string, string>;
 
 /**
  * Scraper for top-level index pages for authors on doollee.com.
@@ -72,15 +72,9 @@ export default class IndexPage extends BasePage<UrlArgs, Data> {
    * @inheritDoc
    */
   public async extractPage(): Promise<void> {
-    const mainSelector = this.page.locator(
-      IndexPage.selectors.linkContainer
-    );
-    const eSelector = this.page.locator(
-      IndexPage.selectors.linkContainerE
-    );
-    const qxSelector = this.page.locator(
-      IndexPage.selectors.linkContainerQX
-    );
+    const mainSelector = this.page.locator(IndexPage.selectors.linkContainer);
+    const eSelector = this.page.locator(IndexPage.selectors.linkContainerE);
+    const qxSelector = this.page.locator(IndexPage.selectors.linkContainerQX);
     const combinedSelector = mainSelector.or(eSelector).or(qxSelector);
     await combinedSelector.waitFor();
 

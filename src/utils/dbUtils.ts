@@ -1,6 +1,9 @@
 import { ObjectId } from "mongodb";
 
-const shouldRemove = (value: any) => {
+type UnknownArray = unknown[];
+type UnknownObject = Record<string, unknown>;
+
+const shouldRemove = (value: unknown) => {
   // special case: preserve null values
   if (value === null) return false;
 
@@ -38,24 +41,29 @@ const shouldRemove = (value: any) => {
  * beyond specified exceptions, and has limited edge case testing outside what is
  * expected from the scraped data.
  */
-export function removeEmptyFields(obj: any): any {
-  if (Array.isArray(obj)) {
-    const arr = obj.map((item) => removeEmptyFields(item)).filter((item) => !shouldRemove(item));
-    return arr.length ? arr : undefined;
-  }
-  if (typeof obj === "object" && obj !== null) {
-    if (obj instanceof ObjectId || obj instanceof Date) {
-      return obj;
-    }
+export function removeEmptyFields<T>(obj: T): T | undefined {
+  const isArrayLike = Array.isArray(obj);
+  const isObjectLike = typeof obj === "object";
+  const isNullish = obj === null || obj === undefined;
+  const isSpecialObject = obj instanceof ObjectId || obj instanceof Date;
 
-    const result: any = {};
-    for (const [key, value] of Object.entries(obj)) {
-      const cleaned = removeEmptyFields(value);
-      if (!shouldRemove(cleaned)) {
-        result[key] = cleaned;
-      }
-    }
-    return Object.keys(result).length ? result : undefined;
+  if (isArrayLike) {
+    const arrayLike = obj as UnknownArray;
+    const arr = arrayLike.map((item: unknown) => removeEmptyFields(item)).filter((item) => !shouldRemove(item));
+    return (arr.length ? arr : undefined) as T;
   }
-  return obj;
+
+  if (!isObjectLike || isNullish || isSpecialObject) {
+    return obj;
+  }
+
+  const objectLike = obj as UnknownObject;
+  const result = Object.entries(objectLike).reduce((acc, [key, value]) => {
+    const cleaned = removeEmptyFields(value);
+    if (!shouldRemove(cleaned)) {
+      acc[key] = cleaned;
+    }
+    return acc;
+  }, {} as UnknownObject);
+  return Object.keys(result).length ? (result as T) : undefined;
 }

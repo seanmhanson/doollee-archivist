@@ -6,7 +6,7 @@
 
 type ISBNResult = [
   numericFormatted: string, // numeric value for database storage
-  originalFormatted: string // original value with hyphens for reference
+  originalFormatted: string, // original value with hyphens for reference
 ];
 
 export function extractISBN(text: string): ISBNResult {

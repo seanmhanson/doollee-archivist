@@ -1,13 +1,11 @@
 import { promises as fs } from "fs";
 import path from "path";
 
-import WebScraper from "#/core/WebScraper";
-import config from "#/core/Config";
-
-/** page models */
-import IndexPage from "#/page-models/IndexPage";
-
 import type { IndexUrlsData } from "#/types";
+
+import config from "#/core/Config";
+import WebScraper from "#/core/WebScraper";
+import IndexPage from "#/page-models/IndexPage";
 
 async function main() {
   const data: IndexUrlsData = {};

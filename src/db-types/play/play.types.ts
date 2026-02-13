@@ -4,7 +4,6 @@ import type { ObjectId } from "mongodb";
  * Document structure for a Play in the database.
  */
 
-
 export type PlayDocument = {
   _id: ObjectId;
   playId: string; // the id used by doollee, not our internal id
@@ -58,7 +57,6 @@ export type RawFields = PlayDocument["rawFields"];
 type OptionalInitialMetadataKeys = "createdAt" | "updatedAt";
 export type InitialMetadata = Omit<Metadata, OptionalInitialMetadataKeys> &
   Partial<Pick<Metadata, OptionalInitialMetadataKeys>>;
-
 
 /**
  * Input data retreived from scraping a play page, before being transformed into

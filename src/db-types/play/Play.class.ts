@@ -1,7 +1,8 @@
 import { ObjectId } from "mongodb";
-import type { Document } from "mongodb";
-import { InitialMetadata, RawFields, PlayDocument, PlayData } from "./play.types";
-import * as dbUtils from "../../utils/dbUtils";
+
+import type { InitialMetadata, RawFields, PlayDocument, PlayData } from "#/db-types/play/play.types";
+
+import * as dbUtils from "#/utils/dbUtils";
 
 export default class Play {
   private _id: ObjectId;
@@ -63,7 +64,7 @@ export default class Play {
     };
 
     this.title = input.title;
-    this.author = input.originalAuthor || "";
+    this.author = input.originalAuthor ?? "";
     this.authorId = input.authorId;
     this.adaptingAuthor = input.adaptingAuthor;
     this.genres = input.genres;
@@ -90,12 +91,12 @@ export default class Play {
   toDocument(): PlayDocument {
     const now = new Date();
 
-    const document: Document = {
+    const document: PlayDocument = {
       _id: this._id,
       playId: this.playId,
       metadata: {
         ...this.metadata,
-        createdAt: this.metadata.createdAt || now,
+        createdAt: this.metadata.createdAt ?? now,
         updatedAt: now,
       },
       rawFields: this.rawFields,
@@ -125,6 +126,10 @@ export default class Play {
 
     // prune undefined/empty fields and manually remove fields added by this class
     const prunedDocument = dbUtils.removeEmptyFields(document);
+    if (!prunedDocument) {
+      throw new Error("Failed to create play document: all fields are empty or undefined");
+    }
+
     if (!prunedDocument.metadata.needsReview) {
       delete prunedDocument.metadata.needsReview;
     }

@@ -1,8 +1,7 @@
+import type { ScrapedAuthorData } from "#/db-types/author/author.types";
 import type { Page } from "playwright";
 
-import BaseBiography from "./__BaseBiography";
-
-import type { ScrapedAuthorData } from "#/db-types/author/author.types";
+import BaseBiography from "#/page-models/ProfilePage/Biography/__BaseBiography";
 
 type ScrapedData = {
   bio: string;
@@ -46,18 +45,18 @@ export default class AdaptationBiography extends BaseBiography {
   }
 
   protected async scrapeData(): Promise<ScrapedData> {
-    return await this.page.evaluate(async () => {
+    return await this.page.evaluate(() => {
       const bioSelector = "#table > p";
       const tableSelector = "#table table:first-child";
       const dateSelector = "#table table:first-child tr:first-child > td:nth-child(2) > h1";
       const imageSelector = "#table table:first-child tr:first-child > td:first-child > p img";
 
-      const bio = document.querySelector(bioSelector)?.textContent?.trim() || "";
-      const dateString = document.querySelector(dateSelector)?.textContent?.trim() || "";
+      const bio = document.querySelector(bioSelector)?.textContent?.trim() ?? "";
+      const dateString = document.querySelector(dateSelector)?.textContent?.trim() ?? "";
       const imageNode = document.querySelector(imageSelector);
-      const imageSrc = imageNode?.getAttribute("src") || "";
-      const imageAlt = imageNode?.getAttribute("alt") || "";
-      const innerHTML = document.querySelector(tableSelector)?.innerHTML || "";
+      const imageSrc = imageNode?.getAttribute("src") ?? "";
+      const imageAlt = imageNode?.getAttribute("alt") ?? "";
+      const innerHTML = document.querySelector(tableSelector)?.innerHTML ?? "";
 
       return {
         bio,
@@ -71,12 +70,12 @@ export default class AdaptationBiography extends BaseBiography {
 
   private parseAdaptationNameAndDates(dateString: string): ParsedNameAndDates {
     const datePattern = /\s*\(([^-]+?)\s*-\s*([^)]+?)\)$/;
-    const match = dateString.match(datePattern);
+    const match = datePattern.exec(dateString);
 
     return {
       name: match ? dateString.replace(datePattern, "").trim() : dateString,
-      yearBorn: match?.[1]?.trim() || "",
-      yearDied: match?.[2]?.trim() || "",
+      yearBorn: match?.[1]?.trim() ?? "",
+      yearDied: match?.[2]?.trim() ?? "",
     };
   }
 }

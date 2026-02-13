@@ -53,7 +53,7 @@ export class Config {
   }
 
   private getEnvOrDefault(key: keyof typeof Config.defaults): string {
-    const value = process.env[key] || Config.defaults[key];
+    const value = process.env[key] ?? Config.defaults[key];
     if (!value && value !== "") {
       throw new Error(`Missing required configuration for ${key}`);
     }
