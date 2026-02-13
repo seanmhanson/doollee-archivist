@@ -1,3 +1,6 @@
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import importPlugin from "eslint-plugin-import";
@@ -13,7 +16,6 @@ export default [
       "**/docs/**",
       "**/output/**",
       "**/input/**",
-      "**/*.json",
       "**/*.js",
       "eslint.config.mjs",
     ],
@@ -40,7 +42,7 @@ export default [
       parser: tseslint.parser,
       parserOptions: {
         projectService: true,
-        tsconfigRootDir: import.meta.dirname,
+        tsconfigRootDir: dirname(fileURLToPath(import.meta.url)),
       },
     },
 
