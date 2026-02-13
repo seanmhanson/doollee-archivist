@@ -6,7 +6,6 @@ import type {
   PlayDocument,
   PlayData,
 } from "#/db-types/play/play.types";
-import type { Document } from "mongodb";
 
 import * as dbUtils from "#/utils/dbUtils";
 
@@ -70,7 +69,7 @@ export default class Play {
     };
 
     this.title = input.title;
-    this.author = input.originalAuthor || "";
+    this.author = input.originalAuthor ?? "";
     this.authorId = input.authorId;
     this.adaptingAuthor = input.adaptingAuthor;
     this.genres = input.genres;
@@ -97,12 +96,12 @@ export default class Play {
   toDocument(): PlayDocument {
     const now = new Date();
 
-    const document: Document = {
+    const document: PlayDocument = {
       _id: this._id,
       playId: this.playId,
       metadata: {
         ...this.metadata,
-        createdAt: this.metadata.createdAt || now,
+        createdAt: this.metadata.createdAt ?? now,
         updatedAt: now,
       },
       rawFields: this.rawFields,
@@ -131,7 +130,7 @@ export default class Play {
     };
 
     // prune undefined/empty fields and manually remove fields added by this class
-    const prunedDocument = dbUtils.removeEmptyFields(document);
+    const prunedDocument: PlayDocument = dbUtils.removeEmptyFields(document);
     if (!prunedDocument.metadata.needsReview) {
       delete prunedDocument.metadata.needsReview;
     }
