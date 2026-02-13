@@ -32,7 +32,6 @@ export default class PlaysList extends BaseWorksList {
           publishingInfo: publisher,
           productionInfo: production,
           playId,
-          production,
           genres,
           ...publicationDetails,
           ...productionDetails,
