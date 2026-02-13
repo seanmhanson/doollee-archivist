@@ -117,7 +117,7 @@ async function testRateLimit() {
         if (i < testUrls.length - 1) {
           await new Promise((resolve) => setTimeout(resolve, delay));
         }
-      } catch (error: unknown) {
+      } catch (error) {
         console.error(`❌ Error with ${url}:`, error);
         shouldBreak = true;
       }

@@ -106,9 +106,12 @@ export default abstract class BasePage<Args extends object, Data extends object>
         console.debug(`✅ Successfully navigated to: ${this.url}`);
       }
     } catch (error) {
-      console.log(`❌ Navigation failed for: ${this.url}`);
-      console.log("   Error:", error);
-      throw error;
+      const message = `Navigation failed for: ${this.url}`;
+
+      if (error instanceof Error) {
+        throw new Error(message, { cause: error });
+      }
+      throw new Error(`${message}: ${String(error)}`);
     }
   }
 

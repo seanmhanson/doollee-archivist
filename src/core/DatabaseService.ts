@@ -196,8 +196,13 @@ export default class DatabaseService {
           await collection.createIndex(indexSpec, index.options);
           console.info(`   - Created index on '${collectionName}.${index.field}'`);
         } catch (error) {
-          console.error(`❌ - Failed to create index on '${collectionName}.${index.field}':`, error);
-          throw error;
+          const message = `Failed to create index on '${collectionName}.${index.field}'`;
+          console.error(`❌ - ${message}`);
+
+          if (error instanceof Error) {
+            throw new Error(message, { cause: error });
+          }
+          throw new Error(`${message}: ${String(error)}`);
         }
       }
     }

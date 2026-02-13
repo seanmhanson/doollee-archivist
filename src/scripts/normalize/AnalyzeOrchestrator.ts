@@ -210,8 +210,12 @@ class AnalyzeOrchestrator {
       await fs.mkdir(outputDir, { recursive: true });
       await fs.writeFile(filePath, csv, "utf8");
     } catch (error) {
-      console.error(`Error writing CSV for ${fieldName} frequencies:`, error);
-      throw error;
+      const message = `Error writing CSV for ${fieldName} frequencies`;
+
+      if (error instanceof Error) {
+        throw new Error(message, { cause: error });
+      }
+      throw new Error(`${message}: ${String(error)}`);
     }
 
     this.writtenFiles.push(filePath);
