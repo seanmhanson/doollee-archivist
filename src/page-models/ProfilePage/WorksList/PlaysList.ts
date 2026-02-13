@@ -11,18 +11,8 @@ export default class PlaysList extends BaseWorksList {
     const data = this.normalizeStringFields(await this.scrapeData());
 
     this.data = data.map(
-      ({
-        playId: playIdText,
-        parts: partsText,
-        genres: rawGenres,
-        publisher,
-        production,
-        ...rest
-      }) => {
-        const publicationDetails = this.parsePublicationDetails(
-          publisher,
-          true,
-        );
+      ({ playId: playIdText, parts: partsText, genres: rawGenres, publisher, production, ...rest }) => {
+        const publicationDetails = this.parsePublicationDetails(publisher, true);
         const productionDetails = this.parseProductionDetails(production);
         const playId = this.getPlayId(playIdText);
         const parts = this.parseParts(partsText);
@@ -117,9 +107,7 @@ export default class PlaysList extends BaseWorksList {
     const match = pattern.exec(normalizedText);
 
     if (!match) {
-      throw new Error(
-        `Parts text does not match expected format: ${partsText}`,
-      );
+      throw new Error(`Parts text does not match expected format: ${partsText}`);
     }
 
     const partsTextMale = match[1].trim();

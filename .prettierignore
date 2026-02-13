@@ -4,5 +4,4 @@ docs
 output
 input
 src/input
-*.json
 *.md

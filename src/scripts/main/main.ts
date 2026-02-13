@@ -15,14 +15,8 @@ async function main() {
     const progressDisplay = new ProgressDisplay();
 
     // Only create ModuleWriters if writing to files
-    const authorModuleWriter =
-      config.writeTo === "file"
-        ? await ModuleWriter.create(`${timestamp}-authors`)
-        : null;
-    const playModuleWriter =
-      config.writeTo === "file"
-        ? await ModuleWriter.create(`${timestamp}-plays`)
-        : null;
+    const authorModuleWriter = config.writeTo === "file" ? await ModuleWriter.create(`${timestamp}-authors`) : null;
+    const playModuleWriter = config.writeTo === "file" ? await ModuleWriter.create(`${timestamp}-plays`) : null;
 
     // Create services object for orchestrator
     const services = {

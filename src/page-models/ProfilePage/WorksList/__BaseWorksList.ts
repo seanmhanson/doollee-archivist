@@ -11,8 +11,7 @@ type PublicationDetails = {
   isbn?: string;
 };
 
-const { hasAlphanumericCharacters, normalizeWhitespace, removeAndNormalize } =
-  stringUtils;
+const { hasAlphanumericCharacters, normalizeWhitespace, removeAndNormalize } = stringUtils;
 
 export default abstract class BaseWorksList {
   protected static publisherException = "I don't think it has been published.";
@@ -30,10 +29,7 @@ export default abstract class BaseWorksList {
     this.data = [];
   }
 
-  public static async create<T extends BaseWorksList>(
-    this: new (page: Page) => T,
-    page: Page,
-  ): Promise<T> {
+  public static async create<T extends BaseWorksList>(this: new (page: Page) => T, page: Page): Promise<T> {
     const instance = new this(page);
     try {
       await instance.extractData();
@@ -49,9 +45,7 @@ export default abstract class BaseWorksList {
     return idString?.trim() || "0000000";
   }
 
-  protected normalizeStringFields<T extends Record<string, unknown>>(
-    data: T[],
-  ): T[] {
+  protected normalizeStringFields<T extends Record<string, unknown>>(data: T[]): T[] {
     return data.map((work) => {
       return Object.entries(work).reduce(
         (acc, [key, value]) => {
@@ -76,10 +70,10 @@ export default abstract class BaseWorksList {
     const fullDatePattern = /\(?(\d{1,2}\s+[A-Za-z]{3}\s+\d{4})\)?/; // DD MMM YYYY
     const yearOnlyPattern = /\(?(\d{4})\)?/; // YYYY
 
-    const [extractedDate, updatedString] = stringUtils.searchForAndRemove(
-      productionText,
-      [fullDatePattern, yearOnlyPattern],
-    );
+    const [extractedDate, updatedString] = stringUtils.searchForAndRemove(productionText, [
+      fullDatePattern,
+      yearOnlyPattern,
+    ]);
 
     return {
       productionLocation: removeAndNormalize(updatedString, ">>>"),
@@ -87,17 +81,12 @@ export default abstract class BaseWorksList {
     };
   }
 
-  protected parsePublicationDetails(
-    publicationText: string,
-    includeISBN: boolean,
-  ): PublicationDetails {
+  protected parsePublicationDetails(publicationText: string, includeISBN: boolean): PublicationDetails {
     let workingString = publicationText;
     const isbn = includeISBN ? { isbn: "" } : {};
 
     const isBlank = !hasAlphanumericCharacters(publicationText);
-    const isMissing = publicationText.includes(
-      BaseWorksList.publisherException,
-    );
+    const isMissing = publicationText.includes(BaseWorksList.publisherException);
 
     if (isBlank || isMissing) {
       return { publisher: "", publicationYear: "", ...isbn };
@@ -112,10 +101,7 @@ export default abstract class BaseWorksList {
     }
 
     const datePattern = /\(?(\d{4})\)?/; // YYYY with optional enclosing parentheses
-    const [extractedDate, updatedString] = stringUtils.searchForAndRemove(
-      workingString,
-      [datePattern],
-    );
+    const [extractedDate, updatedString] = stringUtils.searchForAndRemove(workingString, [datePattern]);
 
     return {
       publisher: removeAndNormalize(updatedString, ">>>"),

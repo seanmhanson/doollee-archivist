@@ -33,10 +33,7 @@ export default class WebScraper {
 
   private constructor() {}
 
-  static async create({
-    headless = true,
-    slowMo = 50,
-  }: BrowserOptions = {}): Promise<WebScraper> {
+  static async create({ headless = true, slowMo = 50 }: BrowserOptions = {}): Promise<WebScraper> {
     console.log("--------------------------------");
     console.log("  🏁 Creating a WebScraper Instance...");
     const instance = new WebScraper();

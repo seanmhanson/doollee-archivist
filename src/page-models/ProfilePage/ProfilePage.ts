@@ -25,8 +25,7 @@ export default class ProfilePage extends BasePage<UrlArgs, Data> {
 
   private template: TemplateType = null;
 
-  private biographyComponent: StandardBiography | AdaptationBiography | null =
-    null;
+  private biographyComponent: StandardBiography | AdaptationBiography | null = null;
 
   private worksListComponent: PlaysList | AdaptationList | null = null;
 
@@ -85,12 +84,8 @@ export default class ProfilePage extends BasePage<UrlArgs, Data> {
   }
 
   private async identifyTemplate(): Promise<TemplateType> {
-    const regularLocator = this.page.locator(
-      ProfilePage.selectors.sectionIdentifier,
-    );
-    const tableLocator = this.page
-      .locator(ProfilePage.selectors.tableIdentifier)
-      .first();
+    const regularLocator = this.page.locator(ProfilePage.selectors.sectionIdentifier);
+    const tableLocator = this.page.locator(ProfilePage.selectors.tableIdentifier).first();
 
     await regularLocator.or(tableLocator).first().waitFor();
 

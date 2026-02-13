@@ -11,9 +11,7 @@ export default abstract class BaseBiography {
     address: "address",
     telephone: "telephone",
   };
-  private static readonly labelString = Object.keys(
-    BaseBiography.labelMap,
-  ).join("|");
+  private static readonly labelString = Object.keys(BaseBiography.labelMap).join("|");
 
   private static readonly placeholders = [
     "including biography, theatres, agent, synopses, cast sizes, production and published dates",
@@ -34,10 +32,7 @@ export default abstract class BaseBiography {
     this.page = page;
   }
 
-  public static async create<T extends BaseBiography>(
-    this: new (page: Page) => T,
-    page: Page,
-  ): Promise<T> {
+  public static async create<T extends BaseBiography>(this: new (page: Page) => T, page: Page): Promise<T> {
     const instance = new this(page);
     try {
       await instance.extractData();
@@ -49,9 +44,7 @@ export default abstract class BaseBiography {
 
   protected abstract extractData(): Promise<void>;
 
-  protected parseLabeledContent(
-    sectionHTML: string,
-  ): Partial<ScrapedAuthorData> {
+  protected parseLabeledContent(sectionHTML: string): Partial<ScrapedAuthorData> {
     /**
      * Construct a case-insensitive regex that will find bolded labels, then omit
      * whitespace and any optional anchor tags, capturing the text content that follows

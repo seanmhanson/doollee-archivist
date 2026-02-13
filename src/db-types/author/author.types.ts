@@ -60,15 +60,9 @@ type OptionalInitialMetadataKeys = "createdAt" | "updatedAt";
 export type InitialMetadata = Omit<Metadata, OptionalInitialMetadataKeys> &
   Partial<Pick<Metadata, OptionalInitialMetadataKeys>>;
 
-type OptionalNameKeys =
-  | "isOrganization"
-  | "firstName"
-  | "lastName"
-  | "middleNames"
-  | "suffixes";
+type OptionalNameKeys = "isOrganization" | "firstName" | "lastName" | "middleNames" | "suffixes";
 type RequiredNameKeys = "name" | "displayName";
-export type AuthorNameData = Pick<AuthorDocument, RequiredNameKeys> &
-  Partial<Pick<AuthorDocument, OptionalNameKeys>>;
+export type AuthorNameData = Pick<AuthorDocument, RequiredNameKeys> & Partial<Pick<AuthorDocument, OptionalNameKeys>>;
 
 /**
  * Input data from scraping an author page, before being transformed into
@@ -95,10 +89,5 @@ type OptionalKeys =
 type OptionalFields = Partial<Pick<AuthorDocument, OptionalKeys>>;
 type OptionalRawFields = Partial<RawFields>;
 
-export type ScrapedAuthorData = RequiredFields &
-  OptionalFields &
-  OptionalRawFields;
-export type AuthorData = RequiredFields &
-  RequiredMetadata &
-  OptionalFields &
-  OptionalRawFields;
+export type ScrapedAuthorData = RequiredFields & OptionalFields & OptionalRawFields;
+export type AuthorData = RequiredFields & RequiredMetadata & OptionalFields & OptionalRawFields;

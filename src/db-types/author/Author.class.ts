@@ -10,12 +10,7 @@ import type {
 import type { ObjectId as ObjectIdType } from "mongodb";
 
 import * as dbUtils from "#/utils/dbUtils";
-import {
-  toTitleCase,
-  removeDisambiguationSuffix,
-  isAllCaps,
-  stringArraysEqual,
-} from "#/utils/stringUtils";
+import { toTitleCase, removeDisambiguationSuffix, isAllCaps, stringArraysEqual } from "#/utils/stringUtils";
 
 /**
  * Usage:
@@ -112,15 +107,7 @@ export default class Author {
   }
 
   constructor(input: AuthorData) {
-    const {
-      name,
-      displayName,
-      isOrganization,
-      lastName,
-      firstName,
-      middleNames,
-      suffixes,
-    } = this.parseName(input);
+    const { name, displayName, isOrganization, lastName, firstName, middleNames, suffixes } = this.parseName(input);
 
     this._id = new ObjectId();
 
@@ -172,23 +159,10 @@ export default class Author {
    *  If the name is a single word, it may still be a mononym, and will
    *  require manual review.
    */
-  private parseOrganization({
-    listingName = "",
-    headingName = "",
-    altName = "",
-  }: RawFields): AuthorNameData {
-    const lowercaseListing = listingName
-      .normalize("NFC")
-      .toLocaleLowerCase()
-      .trim();
-    const lowercaseHeading = headingName
-      .normalize("NFC")
-      .toLocaleLowerCase()
-      .trim();
-    const lowercaseAltName = altName
-      .normalize("NFC")
-      .toLocaleLowerCase()
-      .trim();
+  private parseOrganization({ listingName = "", headingName = "", altName = "" }: RawFields): AuthorNameData {
+    const lowercaseListing = listingName.normalize("NFC").toLocaleLowerCase().trim();
+    const lowercaseHeading = headingName.normalize("NFC").toLocaleLowerCase().trim();
+    const lowercaseAltName = altName.normalize("NFC").toLocaleLowerCase().trim();
 
     const listingInAllCaps = isAllCaps(listingName);
     const matchesHeading = lowercaseListing === lowercaseHeading;
@@ -197,9 +171,7 @@ export default class Author {
     const isOrganization = listingInAllCaps && matchesHeading && matchesAlt;
 
     this.needsReview = listingName.split(" ").length === 1;
-    this.needsReviewReason = this.needsReview
-      ? "Single word organization name"
-      : undefined;
+    this.needsReviewReason = this.needsReview ? "Single word organization name" : undefined;
 
     return {
       name: orgName,
@@ -221,11 +193,7 @@ export default class Author {
    *  as needing manual review. String comparisons are made after normalizing
    *  for unicode and using locale-sensitive case.
    */
-  private parseAuthorName({
-    listingName = "",
-    headingName = "",
-    altName = "",
-  }: RawFields): AuthorNameData {
+  private parseAuthorName({ listingName = "", headingName = "", altName = "" }: RawFields): AuthorNameData {
     const listingNames = listingName.split(" ");
     const headingNames = headingName.split(" ");
     const headingFirstName = headingNames[0];
@@ -234,9 +202,7 @@ export default class Author {
     const listingFirstName = listingNames[listingNames.length - 1];
 
     const lastNameHeadingIndex = headingNames.indexOf(listingLastName);
-    const firstNameListingIndex = listingNames.indexOf(
-      toTitleCase(headingFirstName),
-    );
+    const firstNameListingIndex = listingNames.indexOf(toTitleCase(headingFirstName));
 
     const headingSuffixes = headingNames.slice(lastNameHeadingIndex + 1);
     const headingMiddleNames = headingNames.slice(1, lastNameHeadingIndex);
@@ -244,44 +210,18 @@ export default class Author {
     const listingMiddleNames = listingNames.slice(firstNameListingIndex + 1);
 
     const sameSuffixes = stringArraysEqual(headingSuffixes, listingSuffixes);
-    const sameMiddleNames = stringArraysEqual(
-      headingMiddleNames,
-      listingMiddleNames,
-    );
-    const sameFirstNames = stringArraysEqual(
-      [headingFirstName],
-      [listingFirstName],
-    );
-    const sameLastNames = stringArraysEqual(
-      [listingLastName],
-      [headingLastName],
-    );
+    const sameMiddleNames = stringArraysEqual(headingMiddleNames, listingMiddleNames);
+    const sameFirstNames = stringArraysEqual([headingFirstName], [listingFirstName]);
+    const sameLastNames = stringArraysEqual([listingLastName], [headingLastName]);
 
     if (!(sameSuffixes && sameMiddleNames && sameFirstNames && sameLastNames)) {
       this.needsReview = true;
-      this.needsReviewReason =
-        "Author's listing and heading names are inconsistent.";
+      this.needsReviewReason = "Author's listing and heading names are inconsistent.";
       this.needsReviewData = {
-        ...this.prepareFlaggedNameData(
-          "First Name",
-          [headingFirstName],
-          [listingFirstName],
-        ),
-        ...this.prepareFlaggedNameData(
-          "Middle Name(s)",
-          headingMiddleNames,
-          listingMiddleNames,
-        ),
-        ...this.prepareFlaggedNameData(
-          "Last Name",
-          [headingLastName],
-          [listingLastName],
-        ),
-        ...this.prepareFlaggedNameData(
-          "Suffix(es)",
-          headingSuffixes,
-          listingSuffixes,
-        ),
+        ...this.prepareFlaggedNameData("First Name", [headingFirstName], [listingFirstName]),
+        ...this.prepareFlaggedNameData("Middle Name(s)", headingMiddleNames, listingMiddleNames),
+        ...this.prepareFlaggedNameData("Last Name", [headingLastName], [listingLastName]),
+        ...this.prepareFlaggedNameData("Suffix(es)", headingSuffixes, listingSuffixes),
       };
     }
 
@@ -289,12 +229,7 @@ export default class Author {
     const lastName = toTitleCase(listingNames[0]);
     const middleNames = headingMiddleNames.map((name) => toTitleCase(name));
     const suffixes = headingSuffixes.map((name) => toTitleCase(name));
-    const canonicalName = [
-      firstName,
-      ...middleNames,
-      lastName,
-      ...suffixes,
-    ].join(" ");
+    const canonicalName = [firstName, ...middleNames, lastName, ...suffixes].join(" ");
     const displayName = altName || canonicalName;
 
     return {
@@ -308,11 +243,7 @@ export default class Author {
     };
   }
 
-  private prepareFlaggedNameData(
-    label: string,
-    headingValues: string[],
-    listingValues: string[],
-  ) {
+  private prepareFlaggedNameData(label: string, headingValues: string[], listingValues: string[]) {
     const matching = stringArraysEqual(headingValues, listingValues);
     if (matching) {
       return {};

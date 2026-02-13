@@ -58,8 +58,7 @@ class AnalyzeOrchestrator {
     }
 
     this.playsCollection = await this.services.dbService.getCollection("plays");
-    this.authorsCollection =
-      await this.services.dbService.getCollection("authors");
+    this.authorsCollection = await this.services.dbService.getCollection("authors");
   }
 
   public async run() {
@@ -97,9 +96,7 @@ class AnalyzeOrchestrator {
     const pipeline = this.getPartsPipeline();
 
     const collection = this.getPlaysCollection();
-    const results = (await collection
-      .aggregate(pipeline)
-      .toArray()) as ResultDocument[];
+    const results = (await collection.aggregate(pipeline).toArray()) as ResultDocument[];
 
     const csv = [
       "All,Frequency,MaleParts,FemaleParts,OtherParts",
@@ -112,11 +109,7 @@ class AnalyzeOrchestrator {
     await this.writeToCSV(csv, "parts");
   }
 
-  private getSingleFrequencyPipeline(
-    fieldName: string,
-    sortByField = false,
-    sortDescending = true,
-  ) {
+  private getSingleFrequencyPipeline(fieldName: string, sortByField = false, sortDescending = true) {
     const groupField = `$${fieldName}`;
 
     const sortOrder = sortDescending ? -1 : 1;
@@ -137,22 +130,13 @@ class AnalyzeOrchestrator {
     sortByField = false,
     sortDescending = true,
   }: SingleFrequencyProps) {
-    const pipeline = this.getSingleFrequencyPipeline(
-      fieldName,
-      sortByField,
-      sortDescending,
-    );
-    const results = (await collection
-      .aggregate(pipeline)
-      .toArray()) as ResultDocument[];
+    const pipeline = this.getSingleFrequencyPipeline(fieldName, sortByField, sortDescending);
+    const results = (await collection.aggregate(pipeline).toArray()) as ResultDocument[];
     const csv = this.getSingleFrequencyCSV(results, fieldName);
     await this.writeToCSV(csv, fieldName);
   }
 
-  private getSingleFrequencyCSV(
-    results: ResultDocument[],
-    fieldName: string,
-  ): string {
+  private getSingleFrequencyCSV(results: ResultDocument[], fieldName: string): string {
     const header = `${fieldName},count`;
     const rows = results.map(({ [fieldName]: fieldValue, count }) => {
       return `${this.escapeCsvField(fieldValue)},${count}`;
@@ -163,8 +147,7 @@ class AnalyzeOrchestrator {
   private getPartsPipeline() {
     const labels = ["male", "female", "other"];
     const toKey = (label: string) => `${label}Parts`;
-    const toCapitalized = (label: string) =>
-      label.charAt(0).toUpperCase() + label.slice(1);
+    const toCapitalized = (label: string) => label.charAt(0).toUpperCase() + label.slice(1);
 
     const input = labels.map((label) => {
       return { type: label, text: `$partsText${toCapitalized(label)}` };
@@ -198,10 +181,7 @@ class AnalyzeOrchestrator {
               input,
               as: "part",
               cond: {
-                $and: [
-                  { $ne: ["$$part.text", null] },
-                  { $ne: ["$$part.text", ""] },
-                ],
+                $and: [{ $ne: ["$$part.text", null] }, { $ne: ["$$part.text", ""] }],
               },
             },
           },

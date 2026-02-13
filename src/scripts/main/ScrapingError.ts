@@ -1,11 +1,5 @@
 type recoveryStrategy = "fatal" | "skip" | "retry";
-type errorContext =
-  | "setup"
-  | "scraping"
-  | "writing-author"
-  | "writing-play"
-  | "processing-play"
-  | "processing-author";
+type errorContext = "setup" | "scraping" | "writing-author" | "writing-play" | "processing-play" | "processing-author";
 
 type ScrapingErrorProps = {
   message: string;
@@ -21,13 +15,7 @@ abstract class BaseScrapingError extends Error {
   public recoveryStrategy: recoveryStrategy;
   public context: errorContext;
 
-  constructor({
-    message,
-    name = "ScrapingError",
-    cause,
-    recoveryStrategy,
-    context,
-  }: ScrapingErrorProps) {
+  constructor({ message, name = "ScrapingError", cause, recoveryStrategy, context }: ScrapingErrorProps) {
     super(message, { cause });
     this.name = name || "ScrapingError";
     this.cause = cause;
@@ -108,13 +96,6 @@ class WritePlayError extends BaseScrapingError {
   }
 }
 
-export {
-  ScrapingError,
-  SetupError,
-  WriteAuthorError,
-  WritePlayError,
-  PlayProcessingError,
-  AuthorProcessingError,
-};
+export { ScrapingError, SetupError, WriteAuthorError, WritePlayError, PlayProcessingError, AuthorProcessingError };
 
 export type { recoveryStrategy, errorContext, ScrapingErrorProps };

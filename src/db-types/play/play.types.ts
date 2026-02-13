@@ -70,9 +70,7 @@ type RequiredMetadataKeys = "scrapedAt" | "sourceUrl";
 type RequiredMetadata = Pick<Metadata, RequiredMetadataKeys>;
 
 type OmittedKeys = "_id" | "author" | "metadata" | "rawFields";
-type OptionalCoreFields = Partial<
-  Omit<PlayDocument, OmittedKeys | RequiredKeys>
->;
+type OptionalCoreFields = Partial<Omit<PlayDocument, OmittedKeys | RequiredKeys>>;
 type OptionalRawFields = Partial<RawFields>;
 
 type RenamedFields = {
@@ -80,12 +78,5 @@ type RenamedFields = {
   originalAuthor?: PlayDocument["author"];
 };
 
-export type ScrapedPlayData = RequiredFields &
-  OptionalCoreFields &
-  OptionalRawFields &
-  RenamedFields;
-export type PlayData = RequiredFields &
-  RequiredMetadata &
-  OptionalCoreFields &
-  OptionalRawFields &
-  RenamedFields;
+export type ScrapedPlayData = RequiredFields & OptionalCoreFields & OptionalRawFields & RenamedFields;
+export type PlayData = RequiredFields & RequiredMetadata & OptionalCoreFields & OptionalRawFields & RenamedFields;

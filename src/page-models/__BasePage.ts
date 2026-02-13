@@ -16,10 +16,7 @@ export type BasePageArgs<T> = { url: string } | T;
  * @template Args - Parameters for URL construction specific to a given page.
  * @template Data - Structured content extracted from the page DOM.
  */
-export default abstract class BasePage<
-  Args extends object,
-  Data extends object,
-> {
+export default abstract class BasePage<Args extends object, Data extends object> {
   /**
    * Base URL used in construction any full page URLs
    */
@@ -77,10 +74,7 @@ export default abstract class BasePage<
    * Records errors in metadata without interrupting scraping operations.
    * @param options Navigation options including waitUntil and timeout.
    */
-  async goto(options?: {
-    waitUntil?: WaitUntilConditions;
-    timeout?: number;
-  }): Promise<void> {
+  async goto(options?: { waitUntil?: WaitUntilConditions; timeout?: number }): Promise<void> {
     const defaultOptions = {
       waitUntil: "domcontentloaded" as const,
       timeout: config.pageTimeout,
@@ -134,9 +128,7 @@ export default abstract class BasePage<
    */
   protected async getAllTextContents(selector: string): Promise<string[]> {
     const elements = await this.page.locator(selector).all();
-    const texts = await Promise.all(
-      elements.map(async (element) => (await element.textContent()) ?? ""),
-    );
+    const texts = await Promise.all(elements.map(async (element) => (await element.textContent()) ?? ""));
     return texts;
   }
 
@@ -145,10 +137,7 @@ export default abstract class BasePage<
    * @param selector Selector of the element to wait for.
    * @param timeout Maximum wait time in milliseconds.
    */
-  protected async waitForSelector(
-    selector: string,
-    timeout = config.elementTimeout,
-  ): Promise<void> {
+  protected async waitForSelector(selector: string, timeout = config.elementTimeout): Promise<void> {
     await this.page.waitForSelector(selector, { timeout });
   }
 

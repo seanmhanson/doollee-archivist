@@ -24,10 +24,7 @@ async function main() {
   const outputDir = path.resolve("analysis");
   await fs.mkdir(outputDir, { recursive: true });
 
-  const csv = [
-    "genre,count",
-    ...results.map(({ genre, count }) => `"${genre}",${count}`),
-  ].join("\n");
+  const csv = ["genre,count", ...results.map(({ genre, count }) => `"${genre}",${count}`)].join("\n");
 
   const filePath = path.join(outputDir, "genre-frequencies.csv");
   await fs.writeFile(filePath, csv, "utf8");

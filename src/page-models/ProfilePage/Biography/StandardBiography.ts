@@ -46,15 +46,10 @@ export default class StandardBiography extends BaseBiography {
       const datesSelector = "#osborne > .welcome";
       const imageSelector = "#osborne > img";
 
-      const name =
-        document.querySelector(nameSelector)?.textContent?.trim() ?? "";
-      const altName =
-        document.querySelector(imageSelector)?.getAttribute("alt")?.trim() ??
-        "";
-      const dateString =
-        document.querySelector(datesSelector)?.textContent?.trim() ?? "";
-      const innerHTML =
-        document.querySelector(sectionSelector)?.innerHTML ?? "";
+      const name = document.querySelector(nameSelector)?.textContent?.trim() ?? "";
+      const altName = document.querySelector(imageSelector)?.getAttribute("alt")?.trim() ?? "";
+      const dateString = document.querySelector(datesSelector)?.textContent?.trim() ?? "";
+      const innerHTML = document.querySelector(sectionSelector)?.innerHTML ?? "";
 
       return { altName, name, dateString, innerHTML };
     });
@@ -73,9 +68,7 @@ export default class StandardBiography extends BaseBiography {
     }
 
     const lastMatch = labelMatches[labelMatches.length - 1];
-    const biography = sectionHTML.substring(
-      lastMatch.index + lastMatch[0].length,
-    );
+    const biography = sectionHTML.substring(lastMatch.index + lastMatch[0].length);
     return this.normalizeBiography(biography);
   }
 

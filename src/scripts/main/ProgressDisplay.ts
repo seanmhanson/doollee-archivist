@@ -79,22 +79,14 @@ class ProgressDisplay {
   }
 
   private initializeDebouncing() {
-    const { debouncedFn, forcedFn, clear } = debounce(
-      () => this.render(),
-      RENDER_DEBOUNCE_MS,
-    );
+    const { debouncedFn, forcedFn, clear } = debounce(() => this.render(), RENDER_DEBOUNCE_MS);
     this.debouncedRender = debouncedFn;
     this.forceRender = forcedFn;
     this.clearDebounce = clear;
   }
 
   private updateData(data: DisplayData = {}) {
-    const {
-      globalStats = {},
-      currentStats = {},
-      authorStats = {},
-      playStats = {},
-    } = data;
+    const { globalStats = {}, currentStats = {}, authorStats = {}, playStats = {} } = data;
     const { startTime, endTime, ...globalBatchStats } = globalStats;
     this.globalStats = { ...this.globalStats, ...globalBatchStats };
     this.currentStats = { ...this.currentStats, ...currentStats };
@@ -105,9 +97,7 @@ class ProgressDisplay {
   private setupLogFile() {
     this.globalStats.startTime = this.globalStats.startTime ?? new Date();
 
-    const timestamp = this.globalStats.startTime
-      .toISOString()
-      .replace(/:/g, "-");
+    const timestamp = this.globalStats.startTime.toISOString().replace(/:/g, "-");
     const outputDir = this.loggingStats.logDirectory;
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
@@ -131,9 +121,7 @@ class ProgressDisplay {
   }
 
   private getElapsedTime(): string {
-    const durationMs = this.globalStats.startTime
-      ? Date.now() - this.globalStats.startTime.getTime()
-      : 0;
+    const durationMs = this.globalStats.startTime ? Date.now() - this.globalStats.startTime.getTime() : 0;
 
     const totalSeconds = Math.floor(durationMs / 1000);
     const hours = Math.floor(totalSeconds / 3600)
@@ -152,16 +140,11 @@ class ProgressDisplay {
       const severity = level.toUpperCase();
 
       const includeUrl = level === "warn" || level === "error";
-      const strippedUrl = (this.currentStats.currentAuthorUrl ?? "").replace(
-        config.baseUrl,
-        "",
-      );
+      const strippedUrl = (this.currentStats.currentAuthorUrl ?? "").replace(config.baseUrl, "");
       const url = includeUrl && strippedUrl ? ` (${strippedUrl}) -` : "";
       const logMessage = `[${timestamp}] ${severity}:${url} ${message} \n`;
 
-      if (
-        this.loggingStats.lastLoggedLines.length >= this.loggingStats.tailLength
-      ) {
+      if (this.loggingStats.lastLoggedLines.length >= this.loggingStats.tailLength) {
         this.loggingStats.lastLoggedLines.shift();
       }
       this.loggingStats.lastLoggedLines.push(logMessage.trim());
@@ -226,10 +209,7 @@ class ProgressDisplay {
     const startTime = this.getStartTime();
     const elapsedTime = this.getElapsedTime();
     const batchSize = this.toPaddedString(this.globalStats.globalBatchSize, 4);
-    const totalBatches = this.toPaddedString(
-      this.globalStats.globalBatchCount,
-      3,
-    );
+    const totalBatches = this.toPaddedString(this.globalStats.globalBatchCount, 3);
 
     return (
       `┌─ Time Started:  ${startTime}       ` +
@@ -240,41 +220,15 @@ class ProgressDisplay {
   }
 
   private rendercurrentStatsSection() {
-    const totalBatches = this.toPaddedString(
-      this.globalStats.globalBatchCount,
-      3,
-    );
-    const currentBatchIndex = this.toPaddedString(
-      this.currentStats.currentBatchIndex + 1,
-      3,
-    );
-    const currentAuthorIndex = this.toPaddedString(
-      this.currentStats.currentAuthorIndex + 1,
-      4,
-    );
-    const currentPlayIndex = this.toPaddedString(
-      this.currentStats.currentPlayIndex + 1,
-      3,
-    );
-    const authorsByBatchCount = this.toPaddedString(
-      this.currentStats.authorsByBatchCount,
-      4,
-    );
-    const playsByAuthorCount = this.toPaddedString(
-      this.currentStats.playsByAuthorCount,
-      3,
-    );
-    const firstAuthorName = this.currentStats.firstAuthorName
-      ?.toLowerCase()
-      .replace(/\s+/g, "")
-      .slice(0, 10);
-    const lastAuthorName = this.currentStats.lastAuthorName
-      ?.toLowerCase()
-      .replace(/\s+/g, "")
-      .slice(0, 10);
-    const currentAuthorUrl = this.currentStats.currentAuthorUrl
-      ?.replace(config.baseUrl, "")
-      .slice(0, 21);
+    const totalBatches = this.toPaddedString(this.globalStats.globalBatchCount, 3);
+    const currentBatchIndex = this.toPaddedString(this.currentStats.currentBatchIndex + 1, 3);
+    const currentAuthorIndex = this.toPaddedString(this.currentStats.currentAuthorIndex + 1, 4);
+    const currentPlayIndex = this.toPaddedString(this.currentStats.currentPlayIndex + 1, 3);
+    const authorsByBatchCount = this.toPaddedString(this.currentStats.authorsByBatchCount, 4);
+    const playsByAuthorCount = this.toPaddedString(this.currentStats.playsByAuthorCount, 3);
+    const firstAuthorName = this.currentStats.firstAuthorName?.toLowerCase().replace(/\s+/g, "").slice(0, 10);
+    const lastAuthorName = this.currentStats.lastAuthorName?.toLowerCase().replace(/\s+/g, "").slice(0, 10);
+    const currentAuthorUrl = this.currentStats.currentAuthorUrl?.replace(config.baseUrl, "").slice(0, 21);
 
     return (
       `┌─ Current Batch:    ` +
@@ -289,54 +243,18 @@ class ProgressDisplay {
   }
 
   private renderOutputDataSection() {
-    const batchAuthorsWritten = this.toPaddedString(
-      this.authorStats.batchAuthorsWritten,
-      4,
-    );
-    const batchAuthorsSkipped = this.toPaddedString(
-      this.authorStats.batchAuthorsSkipped,
-      4,
-    );
-    const batchAuthorsFlagged = this.toPaddedString(
-      this.authorStats.batchAuthorsFlagged,
-      4,
-    );
-    const totalAuthorsWritten = this.toPaddedString(
-      this.authorStats.totalAuthorsWritten,
-      5,
-    );
-    const totalAuthorsSkipped = this.toPaddedString(
-      this.authorStats.totalAuthorsSkipped,
-      5,
-    );
-    const totalAuthorsFlagged = this.toPaddedString(
-      this.authorStats.totalAuthorsFlagged,
-      5,
-    );
-    const batchPlaysWritten = this.toPaddedString(
-      this.playStats.batchPlaysWritten,
-      5,
-    );
-    const batchPlaysSkipped = this.toPaddedString(
-      this.playStats.batchPlaysSkipped,
-      5,
-    );
-    const batchPlaysFlagged = this.toPaddedString(
-      this.playStats.batchPlaysFlagged,
-      5,
-    );
-    const totalPlaysWritten = this.toPaddedString(
-      this.playStats.totalPlaysWritten,
-      6,
-    );
-    const totalPlaysSkipped = this.toPaddedString(
-      this.playStats.totalPlaysSkipped,
-      6,
-    );
-    const totalPlaysFlagged = this.toPaddedString(
-      this.playStats.totalPlaysFlagged,
-      6,
-    );
+    const batchAuthorsWritten = this.toPaddedString(this.authorStats.batchAuthorsWritten, 4);
+    const batchAuthorsSkipped = this.toPaddedString(this.authorStats.batchAuthorsSkipped, 4);
+    const batchAuthorsFlagged = this.toPaddedString(this.authorStats.batchAuthorsFlagged, 4);
+    const totalAuthorsWritten = this.toPaddedString(this.authorStats.totalAuthorsWritten, 5);
+    const totalAuthorsSkipped = this.toPaddedString(this.authorStats.totalAuthorsSkipped, 5);
+    const totalAuthorsFlagged = this.toPaddedString(this.authorStats.totalAuthorsFlagged, 5);
+    const batchPlaysWritten = this.toPaddedString(this.playStats.batchPlaysWritten, 5);
+    const batchPlaysSkipped = this.toPaddedString(this.playStats.batchPlaysSkipped, 5);
+    const batchPlaysFlagged = this.toPaddedString(this.playStats.batchPlaysFlagged, 5);
+    const totalPlaysWritten = this.toPaddedString(this.playStats.totalPlaysWritten, 6);
+    const totalPlaysSkipped = this.toPaddedString(this.playStats.totalPlaysSkipped, 6);
+    const totalPlaysFlagged = this.toPaddedString(this.playStats.totalPlaysFlagged, 6);
 
     return (
       `          ┌─────── Current Batch ───────┐ ┌─────── All Batches ─────────┐\n` +
@@ -353,13 +271,7 @@ class ProgressDisplay {
   }
 
   private renderLoggingSection() {
-    const {
-      logFile,
-      warningsLogged,
-      errorsLogged,
-      lastLoggedLines,
-      tailLength,
-    } = this.loggingStats;
+    const { logFile, warningsLogged, errorsLogged, lastLoggedLines, tailLength } = this.loggingStats;
     const logDir = logFile || "N/A";
     const warnings = this.toPaddedString(warningsLogged, 5);
     const errors = this.toPaddedString(errorsLogged, 5);
@@ -369,10 +281,7 @@ class ProgressDisplay {
       .join("\n");
 
     return (
-      `┌─ Log Output: ${logDir}\n` +
-      `├─ ${warnings} Warnings  /  ${errors} Errors\n` +
-      `└─ Tail:\n` +
-      `${tailLines}`
+      `┌─ Log Output: ${logDir}\n` + `├─ ${warnings} Warnings  /  ${errors} Errors\n` + `└─ Tail:\n` + `${tailLines}`
     );
   }
 
@@ -437,8 +346,7 @@ class ProgressDisplay {
   private renderSummaryStatsSection() {
     const startTime = this.globalStats.startTime?.getTime();
     const endTime = this.globalStats.endTime?.getTime();
-    const runtime =
-      startTime && endTime ? this.getRuntime(startTime, endTime) : "N/A";
+    const runtime = startTime && endTime ? this.getRuntime(startTime, endTime) : "N/A";
 
     const batchCount = this.globalStats.completedBatchCount; // TODO
     const authorCount = this.authorStats.totalAuthorsWritten;

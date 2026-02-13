@@ -18,63 +18,50 @@ export default class AdaptationsList extends BaseWorksList {
     const data = this.normalizeStringFields(await this.scrapeTableData());
 
     // destructure values we will remove before returning
-    this.data = data.map(
-      ({
+    this.data = data.map(({ productionLocation, productionYear, publisher, imgAlt, ...adaptation }) => {
+      // scraped values that we will add before returning
+      const productionInfo = `${productionLocation ?? ""} ${productionYear ?? ""}`.trim();
+      const publishingInfo = publisher ?? "";
+
+      const productionDetails = {
         productionLocation,
         productionYear,
-        publisher,
-        imgAlt,
-        ...adaptation
-      }) => {
-        // scraped values that we will add before returning
-        const productionInfo =
-          `${productionLocation ?? ""} ${productionYear ?? ""}`.trim();
-        const publishingInfo = publisher ?? "";
+      };
+      const publicationDetails = {
+        ...this.parsePublicationDetails(publisher, false),
+        isbn: this.formatISBN(adaptation.isbn),
+      };
 
-        const productionDetails = {
-          productionLocation,
-          productionYear,
-        };
-        const publicationDetails = {
-          ...this.parsePublicationDetails(publisher, false),
-          isbn: this.formatISBN(adaptation.isbn),
-        };
+      const altTitle = imgAlt || "";
 
-        const altTitle = imgAlt || "";
+      // scraped values that we will overwrite before returning
+      const playId = this.getPlayId(adaptation.playId);
 
-        // scraped values that we will overwrite before returning
-        const playId = this.getPlayId(adaptation.playId);
+      const parts = this.parseParts(adaptation.parts);
+      const organizations = this.formatOrganizations(adaptation.organizations);
+      const displayTitle = this.formatDisplayTitle(adaptation.title);
+      const originalAuthor = this.parseOriginalAuthor(adaptation.notes);
+      const reference = this.formatReference(adaptation.reference);
+      const genres = this.formatGenres(adaptation.genres);
+      const adaptingAuthor = stringUtils.toTitleCase(adaptation.adaptingAuthor);
 
-        const parts = this.parseParts(adaptation.parts);
-        const organizations = this.formatOrganizations(
-          adaptation.organizations,
-        );
-        const displayTitle = this.formatDisplayTitle(adaptation.title);
-        const originalAuthor = this.parseOriginalAuthor(adaptation.notes);
-        const reference = this.formatReference(adaptation.reference);
-        const genres = this.formatGenres(adaptation.genres);
-        const adaptingAuthor = stringUtils.toTitleCase(
-          adaptation.adaptingAuthor,
-        );
-
-        return {
-          ...adaptation,
-          playId,
-          altTitle,
-          displayTitle,
-          originalAuthor,
-          adaptingAuthor,
-          productionInfo,
-          publishingInfo,
-          organizations,
-          reference,
-          ...parts,
-          genres,
-          ...productionDetails,
-          ...publicationDetails,
-        };
-      },
-    );
+      return {
+        ...adaptation,
+        playId,
+        altTitle,
+        displayTitle,
+        originalAuthor,
+        adaptingAuthor,
+        productionInfo,
+        publishingInfo,
+        organizations,
+        reference,
+        ...parts,
+        genres,
+        ...productionDetails,
+        ...publicationDetails,
+      };
+    });
   }
 
   protected async scrapeTableData() {

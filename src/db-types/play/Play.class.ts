@@ -1,11 +1,6 @@
 import { ObjectId } from "mongodb";
 
-import type {
-  InitialMetadata,
-  RawFields,
-  PlayDocument,
-  PlayData,
-} from "#/db-types/play/play.types";
+import type { InitialMetadata, RawFields, PlayDocument, PlayData } from "#/db-types/play/play.types";
 
 import * as dbUtils from "#/utils/dbUtils";
 

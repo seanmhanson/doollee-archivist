@@ -25,12 +25,9 @@ export default class AdaptationBiography extends BaseBiography {
   }
 
   protected async extractData(): Promise<void> {
-    const { bio, dateString, imageSrc, imageAlt, innerHTML } =
-      await this.scrapeData();
-    const { name, yearBorn, yearDied } =
-      this.parseAdaptationNameAndDates(dateString);
-    const hasNoImage =
-      imageSrc === "" || imageSrc.includes("/Images-playwrights/Blank");
+    const { bio, dateString, imageSrc, imageAlt, innerHTML } = await this.scrapeData();
+    const { name, yearBorn, yearDied } = this.parseAdaptationNameAndDates(dateString);
+    const hasNoImage = imageSrc === "" || imageSrc.includes("/Images-playwrights/Blank");
     const altName = hasNoImage ? "" : imageAlt;
 
     const labeledContents = this.parseLabeledContent(innerHTML);
@@ -51,15 +48,11 @@ export default class AdaptationBiography extends BaseBiography {
     return await this.page.evaluate(() => {
       const bioSelector = "#table > p";
       const tableSelector = "#table table:first-child";
-      const dateSelector =
-        "#table table:first-child tr:first-child > td:nth-child(2) > h1";
-      const imageSelector =
-        "#table table:first-child tr:first-child > td:first-child > p img";
+      const dateSelector = "#table table:first-child tr:first-child > td:nth-child(2) > h1";
+      const imageSelector = "#table table:first-child tr:first-child > td:first-child > p img";
 
-      const bio =
-        document.querySelector(bioSelector)?.textContent?.trim() ?? "";
-      const dateString =
-        document.querySelector(dateSelector)?.textContent?.trim() ?? "";
+      const bio = document.querySelector(bioSelector)?.textContent?.trim() ?? "";
+      const dateString = document.querySelector(dateSelector)?.textContent?.trim() ?? "";
       const imageNode = document.querySelector(imageSelector);
       const imageSrc = imageNode?.getAttribute("src") ?? "";
       const imageAlt = imageNode?.getAttribute("alt") ?? "";

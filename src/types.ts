@@ -1,8 +1,4 @@
-export type WaitUntilConditions =
-  | "load"
-  | "domcontentloaded"
-  | "networkidle"
-  | "commit";
+export type WaitUntilConditions = "load" | "domcontentloaded" | "networkidle" | "commit";
 
 /**
  * Metadata gathered during page extraction to facilitate error handling
