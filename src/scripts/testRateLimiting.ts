@@ -1,4 +1,3 @@
-import { getErrorFieldString } from "#/utils/errorUtils";
 import { firefox } from "playwright";
 
 /**
