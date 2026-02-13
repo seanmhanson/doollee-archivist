@@ -16,12 +16,9 @@ export type PageMetadata = Partial<{
   url: string;
 }>;
 
-export type IndexUrlsData = {
-  [letter: string]: {
-    url: string;
-    metadata: PageMetadata;
-    links: {
-      [range: string]: string;
-    };
-  };
+type IndexUrl = {
+  url: string;
+  metadata: PageMetadata;
+  links: Record<string, string>;
 };
+export type IndexUrlsData = Record<string, IndexUrl>;
