@@ -4,10 +4,7 @@
  * @param fn the function to be debounced
  * @param delay the delay in ms to enforce between calls
  */
-function debounce<T extends (...args: never[]) => ReturnType<T>>(
-  fn: T,
-  delay: number,
-) {
+function debounce<T extends (...args: unknown[]) => unknown>(fn: T, delay: number) {
   let timeout: NodeJS.Timeout | null = null;
 
   const debouncedFn = function (...args: Parameters<T>): void {
@@ -21,7 +18,7 @@ function debounce<T extends (...args: never[]) => ReturnType<T>>(
 
   const forcedFn = function (...args: Parameters<T>): ReturnType<T> {
     clear();
-    return fn(...args);
+    return fn(...args) as ReturnType<T>;
   };
 
   const clear = () => {

@@ -374,7 +374,11 @@ export default class Author {
     };
 
     // prune undefined/empty fields and manually remove fields added by this class
-    const prunedDocument: AuthorDocument = dbUtils.removeEmptyFields(document);
+    const prunedDocument = dbUtils.removeEmptyFields(document);
+    if (!prunedDocument) {
+      throw new Error("Failed to create author document: all fields are empty or undefined");
+    }
+
     if (!prunedDocument.metadata.needsReview) {
       delete prunedDocument.metadata.needsReview;
       delete prunedDocument.metadata.needsReviewReason;

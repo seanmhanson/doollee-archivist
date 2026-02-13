@@ -130,7 +130,11 @@ export default class Play {
     };
 
     // prune undefined/empty fields and manually remove fields added by this class
-    const prunedDocument: PlayDocument = dbUtils.removeEmptyFields(document);
+    const prunedDocument = dbUtils.removeEmptyFields(document);
+    if (!prunedDocument) {
+      throw new Error("Failed to create play document: all fields are empty or undefined");
+    }
+
     if (!prunedDocument.metadata.needsReview) {
       delete prunedDocument.metadata.needsReview;
     }

@@ -42,7 +42,7 @@ const shouldRemove = (value: unknown) => {
  * beyond specified exceptions, and has limited edge case testing outside what is
  * expected from the scraped data.
  */
-export function removeEmptyFields<T>(obj: T): T {
+export function removeEmptyFields<T>(obj: T): T | undefined {
   const isArrayLike = Array.isArray(obj);
   const isObjectLike = typeof obj === "object";
   const isNullish = obj === null || obj === undefined;
@@ -50,9 +50,7 @@ export function removeEmptyFields<T>(obj: T): T {
 
   if (isArrayLike) {
     const arrayLike = obj as UnknownArray;
-    const arr = arrayLike
-      .map((item: unknown) => removeEmptyFields(item))
-      .filter((item) => !shouldRemove(item));
+    const arr = arrayLike.map((item: unknown) => removeEmptyFields(item)).filter((item) => !shouldRemove(item));
     return (arr.length ? arr : undefined) as T;
   }
 
@@ -68,7 +66,7 @@ export function removeEmptyFields<T>(obj: T): T {
     }
     return acc;
   }, {} as UnknownObject);
-  return (Object.keys(result).length ? result : undefined) as T;
+  return Object.keys(result).length ? (result as T) : undefined;
 }
 
 
