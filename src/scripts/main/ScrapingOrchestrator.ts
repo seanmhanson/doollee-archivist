@@ -798,23 +798,32 @@ class ScrapingOrchestrator {
       process.exit(1);
     }
 
-    const logErrorField = (error: unknown, field: string) => {
+    // Helper to log specific fields rather than entire trace, as this is a common
+    // and expected error that will occur frequently and is written to the log file
+    const logSkipError = (error: unknown) => {
       const errorIsObjectlike = error && typeof error === "object";
-      const errorHasField = errorIsObjectlike && Reflect.has(error, field);
-      if (!errorIsObjectlike || !errorHasField) {
+      if (!errorIsObjectlike) {
         return;
       }
 
-      const value: unknown = Reflect.get(error, field);
-      if (typeof value === "string" && value !== "") {
-        console.error(`Error ${field}: ${value}`);
+      if (Reflect.has(error, "message")) {
+        const message: unknown = Reflect.get(error, "message");
+        if (typeof message === "string" && message !== "") {
+          console.error(`Error message: ${message}`);
+        }
+      }
+
+      if (Reflect.has(error, "cause")) {
+        const cause: unknown = Reflect.get(error, "cause");
+        if (typeof cause === "string" && cause !== "") {
+          console.error(`Error cause: ${cause}`);
+        }
       }
     };
 
     const skipAuthor = async (reason: string, error?: unknown) => {
       console.warn(`Skipping author ${this.state.profileName} due to ${reason}`);
-      logErrorField(error, "message");
-      logErrorField(error, "cause");
+      logSkipError(error);
 
       this.authorStats.totalAuthorsSkipped++;
       this.authorStats.batchAuthorsSkipped++;
@@ -824,8 +833,7 @@ class ScrapingOrchestrator {
 
     const skipPlay = async (reason: string, error?: unknown) => {
       console.warn(`Skipping play due to ${reason}`);
-      logErrorField(error, "message");
-      logErrorField(error, "cause");
+      logSkipError(error);
 
       this.playStats.totalPlaysSkipped++;
       this.playStats.batchPlaysSkipped++;

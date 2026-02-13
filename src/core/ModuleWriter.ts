@@ -119,9 +119,8 @@ class ModuleWriter {
     try {
       await fs.writeFile(outputPath, fileContent, "utf8");
     } catch (error) {
-      throw Error(
-        `Error writing file ${outputPath}: ${error instanceof Error ? error.message : String(error)}`,
-      );
+      console.error(`Error writing file to ${outputPath}:`, error);
+      throw error;
     }
 
     this.filenames.push(fullFileName);
@@ -161,9 +160,8 @@ class ModuleWriter {
     try {
       await fs.writeFile(outputPath, indexFileContent, "utf8");
     } catch (error) {
-      throw Error(
-        `Error writing index file: ${error instanceof Error ? error.message : String(error)}`,
-      );
+      console.error(`Error writing index file:`, error);
+      throw error;
     }
   }
 
