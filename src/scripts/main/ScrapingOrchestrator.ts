@@ -39,9 +39,9 @@ import {
   AuthorProcessingError,
 } from "#/scripts/main/ScrapingError";
 
-type AuthorListIndex = { [letter: string]: { [authorName: string]: string } };
-
-type Batch = { [authorName: string]: string };
+type AuthorItems = Record<string, string>;
+type AuthorListIndex = Record<string, AuthorItems>;
+type Batch = AuthorItems;
 
 type PageData = {
   biographyData: ScrapedAuthorData;
@@ -166,16 +166,16 @@ class ScrapingOrchestrator {
 
       for (const [profileName, profileSlug] of Object.entries(batch)) {
         this.beginAuthor(profileName, profileSlug);
-        await this.updateDisplay({ forceUpdate: true });
+        this.updateDisplay({ forceUpdate: true });
 
         try {
           const authorData = await this.scrapeAuthor();
           this.createAuthor(authorData);
         } catch (error) {
-          this.errorHandler(error);
+          await this.errorHandler(error);
           continue;
         }
-        await this.updateDisplay({ forceUpdate: true });
+        this.updateDisplay({ forceUpdate: true });
 
         for (const play of this.state.currentPlays) {
           this.beginPlay();
@@ -183,19 +183,19 @@ class ScrapingOrchestrator {
             this.createPlay(play);
             await this.writePlay();
           } catch (error) {
-            this.errorHandler(error);
+            await this.errorHandler(error);
             continue;
           }
-          await this.updateDisplay();
+          this.updateDisplay();
         } // end plays loop
 
         try {
           await this.writeAuthor();
         } catch (error) {
-          this.errorHandler(error);
+          await this.errorHandler(error);
           continue;
         }
-        await this.updateDisplay();
+        this.updateDisplay();
       } // end authors loop
 
       this.endBatch();
@@ -231,18 +231,18 @@ class ScrapingOrchestrator {
     await fs.mkdir(dir, { recursive: true });
   }
 
-  private async addSkippedAuthor(reason: string = "other") {
+  private async addSkippedAuthor(reason = "other") {
     const profileName = this.state.profileName;
-    const url = this.currentStats.currentAuthorUrl || "";
+    const url = this.currentStats.currentAuthorUrl ?? "";
 
     const skippedAuthor = { profileName, url, reason };
     this.reviewState.skippedEntries.authors.push(skippedAuthor);
     await this.writeReviewFile();
   }
 
-  private async addSkippedPlay(reason: string = "other") {
+  private async addSkippedPlay(reason = "other") {
     const profileName = this.state.profileName;
-    const url = this.currentStats.currentAuthorUrl || "";
+    const url = this.currentStats.currentAuthorUrl ?? "";
     const playId = this.state.currentPlay?.doolleeId;
     const title = this.state.currentPlay?.title;
 
@@ -256,10 +256,10 @@ class ScrapingOrchestrator {
       profileName: this.state.profileName,
       filename: `${this.state.profileSlug}.json`,
       url:
-        document.metadata.sourceUrl || this.currentStats.currentAuthorUrl || "",
-      id: document._id?.toHexString() || "",
-      name: document.name || "",
-      reason: document.metadata.needsReviewReason || "(unspecified reason)",
+        document.metadata.sourceUrl ?? this.currentStats.currentAuthorUrl ?? "",
+      id: document._id?.toHexString() ?? "",
+      name: document.name ?? "",
+      reason: document.metadata.needsReviewReason ?? "(unspecified reason)",
     };
 
     if (document.metadata.needsReviewData) {
@@ -272,9 +272,9 @@ class ScrapingOrchestrator {
 
   private async addFlaggedPlay() {
     const profileName = this.state.profileName;
-    const title = this.state.currentPlay?.title || "";
-    const id = this.state.currentPlay?.doolleeId || "";
-    const url = this.currentStats.currentAuthorUrl || "";
+    const title = this.state.currentPlay?.title ?? "";
+    const id = this.state.currentPlay?.doolleeId ?? "";
+    const url = this.currentStats.currentAuthorUrl ?? "";
     const filename = this.getPlayFilename(title, id);
 
     let authorName = "";
@@ -338,7 +338,7 @@ class ScrapingOrchestrator {
         this.reviewState.filePath,
         JSON.stringify(reviewData, null, 2),
       );
-    } catch (error) {
+    } catch {
       this.reviewState.hasError = true;
     }
   }
@@ -474,8 +474,9 @@ class ScrapingOrchestrator {
    * @param profileSlug the URL slug of the author's profile
    */
   private beginAuthor(profileName: string, profileSlug: string) {
-    const hasNumericPrefix = profileSlug.charAt(0).match(/[0-9]/);
-    const prefix = hasNumericPrefix ? "A" : profileSlug.charAt(0).toUpperCase();
+    const firstChar = profileSlug.charAt(0);
+    const hasNumericPrefix = /[0-9]/.exec(firstChar);
+    const prefix = hasNumericPrefix ? "A" : firstChar.toUpperCase();
     const authorUrl = `/Playwrights${prefix}/${profileSlug}.php`;
 
     this.state.profileName = profileName;
@@ -625,7 +626,7 @@ class ScrapingOrchestrator {
       .substring(0, 16)
       .toLowerCase()
       .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9\-]/g, "");
+      .replace(/[^a-z0-9-]/g, "");
     return `${id}-${truncatedName}.json`;
   }
 
@@ -798,7 +799,7 @@ class ScrapingOrchestrator {
       if (error) {
         // Log the main error message cleanly
         if (error && typeof error === "object" && "message" in error) {
-          console.error((error as any).message);
+          console.error(error.message);
         }
 
         // Log the original cause with full detail (including getByText examples)
@@ -815,7 +816,7 @@ class ScrapingOrchestrator {
       this.authorStats.totalAuthorsSkipped++;
       this.authorStats.batchAuthorsSkipped++;
       await this.addSkippedAuthor(reason);
-      await this.updateDisplay({ forceUpdate: true });
+      this.updateDisplay({ forceUpdate: true });
     };
 
     const skipPlay = async (reason: string, error?: unknown) => {
@@ -837,7 +838,7 @@ class ScrapingOrchestrator {
       this.playStats.totalPlaysSkipped++;
       this.playStats.batchPlaysSkipped++;
       await this.addSkippedPlay(reason);
-      await this.updateDisplay({ forceUpdate: true });
+      this.updateDisplay({ forceUpdate: true });
     };
 
     const errorActions = {
@@ -852,7 +853,7 @@ class ScrapingOrchestrator {
         await skipPlay("processing error", error),
     };
 
-    const errorName = error?.constructor.name || "UnknownError";
+    const errorName = error?.constructor.name ?? "UnknownError";
     const action = errorActions[errorName];
     if (action) {
       await action();
@@ -868,7 +869,7 @@ class ScrapingOrchestrator {
    * Updates the progress display with the latest statistics and queues a refresh of the UI
    * @param forceUpdate whether to force an immediate update of the display
    */
-  private async updateDisplay({ forceUpdate = false } = {}) {
+  private updateDisplay({ forceUpdate = false } = {}) {
     return this.services.progressDisplay.update(
       {
         globalStats: this.globalStats,
@@ -895,9 +896,9 @@ class ScrapingOrchestrator {
     const isAuthor = "name" in document;
     const isPlay = "title" in document;
 
-    const documentIdLine = `Document ID: ${document._id}`;
+    const documentIdLine = `Document ID: ${document._id.toHexString()}`;
     const sourceUrlLine = `Source URL: ${document.metadata.sourceUrl}`;
-    const scrapedAtLine = `Scraped At: ${document.metadata.scrapedAt}`;
+    const scrapedAtLine = `Scraped At: ${document.metadata.scrapedAt.toDateString()}`;
 
     // this is a safeguard and should never happen, but if it does, we will return a message
     // that does not rely on type-specific fields and allow the caller to handle it appropriately
@@ -934,7 +935,7 @@ class ScrapingOrchestrator {
   }
 
   private incrementErrorStats(errorType: keyof ErrorStats) {
-    if (this.errorStats.hasOwnProperty(errorType)) {
+    if (Object.prototype.hasOwnProperty.call(this.errorStats, errorType)) {
       this.errorStats[errorType]++;
     } else {
       this.errorStats.otherErrors++;

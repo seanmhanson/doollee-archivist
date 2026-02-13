@@ -1,5 +1,4 @@
 import fs from "fs";
-import config from "#/core/Config";
 
 import type {
   GlobalStats,
@@ -9,6 +8,8 @@ import type {
   LoggingStats,
   DisplayData,
 } from "#/scripts/main/ProgressDisplay.types";
+
+import config from "#/core/Config";
 import { defaults } from "#/scripts/main/ProgressDisplay.types";
 import debounce from "#/utils/debounce";
 
@@ -20,7 +21,7 @@ class ProgressDisplay {
   private authorStats: AuthorStats = defaults.authorStats;
   private playStats: PlayStats = defaults.playStats;
   private loggingStats: LoggingStats = defaults.loggingStats;
-  private isReadyFlag: boolean = false;
+  private isReadyFlag = false;
 
   private readonly originalConsole = {
     log: console.log,
@@ -102,9 +103,7 @@ class ProgressDisplay {
   }
 
   private setupLogFile() {
-    if (!this.globalStats.startTime) {
-      this.globalStats.startTime = new Date();
-    }
+    this.globalStats.startTime = this.globalStats.startTime ?? new Date();
 
     const timestamp = this.globalStats.startTime
       .toISOString()
@@ -123,16 +122,12 @@ class ProgressDisplay {
   // Utility Methods
   // ============================================================================
 
-  private toPaddedString(
-    num: number,
-    length: number,
-    padChar: string = "0",
-  ): string {
+  private toPaddedString(num: number, length: number, padChar = "0"): string {
     return num.toString().padStart(length, padChar);
   }
 
   private getStartTime(): string {
-    return this.globalStats.startTime?.toTimeString().slice(0, 8) || "";
+    return this.globalStats.startTime?.toTimeString().slice(0, 8) ?? "";
   }
 
   private getElapsedTime(): string {
@@ -157,7 +152,7 @@ class ProgressDisplay {
       const severity = level.toUpperCase();
 
       const includeUrl = level === "warn" || level === "error";
-      const strippedUrl = (this.currentStats.currentAuthorUrl || "").replace(
+      const strippedUrl = (this.currentStats.currentAuthorUrl ?? "").replace(
         config.baseUrl,
         "",
       );
@@ -165,8 +160,7 @@ class ProgressDisplay {
       const logMessage = `[${timestamp}] ${severity}:${url} ${message} \n`;
 
       if (
-        this.loggingStats.lastLoggedLines.length >=
-        this.loggingStats.tailLength!
+        this.loggingStats.lastLoggedLines.length >= this.loggingStats.tailLength
       ) {
         this.loggingStats.lastLoggedLines.shift();
       }
@@ -370,7 +364,7 @@ class ProgressDisplay {
     const warnings = this.toPaddedString(warningsLogged, 5);
     const errors = this.toPaddedString(errorsLogged, 5);
     const tailLines = lastLoggedLines
-      .slice(-tailLength!)
+      .slice(-tailLength)
       .map((line) => `  ${line}`)
       .join("\n");
 

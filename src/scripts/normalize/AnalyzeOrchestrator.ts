@@ -53,7 +53,7 @@ class AnalyzeOrchestrator {
     await this.analyzePublishers();
     await this.analyzeParts();
 
-    this.close();
+    await this.close();
   }
 
   private async close() {
@@ -157,7 +157,7 @@ class AnalyzeOrchestrator {
         acc[key] = { $sum: { $cond: [condition, 1, 0] } };
         return acc;
       },
-      {} as Record<string, any>,
+      {} as Record<string, unknown>,
     );
 
     const projections = labels.reduce(
@@ -166,7 +166,7 @@ class AnalyzeOrchestrator {
         acc[key] = 1;
         return acc;
       },
-      {} as Record<string, any>,
+      {} as Record<string, unknown>,
     );
 
     return [

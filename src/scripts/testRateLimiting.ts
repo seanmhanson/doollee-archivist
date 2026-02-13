@@ -5,13 +5,13 @@ import { firefox } from "playwright";
  * with minor adjustments.
  */
 
-interface RequestMetrics {
+type RequestMetrics = {
   url: string;
   status: number;
   responseTime: number;
   delay: number;
   timestamp: Date;
-}
+};
 
 type DelayGroup = {
   delay: number;
@@ -91,7 +91,7 @@ async function testRateLimit() {
         });
 
         const responseTime = Date.now() - start;
-        const status = response?.status() || 0;
+        const status = response?.status() ?? 0;
 
         const metric: RequestMetrics = {
           url,
@@ -129,8 +129,8 @@ async function testRateLimit() {
         if (i < testUrls.length - 1) {
           await new Promise((resolve) => setTimeout(resolve, delay));
         }
-      } catch (error: any) {
-        console.error(`❌ Error with ${url}:`, error.message);
+      } catch (error: unknown) {
+        console.error(`❌ Error with ${url}:`, (error as Error).message);
         shouldBreak = true;
       }
     }

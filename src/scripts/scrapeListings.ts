@@ -1,21 +1,19 @@
-import WebScraper from "#/core/WebScraper";
-import ModuleWriter from "#/core/ModuleWriter";
 import config from "#/core/Config";
-
-/** page models */
+import ModuleWriter from "#/core/ModuleWriter";
+import WebScraper from "#/core/WebScraper";
+import listingUrls from "#/input/listingUrls";
 import ListingPage from "#/page-models/ListingPage";
 
-/** input data */
-import listingUrls from "#/input/listingUrls";
-
 async function main() {
-  // for local only testing
-  console.debug = () => {};
+  const noop = () => {
+    /* intentionally empty for local testing only */
+  };
+  console.debug = noop;
 
   const rootDir = "profile-urls";
   const scraper = await WebScraper.create();
 
-  const allMetadata: any = {};
+  const allMetadata: Record<string, unknown> = {};
   let totalFiles = 0;
   let totalPlaywrights = 0;
 
@@ -44,7 +42,7 @@ async function main() {
         filenameSuffix = "_error";
       }
 
-      let playwrightCount = Object.keys(listingPage.data).length;
+      const playwrightCount = Object.keys(listingPage.data).length;
 
       const metadata = {
         ...listingPage.metadata,
@@ -75,7 +73,7 @@ async function main() {
       // Collect metadata from all pages (including 404s, extraction errors, etc.)
       if (Object.keys(listingPage.metadata).length > 0) {
         allMetadata[letterRange] = {
-          url: url,
+          url,
           ...listingPage.metadata,
         };
       }
