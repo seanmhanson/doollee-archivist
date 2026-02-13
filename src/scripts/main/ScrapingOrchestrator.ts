@@ -798,23 +798,23 @@ class ScrapingOrchestrator {
       process.exit(1);
     }
 
-    const skipAuthor = async (reason: string, error?: unknown) => {
-      if (error) {
-        // Log the main error message cleanly
-        if (error && typeof error === "object" && "message" in error) {
-          console.error(error.message);
-        }
-
-        // Log the original cause with full detail (including getByText examples)
-        if (
-          error &&
-          typeof error === "object" &&
-          "cause" in error &&
-          error.cause
-        ) {
-          console.error(error.cause);
-        }
+    const logErrorField = (error: unknown, field: string) => {
+      const errorIsObjectlike = error && typeof error === "object";
+      const errorHasField = errorIsObjectlike && Reflect.has(error, field);
+      if (!errorIsObjectlike || !errorHasField) {
+        return;
       }
+
+      const value: unknown = Reflect.get(error, field);
+      if (typeof value === "string" && value !== "") {
+        console.error(`Error ${field}: ${value}`);
+      }
+    };
+
+    const skipAuthor = async (reason: string, error?: unknown) => {
+      console.warn(`Skipping author ${this.state.profileName} due to ${reason}`);
+      logErrorField(error, "message");
+      logErrorField(error, "cause");
 
       this.authorStats.totalAuthorsSkipped++;
       this.authorStats.batchAuthorsSkipped++;
@@ -824,19 +824,8 @@ class ScrapingOrchestrator {
 
     const skipPlay = async (reason: string, error?: unknown) => {
       console.warn(`Skipping play due to ${reason}`);
-
-      if (error) {
-        console.error(`Error details:`, error);
-        // If it's one of our custom errors with a cause, also log the original error
-        if (
-          error &&
-          typeof error === "object" &&
-          "cause" in error &&
-          error.cause
-        ) {
-          console.error(`Original error cause:`, error.cause);
-        }
-      }
+      logErrorField(error, "message");
+      logErrorField(error, "cause");
 
       this.playStats.totalPlaysSkipped++;
       this.playStats.batchPlaysSkipped++;
