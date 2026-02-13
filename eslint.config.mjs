@@ -97,6 +97,15 @@ export default [
       "no-console": "off",
       "prefer-const": "warn",
       "no-var": "error",
+
+      // typescript overrides paired with base rules
+      "no-empty-function": "off",
+      "@typescript-eslint/no-empty-function": [
+        "warn",
+        {
+          allow: ["private-constructors", "protected-constructors"],
+        },
+      ],
     },
   },
 
