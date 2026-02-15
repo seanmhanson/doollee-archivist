@@ -1,6 +1,9 @@
 import { promises as fs } from "fs";
 import path from "path";
 
+import { Parser } from "@json2csv/plainjs";
+import { flatten } from "@json2csv/transforms";
+
 import type { Collection, Document } from "mongodb";
 
 import DatabaseService from "#/core/DatabaseService";
@@ -8,6 +11,11 @@ import { SetupError } from "#/scripts/main/ScrapingError";
 
 type Services = {
   dbService: DatabaseService;
+};
+
+type SampleProps = {
+  collection: Collection<Document>;
+  sampleSize?: number;
 };
 
 type SingleFrequencyProps = {
@@ -67,6 +75,8 @@ class AnalyzeOrchestrator {
     await this.analyzeGenres();
     await this.analyzePublishers();
     await this.analyzeParts();
+    await this.getSamplePlays();
+    await this.getSampleAuthors();
 
     await this.close();
   }
@@ -105,8 +115,16 @@ class AnalyzeOrchestrator {
           `${this.escapeCsvField(text)},${frequency},${maleParts},${femaleParts},${otherParts}`,
       ),
     ].join("\n");
+    const fileName = "frequencies-parts";
+    await this.writeToCSV(csv, fileName);
+  }
 
-    await this.writeToCSV(csv, "parts");
+  private async getSamplePlays() {
+    await this.getSample({ collection: this.getPlaysCollection() });
+  }
+
+  private async getSampleAuthors() {
+    await this.getSample({ collection: this.getAuthorsCollection() });
   }
 
   private getSingleFrequencyPipeline(fieldName: string, sortByField = false, sortDescending = true) {
@@ -124,6 +142,52 @@ class AnalyzeOrchestrator {
     ];
   }
 
+  private async getSample({ collection, sampleSize = 10 }: SampleProps) {
+    const count = await collection.countDocuments();
+    const name = collection.collectionName;
+    const meetsMinimumCount = count > 100;
+    const meetsThreshold = (sampleSize / count) * 100 < 5;
+    const meetsSampleSize = sampleSize <= count;
+    const fileName = `sampling-${collection.collectionName}`;
+
+    if (!meetsSampleSize) {
+      console.warn(
+        "The requested sample size exceeds the total number of documents in the collection.\n" +
+          `The '${name}' collection has ${count} documents, but a sample size of ${sampleSize} was requested.\n` +
+          `Falling back to retrieving all documents from the collection instead.`,
+      );
+      const results = await collection.find().toArray();
+      await this.writeDocumentsToCSV(results, fileName);
+      return;
+    }
+
+    if (!meetsMinimumCount) {
+      console.error(
+        "The $sample aggregation stage requires a collection have at least 100 docments.\n" +
+          `The '${name}' collection has ${count} documents and cannot be randomly sampled.\n` +
+          `Falling back to retrieving the top ${sampleSize} documents from the '${name}' collection instead.`,
+      );
+      const results = await collection.aggregate([{ $sort: { _id: 1 } }, { $limit: sampleSize }]).toArray();
+      await this.writeDocumentsToCSV(results, fileName);
+      return;
+    }
+
+    if (!meetsThreshold) {
+      console.warn(
+        "The requested sample size exceeds the 5% limit for the $sample aggregation stage.\n" +
+          `Falling back to retrieving the top ${sampleSize} documents from the '${name}' collection instead.\n` +
+          "To retrieve a random sample, please choose a smaller sample size.",
+      );
+      const results = await collection.aggregate([{ $sort: { _id: 1 } }, { $limit: sampleSize }]).toArray();
+      await this.writeDocumentsToCSV(results, fileName);
+      return;
+    }
+
+    const results = await collection.aggregate([{ $sample: { size: sampleSize } }]).toArray();
+    await this.writeDocumentsToCSV(results, fileName);
+    return;
+  }
+
   private async getSingleFrequencyTable({
     collection,
     fieldName,
@@ -133,7 +197,8 @@ class AnalyzeOrchestrator {
     const pipeline = this.getSingleFrequencyPipeline(fieldName, sortByField, sortDescending);
     const results = (await collection.aggregate(pipeline).toArray()) as ResultDocument[];
     const csv = this.getSingleFrequencyCSV(results, fieldName);
-    await this.writeToCSV(csv, fieldName);
+    const fileName = `frequencies-${fieldName}`;
+    await this.writeToCSV(csv, fileName);
   }
 
   private getSingleFrequencyCSV(results: ResultDocument[], fieldName: string): string {
@@ -202,23 +267,30 @@ class AnalyzeOrchestrator {
     ];
   }
 
-  private async writeToCSV(csv: string, fieldName: string): Promise<void> {
+  private async writeToCSV(csv: string, fileName: string): Promise<void> {
     const outputDir = path.resolve("analysis");
-    const filePath = path.join(outputDir, `${fieldName}-frequencies.csv`);
+    const filePath = path.join(outputDir, `${fileName}.csv`);
 
     try {
       await fs.mkdir(outputDir, { recursive: true });
       await fs.writeFile(filePath, csv, "utf8");
     } catch (error) {
-      const message = `Error writing CSV for ${fieldName} frequencies`;
+      const message = `Error writing CSV file ${fileName}`;
       throw new Error(message, { cause: error });
     }
 
     this.writtenFiles.push(filePath);
   }
 
-  private escapeCsvField(value: string): string {
-    return `"${value.replace(/"/g, '""')}"`;
+  private writeDocumentsToCSV(results: Document[], fileName: string) {
+    const parser = new Parser({ transforms: [flatten()] });
+    const csv = parser.parse(results);
+    return this.writeToCSV(csv, fileName);
+  }
+
+  private escapeCsvField(value: string | null | undefined): string {
+    const safeValue = value ?? "";
+    return `"${safeValue.replace(/"/g, '""')}"`;
   }
 }
 
