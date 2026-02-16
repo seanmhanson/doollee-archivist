@@ -4,6 +4,13 @@ import path from "path";
 import { Parser } from "@json2csv/plainjs";
 import { flatten } from "@json2csv/transforms";
 
+import {
+  getSingleFrequencyPipeline,
+  getPartsFrequencyPipeline,
+  getSamplePipeline,
+  getDateFormatPipeline,
+} from "./aggregation-utils";
+
 import type { Collection, Document } from "mongodb";
 
 import DatabaseService from "#/core/DatabaseService";
@@ -26,6 +33,15 @@ type SingleFrequencyProps = {
 };
 
 type ResultDocument = Record<string, string> & { count: number };
+
+type DateFormatResultItem = { value: string; frequency: number };
+
+type DateFormatResults = {
+  fourDigitYear: DateFormatResultItem[];
+  dayMonthAbbrevYear: DateFormatResultItem[];
+  dayMonthFullYear: DateFormatResultItem[];
+  other: DateFormatResultItem[];
+};
 
 class AnalyzeOrchestrator {
   private services: Services;
@@ -75,6 +91,8 @@ class AnalyzeOrchestrator {
     await this.analyzeGenres();
     await this.analyzePublishers();
     await this.analyzeParts();
+    await this.analyzePublicationDates();
+    await this.analyzeProductionDates();
     await this.getSamplePlays();
     await this.getSampleAuthors();
 
@@ -103,7 +121,7 @@ class AnalyzeOrchestrator {
   }
 
   private async analyzeParts() {
-    const pipeline = this.getPartsPipeline();
+    const pipeline = getPartsFrequencyPipeline();
 
     const collection = this.getPlaysCollection();
     const results = (await collection.aggregate(pipeline).toArray()) as ResultDocument[];
@@ -119,27 +137,51 @@ class AnalyzeOrchestrator {
     await this.writeToCSV(csv, fileName);
   }
 
+  private async analyzePublicationDates() {
+    await this.analyzeDateFormats("publicationYear");
+  }
+
+  private async analyzeProductionDates() {
+    await this.analyzeDateFormats("productionYear");
+  }
+
+  private async analyzeDateFormats(fieldName: string) {
+    const collection = this.getPlaysCollection();
+    const pipeline = getDateFormatPipeline(fieldName);
+    const results = (await collection.aggregate(pipeline).toArray())[0] as DateFormatResults;
+
+    const csv = this.getDateFormatCSV(results);
+    const fileName = `frequencies-${fieldName}`;
+    await this.writeToCSV(csv, fileName);
+  }
+
+  private getDateFormatCSV(data: DateFormatResults): string {
+    const categories = Object.keys(data) as (keyof DateFormatResults)[];
+    const headers = categories.flatMap((key) => [`${key}_value`, `${key}_frequency`]);
+
+    // iterate through the different categories at the same time and separate their
+    // values and frequencies, leaving those without values blank.
+    // We iterate up to the maximum size category to ensure we include all data, although
+    // not all rows will have the same number of items for each format.
+    const rows = [];
+    const maxRowCount = Math.max(...categories.map((key) => data[key].length));
+    for (let i = 0; i < maxRowCount; i++) {
+      const row = categories.flatMap((key) => {
+        const item = data[key][i];
+        return item ? [this.escapeCsvField(item.value), String(item.frequency)] : ["", ""];
+      });
+      rows.push(row);
+    }
+
+    return [headers.join(","), ...rows.map((row) => row.join(","))].join("\n");
+  }
+
   private async getSamplePlays() {
     await this.getSample({ collection: this.getPlaysCollection() });
   }
 
   private async getSampleAuthors() {
     await this.getSample({ collection: this.getAuthorsCollection() });
-  }
-
-  private getSingleFrequencyPipeline(fieldName: string, sortByField = false, sortDescending = true) {
-    const groupField = `$${fieldName}`;
-
-    const sortOrder = sortDescending ? -1 : 1;
-    const sortField = sortByField ? fieldName : "count";
-    const sortStage = { [sortField]: sortOrder };
-
-    return [
-      { $match: { [fieldName]: { $exists: true, $nin: ["", null] } } },
-      { $group: { _id: groupField, count: { $sum: 1 } } },
-      { $sort: sortStage },
-      { $project: { _id: 0, [fieldName]: "$_id", count: 1 } },
-    ];
   }
 
   private async getSample({ collection, sampleSize = 10 }: SampleProps) {
@@ -163,11 +205,11 @@ class AnalyzeOrchestrator {
 
     if (!meetsMinimumCount) {
       console.error(
-        "The $sample aggregation stage requires a collection have at least 100 docments.\n" +
+        "The $sample aggregation stage requires a collection have at least 100 documents.\n" +
           `The '${name}' collection has ${count} documents and cannot be randomly sampled.\n` +
           `Falling back to retrieving the top ${sampleSize} documents from the '${name}' collection instead.`,
       );
-      const results = await collection.aggregate([{ $sort: { _id: 1 } }, { $limit: sampleSize }]).toArray();
+      const results = await collection.aggregate(getSamplePipeline({ sampleSize, randomSample: false })).toArray();
       await this.writeDocumentsToCSV(results, fileName);
       return;
     }
@@ -178,12 +220,13 @@ class AnalyzeOrchestrator {
           `Falling back to retrieving the top ${sampleSize} documents from the '${name}' collection instead.\n` +
           "To retrieve a random sample, please choose a smaller sample size.",
       );
-      const results = await collection.aggregate([{ $sort: { _id: 1 } }, { $limit: sampleSize }]).toArray();
+
+      const results = await collection.aggregate(getSamplePipeline({ sampleSize, randomSample: false })).toArray();
       await this.writeDocumentsToCSV(results, fileName);
       return;
     }
 
-    const results = await collection.aggregate([{ $sample: { size: sampleSize } }]).toArray();
+    const results = await collection.aggregate(getSamplePipeline({ sampleSize, randomSample: true })).toArray();
     await this.writeDocumentsToCSV(results, fileName);
     return;
   }
@@ -194,7 +237,7 @@ class AnalyzeOrchestrator {
     sortByField = false,
     sortDescending = true,
   }: SingleFrequencyProps) {
-    const pipeline = this.getSingleFrequencyPipeline(fieldName, sortByField, sortDescending);
+    const pipeline = getSingleFrequencyPipeline({ fieldName, sortByField, sortDescending });
     const results = (await collection.aggregate(pipeline).toArray()) as ResultDocument[];
     const csv = this.getSingleFrequencyCSV(results, fieldName);
     const fileName = `frequencies-${fieldName}`;
@@ -207,64 +250,6 @@ class AnalyzeOrchestrator {
       return `${this.escapeCsvField(fieldValue)},${count}`;
     });
     return [header, ...rows].join("\n");
-  }
-
-  private getPartsPipeline() {
-    const labels = ["male", "female", "other"];
-    const toKey = (label: string) => `${label}Parts`;
-    const toCapitalized = (label: string) => label.charAt(0).toUpperCase() + label.slice(1);
-
-    const input = labels.map((label) => {
-      return { type: label, text: `$partsText${toCapitalized(label)}` };
-    });
-
-    const groupings = labels.reduce(
-      (acc, label) => {
-        const key = toKey(label);
-        const condition = { $eq: ["$parts.type", label] };
-        acc[key] = { $sum: { $cond: [condition, 1, 0] } };
-        return acc;
-      },
-      {} as Record<string, unknown>,
-    );
-
-    const projections = labels.reduce(
-      (acc, label) => {
-        const key = toKey(label);
-        acc[key] = 1;
-        return acc;
-      },
-      {} as Record<string, unknown>,
-    );
-
-    return [
-      // Reshape each document into an array of {type, text} objects
-      {
-        $project: {
-          parts: {
-            $filter: {
-              input,
-              as: "part",
-              cond: {
-                $and: [{ $ne: ["$$part.text", null] }, { $ne: ["$$part.text", ""] }],
-              },
-            },
-          },
-        },
-      },
-
-      // Flatten the array
-      { $unwind: "$parts" },
-
-      // Group by text, counting total and per-type occurrences
-      { $group: { _id: "$parts.text", frequency: { $sum: 1 }, ...groupings } },
-
-      // Sort by total frequency descending
-      { $sort: { frequency: -1 } },
-
-      // Clean up the output
-      { $project: { _id: 0, text: "$_id", frequency: 1, ...projections } },
-    ];
   }
 
   private async writeToCSV(csv: string, fileName: string): Promise<void> {

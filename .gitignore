@@ -1,5 +1,6 @@
 node_modules/
 output/
+analysis/
 .env
 *.log
 .editorconfig
