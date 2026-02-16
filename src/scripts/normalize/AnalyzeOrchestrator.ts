@@ -9,6 +9,7 @@ import {
   getPartsFrequencyPipeline,
   getSamplePipeline,
   getDateFormatPipeline,
+  getFieldPresencePipeline,
 } from "./aggregation-utils";
 
 import type { Collection, Document } from "mongodb";
@@ -93,6 +94,7 @@ class AnalyzeOrchestrator {
     await this.analyzeParts();
     await this.analyzePublicationDates();
     await this.analyzeProductionDates();
+    await this.analyzePlaysFieldPresence();
     await this.getSamplePlays();
     await this.getSampleAuthors();
 
@@ -174,6 +176,53 @@ class AnalyzeOrchestrator {
     }
 
     return [headers.join(","), ...rows.map((row) => row.join(","))].join("\n");
+  }
+
+  private async analyzePlaysFieldPresence() {
+    const fields = [
+      "authorId",
+      "adaptingAuthor",
+      "genres",
+      "notes",
+      "synopsis",
+      "organizations",
+      "music",
+      "reference",
+      "publisher",
+      "publicationYear",
+      "isbn",
+      "productionLocation",
+      "productionYear",
+      "partsCountMale",
+      "partsCountFemale",
+      "partsCountOther",
+      "partsTextMale",
+      "partsTextFemale",
+      "partsTextOther",
+      "metadata.needsReview",
+    ];
+
+    const collection = this.getPlaysCollection();
+    const pipeline = getFieldPresencePipeline(fields);
+    const result = (await collection.aggregate(pipeline).toArray())[0] as Record<string, number>;
+
+    const csv = this.getFieldPresenceCSV(fields, result);
+    const fileName = "field-presence-plays";
+    await this.writeToCSV(csv, fileName);
+  }
+
+  private getFieldPresenceCSV(fields: string[], result: Record<string, number>): string {
+    const total = result.total;
+    const header = "FIELD,PRESENT,ABSENT,UNIQUE";
+    const sanitizeFieldName = (field: string) => field.replace(/\./g, "_");
+    
+    const rows = fields.map((field) => {
+      const sanitized = sanitizeFieldName(field);
+      const present = result[`${sanitized}_present`] || 0;
+      const absent = total - present;
+      const unique = result[`${sanitized}_unique`] || 0;
+      return `${this.escapeCsvField(field)},${present},${absent},${unique}`;
+    return [header, ...rows].join("\n");
   }
 
   private async getSamplePlays() {
