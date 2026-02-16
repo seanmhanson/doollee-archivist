@@ -183,70 +183,41 @@ function getDateFormatPipeline(field: string) {
 
 /**
  * Generate a MongoDB aggregation pipeline that counts how many documents have each
- * specified field present vs absent, and how many unique values exist for each field.
- * Uses $facet to compute unique counts separately per field to manage memory better.
+ * specified field present vs absent, returning a single count for each field.
  */
 function getFieldPresencePipeline(fields: string[]) {
   // Sanitize field names for output (replace dots with underscores)
   const sanitizeFieldName = (field: string) => field.replace(/\./g, "_");
 
-  // Facets for counting unique values per field (doesn't load values into memory)
-  const uniqueCountFacets = fields.reduce(
+  // Create projection object that converts each field to 1 if present, 0 if absent
+  const projectionFields = fields.reduce(
     (acc, field) => {
       const sanitized = sanitizeFieldName(field);
-      acc[`${sanitized}_unique`] = [
-        { $match: { [field]: { $exists: true, $ne: null } } },
-        { $group: { _id: `$${field}` } },
-        { $count: "count" },
-      ];
+      acc[sanitized] = { $cond: [{ $ifNull: [`$${field}`, false] }, 1, 0] };
       return acc;
     },
-    {} as Record<string, any[]>,
+    {} as Record<string, unknown>,
   );
 
-  // Main presence counts
-  const presenceAccumulators = fields.reduce(
+  // Create group accumulator for each field
+  const groupAccumulators = fields.reduce(
     (acc, field) => {
       const sanitized = sanitizeFieldName(field);
-      acc[`${sanitized}_present`] = { $sum: { $cond: [{ $ifNull: [`$${field}`, false] }, 1, 0] } };
+      acc[`${sanitized}_present`] = { $sum: `$${sanitized}` };
       return acc;
     },
     {} as Record<string, unknown>,
   );
 
   return [
+    { $project: projectionFields },
     {
-      $facet: {
-        presence: [
-          {
-            $group: {
-              _id: null,
-              total: { $sum: 1 },
-              ...presenceAccumulators,
-            },
-          },
-        ],
-        ...uniqueCountFacets,
+      $group: {
+        _id: null,
+        total: { $sum: 1 },
+        ...groupAccumulators,
       },
     },
-    {
-      $project: {
-        result: {
-          $mergeObjects: [
-            { $arrayElemAt: ["$presence", 0] },
-            ...fields.map((field) => {
-              const sanitized = sanitizeFieldName(field);
-              return {
-                [`${sanitized}_unique`]: {
-                  $ifNull: [{ $arrayElemAt: [`$${sanitized}_unique.count`, 0] }, 0],
-                },
-              };
-            }),
-          ],
-        },
-      },
-    },
-    { $replaceRoot: { newRoot: "$result" } },
     { $project: { _id: 0 } },
   ];
 }

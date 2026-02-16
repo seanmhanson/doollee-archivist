@@ -213,15 +213,16 @@ class AnalyzeOrchestrator {
 
   private getFieldPresenceCSV(fields: string[], result: Record<string, number>): string {
     const total = result.total;
-    const header = "FIELD,PRESENT,ABSENT,UNIQUE";
+    const header = "FIELD,PRESENT,ABSENT";
     const sanitizeFieldName = (field: string) => field.replace(/\./g, "_");
-    
+
     const rows = fields.map((field) => {
       const sanitized = sanitizeFieldName(field);
       const present = result[`${sanitized}_present`] || 0;
       const absent = total - present;
-      const unique = result[`${sanitized}_unique`] || 0;
-      return `${this.escapeCsvField(field)},${present},${absent},${unique}`;
+      return `${this.escapeCsvField(field)},${present},${absent}`;
+    });
+
     return [header, ...rows].join("\n");
   }
 
