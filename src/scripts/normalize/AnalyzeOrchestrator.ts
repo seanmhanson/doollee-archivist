@@ -95,6 +95,7 @@ class AnalyzeOrchestrator {
     await this.analyzePublicationDates();
     await this.analyzeProductionDates();
     await this.analyzePlaysFieldPresence();
+    await this.analyzeAuthorsFieldPresence();
     await this.getSamplePlays();
     await this.getSampleAuthors();
 
@@ -208,6 +209,41 @@ class AnalyzeOrchestrator {
 
     const csv = this.getFieldPresenceCSV(fields, result);
     const fileName = "field-presence-plays";
+    await this.writeToCSV(csv, fileName);
+  }
+
+  private async analyzeAuthorsFieldPresence() {
+    const fields = [
+      "metadata.needsReview",
+      "metadata.needsReviewReason",
+      "metadata.needsReviewData",
+      "displayName",
+      "isOrganization",
+      "lastName",
+      "firstName",
+      "middleNames",
+      "suffixes",
+      "yearBorn",
+      "yearDied",
+      "nationality",
+      "email",
+      "website",
+      "literaryAgent",
+      "biography",
+      "research",
+      "address",
+      "telephone",
+      "playIds",
+      "adaptationIds",
+      "doolleePlayIds",
+    ];
+
+    const collection = this.getAuthorsCollection();
+    const pipeline = getFieldPresencePipeline(fields);
+    const result = (await collection.aggregate(pipeline).toArray())[0] as Record<string, number>;
+
+    const csv = this.getFieldPresenceCSV(fields, result);
+    const fileName = "field-presence-authors";
     await this.writeToCSV(csv, fileName);
   }
 
