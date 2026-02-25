@@ -22,7 +22,7 @@ The site has since fallen into a bit of disrepair. The security certificates hav
 
 Given the state of the page, comments across social media and other locations about difficulty in contacting people about the site since Julian and Pat's deaths, the fear that search engines may eventually de-emphasize the site, and this work be lost, I realized I had an idea for an open-source project.
 
-## Doollee Archivist: Preserving
+## Doollee Archivist: The Goals
 
 Doollee Archivist is an open-source project I am currently working on in my free time, with the four specific goals:  
 1. **Scrape** the data provided by Doollee
