@@ -10,6 +10,7 @@ import {
   getSamplePipeline,
   getDateFormatPipeline,
   getFieldPresencePipeline,
+  getProdPubDataPipeline,
 } from "./aggregation-utils";
 
 import type { Collection, Document } from "mongodb";
@@ -89,15 +90,17 @@ class AnalyzeOrchestrator {
   public async run() {
     await this.connect();
 
-    await this.analyzeGenres();
-    await this.analyzePublishers();
-    await this.analyzeParts();
-    await this.analyzePublicationDates();
-    await this.analyzeProductionDates();
-    await this.analyzePlaysFieldPresence();
-    await this.analyzeAuthorsFieldPresence();
-    await this.getSamplePlays();
-    await this.getSampleAuthors();
+    // await this.analyzeGenres();
+    // await this.analyzePublishers();
+    // await this.analyzeParts();
+    // await this.analyzePublicationDates();
+    // await this.analyzeProductionDates();
+    // await this.analyzePlaysFieldPresence();
+    // await this.analyzeAuthorsFieldPresence();
+    // await this.getSamplePlays();
+    // await this.getSampleAuthors();
+
+    await this.getPublicationProductionInfoCSV();
 
     await this.close();
   }
@@ -245,6 +248,14 @@ class AnalyzeOrchestrator {
     const csv = this.getFieldPresenceCSV(fields, result);
     const fileName = "field-presence-authors";
     await this.writeToCSV(csv, fileName);
+  }
+
+  private async getPublicationProductionInfoCSV() {
+    const collection = this.getPlaysCollection();
+    const pipeline = getProdPubDataPipeline();
+    const result = await collection.aggregate(pipeline).toArray();
+    const fileName = "publication-production-info";
+    await this.writeDocumentsToCSV(result, fileName);
   }
 
   private getFieldPresenceCSV(fields: string[], result: Record<string, number>): string {

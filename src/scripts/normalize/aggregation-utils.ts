@@ -222,10 +222,38 @@ function getFieldPresencePipeline(fields: string[]) {
   ];
 }
 
+function getProdPubDataPipeline() {
+  const matchFields = ["rawFields.publishingInfo", "rawFields.productionInfo"];
+  const projectionFields = [
+    "publisher",
+    "publicationYear",
+    "isbn",
+    "productionLocation",
+    "productionYear",
+    ...matchFields,
+  ];
+
+  const matchOptions = matchFields.map((field) => ({ [field]: { $exists: true, $ne: null } }));
+  const matchStage = { $match: { $or: matchOptions } };
+
+  const projectOptions = projectionFields.reduce(
+    (acc, field) => {
+      acc[field] = 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+  const projectStage = { $project: projectOptions };
+
+  return [matchStage, projectStage];
+}
+
 export {
   getSingleFrequencyPipeline,
   getSamplePipeline,
   getPartsFrequencyPipeline,
   getDateFormatPipeline,
   getFieldPresencePipeline,
+  getProdPubDataPipeline,
 };
+
