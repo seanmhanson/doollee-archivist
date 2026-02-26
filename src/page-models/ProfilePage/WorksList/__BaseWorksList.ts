@@ -13,6 +13,13 @@ type PublicationDetails = {
 
 const { hasAlphanumericCharacters, normalizeWhitespace, removeAndNormalize } = stringUtils;
 
+const YEAR = "(?:(?:18|19)\\d{2}|20[0|1|2]\\d{1})";
+const MONTH = "(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)";
+const DAY = "(?:0?[1-9]{1}|[1-2]\\d{1}|3[0|1]{1})";
+const YEAR_PATTERN = new RegExp(`^${YEAR}$`, "i");
+const MONTH_YEAR_PATTERN = new RegExp(`^${MONTH} ?${YEAR}$`, "i");
+const DAY_MONTH_YEAR_PATTERN = new RegExp(`^${DAY} ?${MONTH} ?${YEAR}$`, "i");
+
 export default abstract class BaseWorksList {
   protected static publisherException = "I don't think it has been published.";
 
@@ -66,14 +73,18 @@ export default abstract class BaseWorksList {
       return { productionLocation: "", productionYear: "" };
     }
 
-    // Date patterns with optional enclosing parentheses
-    const fullDatePattern = /\(?(\d{1,2}\s+[A-Za-z]{3}\s+\d{4})\)?/; // DD MMM YYYY
-    const yearOnlyPattern = /\(?(\d{4})\)?/; // YYYY
+    let extractedDate = "";
+    let updatedString = productionText;
 
-    const [extractedDate, updatedString] = stringUtils.searchForAndRemove(productionText, [
-      fullDatePattern,
-      yearOnlyPattern,
-    ]);
+    try {
+      [extractedDate, updatedString] = stringUtils.searchForAndRemove(productionText, [
+        DAY_MONTH_YEAR_PATTERN,
+        MONTH_YEAR_PATTERN,
+        YEAR_PATTERN,
+      ]);
+    } catch (error) {
+      console.error("Error parsing production details, multiple matches found:", error);
+    }
 
     return {
       productionLocation: removeAndNormalize(updatedString, ">>>"),
