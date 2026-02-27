@@ -1,8 +1,10 @@
 import type { ScrapedPlayData } from "#/db-types/play/play.types";
 import type { Page } from "playwright";
 
+import { DATE_PATTERNS } from "#/patterns";
 import { extractIsbn } from "#/utils/isbnUtils";
 import * as stringUtils from "#/utils/stringUtils";
+
 
 type ProductionDetails = { productionLocation: string; productionYear: string };
 type PublicationDetails = {
@@ -12,13 +14,6 @@ type PublicationDetails = {
 };
 
 const { hasAlphanumericCharacters, normalizeWhitespace, removeAndNormalize } = stringUtils;
-
-const YEAR = "(?:(?:18|19)\\d{2}|20[0|1|2]\\d{1})";
-const MONTH = "(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)";
-const DAY = "(?:0?[1-9]{1}|[1-2]\\d{1}|3[0|1]{1})";
-const YEAR_PATTERN = new RegExp(`^${YEAR}$`, "i");
-const MONTH_YEAR_PATTERN = new RegExp(`^${MONTH} ?${YEAR}$`, "i");
-const DAY_MONTH_YEAR_PATTERN = new RegExp(`^${DAY} ?${MONTH} ?${YEAR}$`, "i");
 
 export default abstract class BaseWorksList {
   protected static publisherException = "I don't think it has been published.";
@@ -78,9 +73,9 @@ export default abstract class BaseWorksList {
 
     try {
       [extractedDate, updatedString] = stringUtils.searchForAndRemove(productionText, [
-        DAY_MONTH_YEAR_PATTERN,
-        MONTH_YEAR_PATTERN,
-        YEAR_PATTERN,
+        DATE_PATTERNS.DAY_MONTH_YEAR,
+        DATE_PATTERNS.MONTH_YEAR,
+        DATE_PATTERNS.YEAR,
       ]);
     } catch (error) {
       console.error("Error parsing production details, multiple matches found:", error);
@@ -118,8 +113,10 @@ export default abstract class BaseWorksList {
       }
     }
 
-    const datePattern = /\(?(\d{4})\)?/; // YYYY with optional enclosing parentheses
-    const [extractedDate, updatedString] = stringUtils.searchForAndRemove(workingString, [datePattern]);
+    const [extractedDate, updatedString] = stringUtils.searchForAndRemove(workingString, [
+      DATE_PATTERNS.MONTH_YEAR,
+      DATE_PATTERNS.YEAR,
+    ]);
 
     return {
       publisher: removeAndNormalize(updatedString, ">>>"),

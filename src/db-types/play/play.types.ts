@@ -14,6 +14,8 @@ export type PlayDocument = {
     scrapedAt: Date;
     sourceUrl: string;
     needsReview?: boolean;
+    needsReviewReason?: string;
+    needsReviewData?: Record<string, Record<string, string>>;
   };
 
   rawFields: {
