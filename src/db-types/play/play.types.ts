@@ -36,6 +36,7 @@ export type PlayDocument = {
   reference?: string;
   publisher?: string;
   publicationYear?: string;
+  containingWork?: string;
   isbn?: string;
   productionLocation?: string;
   productionYear?: string;
@@ -61,7 +62,7 @@ export type InitialMetadata = Omit<Metadata, OptionalInitialMetadataKeys> &
   Partial<Pick<Metadata, OptionalInitialMetadataKeys>>;
 
 /**
- * Input data retreived from scraping a play page, before being transformed into
+ * Input data retrieved from scraping a play page, before being transformed into
  * the Play document structure
  */
 

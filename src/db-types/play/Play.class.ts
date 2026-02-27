@@ -23,6 +23,7 @@ export default class Play {
 
   private publisher?: string;
   private publicationYear?: string;
+  private containingWork?: string;
   private isbn?: string;
 
   private productionLocation?: string;
@@ -77,6 +78,7 @@ export default class Play {
     return {
       publisher: this.publisher,
       publicationYear: this.publicationYear,
+      containingWork: this.containingWork,
       isbn: this.isbn,
     };
   }
@@ -131,6 +133,7 @@ export default class Play {
 
     this.publisher = input.publisher;
     this.publicationYear = input.publicationYear;
+    this.containingWork = input.containingWork;
     this.isbn = input.isbn;
 
     this.productionLocation = input.productionLocation;

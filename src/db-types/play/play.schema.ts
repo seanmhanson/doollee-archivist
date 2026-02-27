@@ -48,6 +48,7 @@ const PlaySchema: Document = {
     reference: { bsonType: "string" },
     publisher: { bsonType: "string" },
     publicationYear: { bsonType: "string" },
+    containingWork: { bsonType: "string" },
     isbn: { bsonType: "string" },
     productionLocation: { bsonType: "string" },
     productionYear: { bsonType: "string" },
