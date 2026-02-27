@@ -1,7 +1,7 @@
 import type { ScrapedPlayData } from "#/db-types/play/play.types";
 import type { Page } from "playwright";
 
-import { extractISBN } from "#/utils/isbnUtils";
+import { extractIsbn } from "#/utils/isbnUtils";
 import * as stringUtils from "#/utils/stringUtils";
 
 type ProductionDetails = { productionLocation: string; productionYear: string };
@@ -104,10 +104,17 @@ export default abstract class BaseWorksList {
     }
 
     if (includeISBN) {
-      const [numericIsbn, matchedIsbn] = extractISBN(publicationText);
-      if (numericIsbn && matchedIsbn) {
-        isbn.isbn = numericIsbn;
-        workingString = publicationText.replace(matchedIsbn[0], "");
+      const extractedIsbn = extractIsbn(publicationText);
+      if (extractedIsbn) {
+        const { type, normalized, raw } = extractedIsbn;
+        if (type === "ISBN10" || type === "ISBN13") {
+          isbn.isbn = normalized;
+          workingString = publicationText.replace(raw, "");
+        } else {
+          // flag needs review and provide data for manual review
+          console.warn(`Extracted ISBN is invalid (${type}): "${raw}" from publication text: "${publicationText}"`);
+          workingString = publicationText.replace(raw, "");
+        }
       }
     }
 
