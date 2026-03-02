@@ -18,8 +18,7 @@ export type AuthorArchive = {
   research?: string;
   address?: string;
   telephone?: string;
-}
-
+};
 
 /**
  * Document structure for an Author in the database.

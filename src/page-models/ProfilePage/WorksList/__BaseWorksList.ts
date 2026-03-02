@@ -5,7 +5,6 @@ import { DATE_PATTERNS } from "#/patterns";
 import { extractIsbn } from "#/utils/isbnUtils";
 import * as stringUtils from "#/utils/stringUtils";
 
-
 type ProductionDetails = { productionLocation: string; productionYear: string };
 type PublicationDetails = {
   publisher: string;

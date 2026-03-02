@@ -1,6 +1,5 @@
 import type { ObjectId } from "mongodb";
 
-
 /**
  * Type for the archived original content scraped from the page, before transformation.
  * NB: this should be projected out by default for the purposes of search.
@@ -19,7 +18,7 @@ type PlayArchiveData = {
   genres?: string;
   parts?: string;
   reference?: string;
-}
+};
 
 type AdaptationArchiveData = {
   playId: string;
@@ -39,11 +38,9 @@ type AdaptationArchiveData = {
   maleParts?: string;
   femaleParts?: string;
   otherParts?: string;
-}
+};
 
-export type PlayArchive =
-  | ({ _type: "play" } & PlayArchiveData)
-  | ({ _type: "adaptation" } & AdaptationArchiveData);
+export type PlayArchive = ({ _type: "play" } & PlayArchiveData) | ({ _type: "adaptation" } & AdaptationArchiveData);
 
 /**
  * Document structure for a Play in the database.
