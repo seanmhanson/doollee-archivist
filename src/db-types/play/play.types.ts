@@ -1,11 +1,57 @@
 import type { ObjectId } from "mongodb";
 
+
+/**
+ * Type for the archived original content scraped from the page, before transformation.
+ * NB: this should be projected out by default for the purposes of search.
+ */
+
+type PlayArchiveData = {
+  playId: string;
+  title: string;
+  altTitle?: string;
+  synopsis?: string;
+  notes?: string;
+  production?: string;
+  organizations?: string;
+  publisher?: string;
+  music?: string;
+  genres?: string;
+  parts?: string;
+  reference?: string;
+}
+
+type AdaptationArchiveData = {
+  playId: string;
+  title: string;
+  adaptingAuthor?: string;
+  productionLocation?: string;
+  productionYear?: string;
+  organizations?: string;
+  publisher?: string;
+  isbn?: string;
+  music?: string;
+  genres?: string;
+  notes?: string;
+  imgAlt?: string;
+  synopsis?: string;
+  reference?: string;
+  maleParts?: string;
+  femaleParts?: string;
+  otherParts?: string;
+}
+
+export type PlayArchive =
+  | ({ _type: "play" } & PlayArchiveData)
+  | ({ _type: "adaptation" } & AdaptationArchiveData);
+
 /**
  * Document structure for a Play in the database.
  */
 
 export type PlayDocument = {
   _id: ObjectId;
+  _archive: PlayArchive;
   playId: string; // the id used by doollee, not our internal id
 
   metadata: {
@@ -66,7 +112,7 @@ export type InitialMetadata = Omit<Metadata, OptionalInitialMetadataKeys> &
  * the Play document structure
  */
 
-type RequiredKeys = "playId" | "title";
+type RequiredKeys = "playId" | "title" | "_archive";
 type RequiredFields = Pick<PlayDocument, RequiredKeys>;
 
 type RequiredMetadataKeys = "scrapedAt" | "sourceUrl";

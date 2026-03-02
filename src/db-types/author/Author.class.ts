@@ -6,6 +6,7 @@ import type {
   AuthorNameData,
   RawFields,
   AuthorData,
+  AuthorArchive,
 } from "#/db-types/author/author.types";
 import type { ObjectId as ObjectIdType } from "mongodb";
 
@@ -34,6 +35,7 @@ import { toTitleCase, removeDisambiguationSuffix, isAllCaps, stringArraysEqual }
 
 export default class Author {
   private _id: ObjectIdType;
+  private _archive: AuthorArchive;
   private metadata: InitialMetadata;
   private rawFields: RawFields;
 
@@ -110,6 +112,7 @@ export default class Author {
     const { name, displayName, isOrganization, lastName, firstName, middleNames, suffixes } = this.parseName(input);
 
     this._id = new ObjectId();
+    this._archive = input._archive;
 
     this.metadata = {
       createdAt: undefined,
@@ -289,6 +292,7 @@ export default class Author {
 
     const document: AuthorDocument = {
       _id: this._id,
+      _archive: this._archive,
       metadata: {
         ...this.metadata,
         createdAt: this.metadata.createdAt ?? now,

@@ -1,4 +1,4 @@
-import type { ScrapedAuthorData } from "#/db-types/author/author.types";
+import type { LabeledContents, ScrapedAuthorData } from "#/db-types/author/author.types";
 import type { Page } from "playwright";
 
 export default abstract class BaseBiography {
@@ -44,7 +44,7 @@ export default abstract class BaseBiography {
 
   protected abstract extractData(): Promise<void>;
 
-  protected parseLabeledContent(sectionHTML: string): Partial<ScrapedAuthorData> {
+  protected parseLabeledContent(sectionHTML: string): LabeledContents {
     /**
      * Construct a case-insensitive regex that will find bolded labels, then omit
      * whitespace and any optional anchor tags, capturing the text content that follows
