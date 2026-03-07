@@ -102,6 +102,11 @@ export class Config {
     }
     return Config.instance;
   }
+
+  public static resetInstance(): void {
+    Config.instance = undefined as unknown as Config;
+  }
 }
 
+export { Config as ConfigClass };
 export default Config.getInstance();
