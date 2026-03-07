@@ -1,11 +1,15 @@
+<<<<<<< HEAD
 import type { ScrapedAuthorData } from "#/db-types/author/author.types";
+=======
+import type { AuthorArchive, ScrapedAuthorData } from "#/db-types/author/author.types";
+>>>>>>> eslint
 import type { Page } from "playwright";
 
 import BaseBiography from "#/page-models/ProfilePage/Biography/__BaseBiography";
 
 type ScrapedData = {
   bio: string;
-  dateString: string;
+  dates: string;
   imageSrc: string;
   imageAlt: string;
   innerHTML: string;
@@ -25,22 +29,28 @@ export default class AdaptationBiography extends BaseBiography {
   }
 
   protected async extractData(): Promise<void> {
-    const { bio, dateString, imageSrc, imageAlt, innerHTML } = await this.scrapeData();
-    const { name, yearBorn, yearDied } = this.parseAdaptationNameAndDates(dateString);
-    const hasNoImage = imageSrc === "" || imageSrc.includes("/Images-playwrights/Blank");
-    const altName = hasNoImage ? "" : imageAlt;
-
+    const { bio, dates, imageSrc, imageAlt, innerHTML } = await this.scrapeData();
+    const { name, yearBorn, yearDied } = this.parseAdaptationNameAndDates(dates);
     const labeledContents = this.parseLabeledContent(innerHTML);
+    const altName = this.getAltName(imageSrc, imageAlt);
     const biography = this.normalizeBiography(bio);
 
-    this.data = {
-      ...this.data,
+    const _archive: AuthorArchive = {
+      name,
+      altName,
+      biography,
+      dates,
       ...labeledContents,
+    };
+
+    this.data = {
+      _archive,
       name,
       altName,
       yearBorn,
       yearDied,
       biography,
+      ...labeledContents,
     };
   }
 
@@ -52,7 +62,11 @@ export default class AdaptationBiography extends BaseBiography {
       const imageSelector = "#table table:first-child tr:first-child > td:first-child > p img";
 
       const bio = document.querySelector(bioSelector)?.textContent?.trim() ?? "";
+<<<<<<< HEAD
       const dateString = document.querySelector(dateSelector)?.textContent?.trim() ?? "";
+=======
+      const dates = document.querySelector(dateSelector)?.textContent?.trim() ?? "";
+>>>>>>> eslint
       const imageNode = document.querySelector(imageSelector);
       const imageSrc = imageNode?.getAttribute("src") ?? "";
       const imageAlt = imageNode?.getAttribute("alt") ?? "";
@@ -60,7 +74,7 @@ export default class AdaptationBiography extends BaseBiography {
 
       return {
         bio,
-        dateString,
+        dates,
         imageSrc,
         imageAlt,
         innerHTML,
@@ -77,5 +91,10 @@ export default class AdaptationBiography extends BaseBiography {
       yearBorn: match?.[1]?.trim() ?? "",
       yearDied: match?.[2]?.trim() ?? "",
     };
+  }
+
+  private getAltName(imageSrc: string, imageAlt: string): string {
+    const hasNoImage = imageSrc === "" || imageSrc.includes("/Images-playwrights/Blank");
+    return hasNoImage ? "" : imageAlt;
   }
 }

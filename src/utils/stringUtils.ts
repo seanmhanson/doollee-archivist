@@ -16,12 +16,25 @@ type SearchAndRemoveResult = [matchedString: string, updatedString: string];
  * NB: the returned value is the first capture group (without optional values)
  * the updated string removes the full match (with optional values)
  * Ex: "(2020)" returns "2020" and removes "(2020)" from the string
+ *
+ * Throws an error if any pattern matches more than once in the input.
  */
 export function searchForAndRemove(input: string, patterns: RegExp[]): SearchAndRemoveResult {
   for (const pattern of patterns) {
-    const match = input.match(pattern);
-    if (match) {
-      return [match[1], input.replace(match[0], "")];
+    // Create a global version of the pattern to find all matches
+    const globalPattern = new RegExp(pattern.source, pattern.flags.includes("i") ? "gi" : "g");
+    const allMatches = Array.from(input.matchAll(globalPattern));
+
+    if (allMatches.length > 1) {
+      throw new Error(
+        `Multiple date matches found in input: "${input}". ` + `Pattern ${pattern} matched ${allMatches.length} times.`,
+      );
+    }
+
+    if (allMatches.length === 1) {
+      const match = allMatches[0];
+      const extracted = match[1] ?? match[0];
+      return [extracted, input.replace(match[0], "")];
     }
   }
   return ["", input];

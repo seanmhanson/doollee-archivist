@@ -3,9 +3,36 @@ import type { Document } from "mongodb";
 const AuthorSchema: Document = {
   bsonType: "object",
   additionalProperties: false,
-  required: ["_id", "metadata", "rawFields", "name", "displayName", "playIds", "adaptationIds", "doolleePlayIds"],
+  required: [
+    "_id",
+    "_archive",
+    "metadata",
+    "rawFields",
+    "name",
+    "displayName",
+    "playIds",
+    "adaptationIds",
+    "doolleePlayIds",
+  ],
   properties: {
     _id: { bsonType: "objectId" },
+    _archive: {
+      bsonType: "object",
+      additionalProperties: false,
+      required: ["name"],
+      properties: {
+        altName: { bsonType: "string" },
+        dates: { bsonType: "string" },
+        biography: { bsonType: "string" },
+        nationality: { bsonType: "string" },
+        email: { bsonType: "string" },
+        website: { bsonType: "string" },
+        literaryAgent: { bsonType: "string" },
+        research: { bsonType: "string" },
+        address: { bsonType: "string" },
+        telephone: { bsonType: "string" },
+      },
+    },
     metadata: {
       bsonType: "object",
       additionalProperties: false,

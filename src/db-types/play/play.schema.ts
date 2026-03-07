@@ -2,12 +2,39 @@ import { type Document } from "mongodb";
 
 const PlaySchema: Document = {
   bsonType: "object",
-  required: ["_id", "metadata", "playId", "title", "author"],
+  required: ["_id", "metadata", "playId", "title", "author", "_archive"],
   additionalProperties: false,
   properties: {
     _id: { bsonType: "objectId" },
+    _archive: {
+      bsonType: "object",
+      required: ["_type", "playId", "title"],
+      additionalProperties: false,
+      properties: {
+        _type: { bsonType: "string", enum: ["play", "adaptation"] },
+        playId: { bsonType: "string" },
+        title: { bsonType: "string" },
+        altTitle: { bsonType: "string" },
+        synopsis: { bsonType: "string" },
+        notes: { bsonType: "string" },
+        production: { bsonType: "string" },
+        organizations: { bsonType: "string" },
+        publisher: { bsonType: "string" },
+        music: { bsonType: "string" },
+        genres: { bsonType: "string" },
+        parts: { bsonType: "string" },
+        reference: { bsonType: "string" },
+        adaptingAuthor: { bsonType: "string" },
+        productionLocation: { bsonType: "string" },
+        productionYear: { bsonType: "string" },
+        isbn: { bsonType: "string" },
+        imgAlt: { bsonType: "string" },
+        maleParts: { bsonType: "string" },
+        femaleParts: { bsonType: "string" },
+        otherParts: { bsonType: "string" },
+      },
+    },
     playId: { bsonType: "string" },
-
     metadata: {
       bsonType: "object",
       required: ["createdAt", "updatedAt", "scrapedAt", "sourceUrl"],
@@ -17,6 +44,12 @@ const PlaySchema: Document = {
         updatedAt: { bsonType: "date" },
         scrapedAt: { bsonType: "date" },
         sourceUrl: { bsonType: "string" },
+        needsReview: { bsonType: "bool" },
+        needsReviewReason: { bsonType: "string" },
+        needsReviewData: {
+          bsonType: "object",
+          additionalProperties: true,
+        },
       },
     },
 
@@ -42,6 +75,7 @@ const PlaySchema: Document = {
     reference: { bsonType: "string" },
     publisher: { bsonType: "string" },
     publicationYear: { bsonType: "string" },
+    containingWork: { bsonType: "string" },
     isbn: { bsonType: "string" },
     productionLocation: { bsonType: "string" },
     productionYear: { bsonType: "string" },

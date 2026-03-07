@@ -1,11 +1,32 @@
 import type { ObjectId } from "mongodb";
 
 /**
+ * Type for the archived original content scraped from the page, before transformation,
+ * only removing whitespace/html tags.
+ * NB: this should be projected out by default for the purposes of search.
+ */
+
+export type AuthorArchive = {
+  name: string;
+  altName?: string;
+  dates?: string;
+  biography?: string;
+  nationality?: string;
+  email?: string;
+  website?: string;
+  literaryAgent?: string;
+  research?: string;
+  address?: string;
+  telephone?: string;
+};
+
+/**
  * Document structure for an Author in the database.
  */
 
 export type AuthorDocument = {
   _id: ObjectId;
+  _archive: AuthorArchive;
 
   metadata: {
     createdAt: Date;
@@ -69,7 +90,10 @@ export type AuthorNameData = Pick<AuthorDocument, RequiredNameKeys> & Partial<Pi
  * the Author document structure.
  */
 
-type RequiredKeys = "name";
+type LabeledKeys = "nationality" | "email" | "website" | "literaryAgent" | "research" | "address" | "telephone";
+export type LabeledContents = Partial<Pick<AuthorDocument, LabeledKeys>>;
+
+type RequiredKeys = "name" | "_archive";
 type RequiredFields = Pick<AuthorDocument, RequiredKeys>;
 
 type RequiredMetadataKeys = "scrapedAt" | "sourceUrl";
