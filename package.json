@@ -1,7 +1,7 @@
 {
   "name": "doollee-archivist",
   "version": "0.1.0",
-  "description": "Scripts to scrape and normalize data from doolee.com's archive of playwrights and plays.",
+  "description": "Scripts to scrape and normalize data from doollee.com's archive of playwrights and plays.",
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -17,7 +17,7 @@
     "scrape:listings": "ts-node -r tsconfig-paths/register src/scripts/scrapeListings.ts",
     "scrape:all": "ts-node -r tsconfig-paths/register src/scripts/main/main.ts",
     "test:rateLimiting": "ts-node -r tsconfig-paths/register src/scripts/testRateLimiting.ts",
-    "analyze:genres": "ts-node -r tsconfig-paths/register src/scripts/normalize/analyze-genres.ts",
+    "analyze": "ts-node -r tsconfig-paths/register src/scripts/normalize/AnalyzeOrchestrator.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -43,6 +43,8 @@
     "typescript-eslint": "^8.55.0"
   },
   "dependencies": {
+    "@json2csv/plainjs": "^7.0.6",
+    "@json2csv/transforms": "^7.0.6",
     "@playwright/test": "^1.57.0",
     "dotenv": "^17.2.3",
     "mongodb": "^7.0.0",

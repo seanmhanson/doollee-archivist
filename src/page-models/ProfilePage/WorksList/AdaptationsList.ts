@@ -1,3 +1,4 @@
+import type { PlayArchive } from "#/db-types/play/play.types";
 import type { Page } from "playwright";
 
 import BaseWorksList from "#/page-models/ProfilePage/WorksList/__BaseWorksList";
@@ -45,7 +46,17 @@ export default class AdaptationsList extends BaseWorksList {
       const genres = this.formatGenres(adaptation.genres);
       const adaptingAuthor = stringUtils.toTitleCase(adaptation.adaptingAuthor);
 
+      const _archive: PlayArchive = {
+        _type: "adaptation",
+        productionLocation,
+        productionYear,
+        publisher,
+        imgAlt,
+        ...adaptation,
+      };
+
       return {
+        _archive,
         ...adaptation,
         playId,
         altTitle,

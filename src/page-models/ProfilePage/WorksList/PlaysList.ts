@@ -1,3 +1,4 @@
+import type { PlayArchive } from "#/db-types/play/play.types";
 import type { Page } from "playwright";
 
 import BaseWorksList from "#/page-models/ProfilePage/WorksList/__BaseWorksList";
@@ -18,9 +19,20 @@ export default class PlaysList extends BaseWorksList {
         const parts = this.parseParts(partsText);
         const genres = this.formatGenres(rawGenres);
 
+        const _archive: PlayArchive = {
+          _type: "play",
+          playId: playIdText,
+          parts: partsText,
+          genres: rawGenres,
+          publisher,
+          production,
+          ...rest,
+        };
+
         return {
           publishingInfo: publisher,
           productionInfo: production,
+          _archive,
           playId,
           genres,
           ...publicationDetails,

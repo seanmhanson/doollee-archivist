@@ -1,4 +1,4 @@
-import type { ScrapedAuthorData } from "#/db-types/author/author.types";
+import type { AuthorArchive, ScrapedAuthorData } from "#/db-types/author/author.types";
 import type { Page } from "playwright";
 
 import BaseBiography from "#/page-models/ProfilePage/Biography/__BaseBiography";
@@ -6,7 +6,7 @@ import BaseBiography from "#/page-models/ProfilePage/Biography/__BaseBiography";
 type ScrapedData = {
   altName: string;
   name: string;
-  dateString: string;
+  dates: string;
   innerHTML: string;
 };
 
@@ -23,19 +23,27 @@ export default class StandardBiography extends BaseBiography {
   }
 
   protected async extractData(): Promise<void> {
-    const { altName, name, dateString, innerHTML } = await this.scrapeData();
-    const { yearBorn, yearDied } = this.parseDates(dateString);
+    const { altName, name, dates, innerHTML } = await this.scrapeData();
+    const { yearBorn, yearDied } = this.parseDates(dates);
     const biography = this.parseBiography(innerHTML);
     const labeledContent = this.parseLabeledContent(innerHTML);
 
-    this.data = {
-      ...this.data,
+    const _archive: AuthorArchive = {
+      name,
+      altName,
+      biography,
+      dates,
       ...labeledContent,
+    };
+
+    this.data = {
+      _archive,
       name,
       altName,
       yearBorn,
       yearDied,
       biography,
+      ...labeledContent,
     };
   }
 
@@ -48,10 +56,10 @@ export default class StandardBiography extends BaseBiography {
 
       const name = document.querySelector(nameSelector)?.textContent?.trim() ?? "";
       const altName = document.querySelector(imageSelector)?.getAttribute("alt")?.trim() ?? "";
-      const dateString = document.querySelector(datesSelector)?.textContent?.trim() ?? "";
+      const dates = document.querySelector(datesSelector)?.textContent?.trim() ?? "";
       const innerHTML = document.querySelector(sectionSelector)?.innerHTML ?? "";
 
-      return { altName, name, dateString, innerHTML };
+      return { altName, name, dates, innerHTML };
     });
   }
 

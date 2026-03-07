@@ -1,7 +1,8 @@
 import type { ScrapedPlayData } from "#/db-types/play/play.types";
 import type { Page } from "playwright";
 
-import { extractISBN } from "#/utils/isbnUtils";
+import { DATE_PATTERNS } from "#/patterns";
+import { extractIsbn } from "#/utils/isbnUtils";
 import * as stringUtils from "#/utils/stringUtils";
 
 type ProductionDetails = { productionLocation: string; productionYear: string };
@@ -66,14 +67,18 @@ export default abstract class BaseWorksList {
       return { productionLocation: "", productionYear: "" };
     }
 
-    // Date patterns with optional enclosing parentheses
-    const fullDatePattern = /\(?(\d{1,2}\s+[A-Za-z]{3}\s+\d{4})\)?/; // DD MMM YYYY
-    const yearOnlyPattern = /\(?(\d{4})\)?/; // YYYY
+    let extractedDate = "";
+    let updatedString = productionText;
 
-    const [extractedDate, updatedString] = stringUtils.searchForAndRemove(productionText, [
-      fullDatePattern,
-      yearOnlyPattern,
-    ]);
+    try {
+      [extractedDate, updatedString] = stringUtils.searchForAndRemove(productionText, [
+        DATE_PATTERNS.DAY_MONTH_YEAR,
+        DATE_PATTERNS.MONTH_YEAR,
+        DATE_PATTERNS.YEAR,
+      ]);
+    } catch (error) {
+      console.error("Error parsing production details, multiple matches found:", error);
+    }
 
     return {
       productionLocation: removeAndNormalize(updatedString, ">>>"),
@@ -93,15 +98,24 @@ export default abstract class BaseWorksList {
     }
 
     if (includeISBN) {
-      const [numericIsbn, matchedIsbn] = extractISBN(publicationText);
-      if (numericIsbn && matchedIsbn) {
-        isbn.isbn = numericIsbn;
-        workingString = publicationText.replace(matchedIsbn[0], "");
+      const extractedIsbn = extractIsbn(publicationText);
+      if (extractedIsbn) {
+        const { type, normalized, raw } = extractedIsbn;
+        if (type === "ISBN10" || type === "ISBN13") {
+          isbn.isbn = normalized;
+          workingString = publicationText.replace(raw, "");
+        } else {
+          // flag needs review and provide data for manual review
+          console.warn(`Extracted ISBN is invalid (${type}): "${raw}" from publication text: "${publicationText}"`);
+          workingString = publicationText.replace(raw, "");
+        }
       }
     }
 
-    const datePattern = /\(?(\d{4})\)?/; // YYYY with optional enclosing parentheses
-    const [extractedDate, updatedString] = stringUtils.searchForAndRemove(workingString, [datePattern]);
+    const [extractedDate, updatedString] = stringUtils.searchForAndRemove(workingString, [
+      DATE_PATTERNS.MONTH_YEAR,
+      DATE_PATTERNS.YEAR,
+    ]);
 
     return {
       publisher: removeAndNormalize(updatedString, ">>>"),
