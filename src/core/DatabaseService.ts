@@ -1,6 +1,6 @@
 import { MongoClient } from "mongodb";
 
-import type { Db, Collection, CreateIndexesOptions, IndexDescription } from "mongodb";
+import type { Db, Collection, CreateIndexesOptions } from "mongodb";
 
 import config from "#/core/Config";
 import authorSchema from "#/db-types/author/author.schema";
@@ -33,7 +33,7 @@ export default class DatabaseService {
     private mongoUri: string = config.mongoUri,
     private dbName: string = config.dbName,
   ) {
-    if (!mongoUri || !dbName) {
+    if (!this.mongoUri || !this.dbName) {
       throw new Error("MongoDB URI and database name are required");
     }
   }
@@ -55,16 +55,7 @@ export default class DatabaseService {
     }
   }
 
-  async getDatabaseInfo() {
-    const credentialPattern = /\/\/[^:]+:[^@]+@/;
-    return {
-      uri: this.mongoUri.replace(credentialPattern, "//***:***@"),
-      dbName: this.dbName,
-      isConnected: await this.isConnected(),
-    };
-  }
-
-  async getCollection(name: CollectionName): Promise<Collection> {
+  public async getCollection(name: CollectionName): Promise<Collection> {
     const database = await this.connect();
     return database.collection(name);
   }
@@ -82,7 +73,7 @@ export default class DatabaseService {
     }
   }
 
-  async close(): Promise<void> {
+  public async close(): Promise<void> {
     if (this.client) {
       await this.client.close();
       this.client = null;
@@ -91,17 +82,7 @@ export default class DatabaseService {
     }
   }
 
-  async resetCollections(): Promise<void> {
-    const database = await this.connect();
-    const existingCollections = await database.listCollections().toArray();
-    for (const { name } of existingCollections) {
-      await database.collection(name).drop();
-      console.info(`🗑️  Dropped collection: ${name}`);
-    }
-    console.info("✅ - Collections reset complete");
-  }
-
-  async resetDatabase(): Promise<void> {
+  public async resetDatabase(): Promise<void> {
     if (process.env.NODE_ENV === "production") {
       throw new Error("Database reset is not allowed in production environment");
     }
@@ -116,56 +97,7 @@ export default class DatabaseService {
     }
   }
 
-  async hasCollections(): Promise<boolean> {
-    try {
-      const database = await this.connect();
-      const collections = await database.listCollections().toArray();
-      const collectionNames = new Set(collections.map((c) => c.name));
-      const expectedNames = new Set(COLLECTIONS.map((c) => c.name));
-
-      const sameSize = collectionNames.size === expectedNames.size;
-      const sameNames = [...expectedNames].every((name) => collectionNames.has(name));
-
-      return sameSize && sameNames;
-    } catch (error) {
-      console.error("❌ - Database collections check failed:", error);
-      throw error;
-    }
-  }
-
-  async hasIndexes(): Promise<boolean> {
-    try {
-      for (const [collectionName, expectedIndexes] of Object.entries(indexesByCollection)) {
-        const collection = await this.getCollection(collectionName as CollectionName);
-        const indexes = (await collection.listIndexes().toArray()) as IndexDescription[];
-
-        for (const expectedIndex of expectedIndexes) {
-          const exists = indexes.some((idx) => idx.key && expectedIndex.field in idx.key);
-
-          if (!exists) {
-            return false;
-          }
-        }
-      }
-      return true;
-    } catch (error) {
-      console.error("❌ - Database indexes check failed:", error);
-      throw error;
-    }
-  }
-
-  async isInitialized(): Promise<boolean> {
-    try {
-      const hasValidCollections = await this.hasCollections();
-      const hasValidIndexes = await this.hasIndexes();
-      return hasValidCollections && hasValidIndexes;
-    } catch (error) {
-      console.error("❌ - Database initialization check failed:", error);
-      throw error;
-    }
-  }
-
-  async createCollections(): Promise<void> {
+  private async createCollections(): Promise<void> {
     const database = await this.connect();
     console.info("⏳ Creating collections:");
 
@@ -183,7 +115,7 @@ export default class DatabaseService {
     console.info("✅ Collection creation complete");
   }
 
-  async createIndexes(): Promise<void> {
+  private async createIndexes(): Promise<void> {
     const database = await this.connect();
     console.info("⏳ Creating indexes:");
 
@@ -205,7 +137,7 @@ export default class DatabaseService {
     console.info("✅ - Index creation complete");
   }
 
-  async initDatabase(): Promise<void> {
+  public async initDatabase(): Promise<void> {
     console.info("⏳ - Initializing database...");
     await this.connect();
     console.info("--------------------------------");

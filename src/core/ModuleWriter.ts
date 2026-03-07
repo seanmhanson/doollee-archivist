@@ -86,10 +86,10 @@ class ModuleWriter {
 
   private validateOptions(options: Options): Options {
     const { filename, data, fileType, stringify } = options;
-    const inferredFileType = fileType ?? this.inferFileType(filename);
-
     this.validateFilename({ filename, fileType });
     this.validateDataType({ stringify, data });
+
+    const inferredFileType = fileType ?? this.inferFileType(filename);
 
     return {
       filename: filename.replace(/\.(ts|json)$/, ""),

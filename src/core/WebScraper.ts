@@ -117,3 +117,15 @@ export default class WebScraper {
 }
 
 export { WebScraper };
+
+// For testing: allows direct instantiation without initialization
+// @ts-expect-error - accessing private constructor for testing
+export class TestWebScraper extends WebScraper {
+  constructor() {
+    if (process.env.NODE_ENV !== "test") {
+      throw new Error("TestWebScraper can only be instantiated in test environment");
+    }
+
+    super();
+  }
+}
