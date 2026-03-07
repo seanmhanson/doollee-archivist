@@ -1,10 +1,5 @@
 import { ObjectId } from "mongodb";
 
-<<<<<<< HEAD
-import type { InitialMetadata, RawFields, PlayDocument, PlayData } from "#/db-types/play/play.types";
-
-import * as dbUtils from "#/utils/dbUtils";
-=======
 import type { InitialMetadata, RawFields, PlayDocument, PlayData, PlayArchive } from "#/db-types/play/play.types";
 
 import { DATE_PATTERNS } from "#/patterns";
@@ -13,7 +8,6 @@ import { extractIsbn } from "#/utils/isbnUtils";
 import * as stringUtils from "#/utils/stringUtils";
 
 const publisherException = "I don't think it has been published.";
->>>>>>> eslint
 
 export default class Play {
   private _id: ObjectId;

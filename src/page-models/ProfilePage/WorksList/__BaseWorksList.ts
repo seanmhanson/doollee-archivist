@@ -1,12 +1,8 @@
 import type { ScrapedPlayData } from "#/db-types/play/play.types";
 import type { Page } from "playwright";
 
-<<<<<<< HEAD
-import { extractISBN } from "#/utils/isbnUtils";
-=======
 import { DATE_PATTERNS } from "#/patterns";
 import { extractIsbn } from "#/utils/isbnUtils";
->>>>>>> eslint
 import * as stringUtils from "#/utils/stringUtils";
 
 type ProductionDetails = { productionLocation: string; productionYear: string };

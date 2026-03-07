@@ -46,9 +46,6 @@ export default class AdaptationsList extends BaseWorksList {
       const genres = this.formatGenres(adaptation.genres);
       const adaptingAuthor = stringUtils.toTitleCase(adaptation.adaptingAuthor);
 
-<<<<<<< HEAD
-      return {
-=======
       const _archive: PlayArchive = {
         _type: "adaptation",
         productionLocation,
@@ -60,7 +57,6 @@ export default class AdaptationsList extends BaseWorksList {
 
       return {
         _archive,
->>>>>>> eslint
         ...adaptation,
         playId,
         altTitle,

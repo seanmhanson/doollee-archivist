@@ -1,8 +1,6 @@
 import { promises as fs } from "fs";
 import path from "path";
 
-<<<<<<< HEAD
-=======
 import { Parser } from "@json2csv/plainjs";
 import { flatten } from "@json2csv/transforms";
 
@@ -15,7 +13,6 @@ import {
   getProdPubDataPipeline,
 } from "./aggregation-utils";
 
->>>>>>> eslint
 import type { Collection, Document } from "mongodb";
 
 import DatabaseService from "#/core/DatabaseService";
@@ -39,8 +36,6 @@ type SingleFrequencyProps = {
 
 type ResultDocument = Record<string, string> & { count: number };
 
-<<<<<<< HEAD
-=======
 type DateFormatResultItem = { value: string; frequency: number };
 
 type DateFormatResults = {
@@ -50,7 +45,6 @@ type DateFormatResults = {
   other: DateFormatResultItem[];
 };
 
->>>>>>> eslint
 class AnalyzeOrchestrator {
   private services: Services;
   private playsCollection?: Collection<Document>;
@@ -106,11 +100,8 @@ class AnalyzeOrchestrator {
     // await this.getSamplePlays();
     // await this.getSampleAuthors();
 
-<<<<<<< HEAD
-=======
     await this.getPublicationProductionInfoCSV();
 
->>>>>>> eslint
     await this.close();
   }
 
@@ -343,11 +334,7 @@ class AnalyzeOrchestrator {
     sortByField = false,
     sortDescending = true,
   }: SingleFrequencyProps) {
-<<<<<<< HEAD
-    const pipeline = this.getSingleFrequencyPipeline(fieldName, sortByField, sortDescending);
-=======
     const pipeline = getSingleFrequencyPipeline({ fieldName, sortByField, sortDescending });
->>>>>>> eslint
     const results = (await collection.aggregate(pipeline).toArray()) as ResultDocument[];
     const csv = this.getSingleFrequencyCSV(results, fieldName);
     const fileName = `frequencies-${fieldName}`;
@@ -362,69 +349,7 @@ class AnalyzeOrchestrator {
     return [header, ...rows].join("\n");
   }
 
-<<<<<<< HEAD
-  private getPartsPipeline() {
-    const labels = ["male", "female", "other"];
-    const toKey = (label: string) => `${label}Parts`;
-    const toCapitalized = (label: string) => label.charAt(0).toUpperCase() + label.slice(1);
-
-    const input = labels.map((label) => {
-      return { type: label, text: `$partsText${toCapitalized(label)}` };
-    });
-
-    const groupings = labels.reduce(
-      (acc, label) => {
-        const key = toKey(label);
-        const condition = { $eq: ["$parts.type", label] };
-        acc[key] = { $sum: { $cond: [condition, 1, 0] } };
-        return acc;
-      },
-      {} as Record<string, unknown>,
-    );
-
-    const projections = labels.reduce(
-      (acc, label) => {
-        const key = toKey(label);
-        acc[key] = 1;
-        return acc;
-      },
-      {} as Record<string, unknown>,
-    );
-
-    return [
-      // Reshape each document into an array of {type, text} objects
-      {
-        $project: {
-          parts: {
-            $filter: {
-              input,
-              as: "part",
-              cond: {
-                $and: [{ $ne: ["$$part.text", null] }, { $ne: ["$$part.text", ""] }],
-              },
-            },
-          },
-        },
-      },
-
-      // Flatten the array
-      { $unwind: "$parts" },
-
-      // Group by text, counting total and per-type occurrences
-      { $group: { _id: "$parts.text", frequency: { $sum: 1 }, ...groupings } },
-
-      // Sort by total frequency descending
-      { $sort: { frequency: -1 } },
-
-      // Clean up the output
-      { $project: { _id: 0, text: "$_id", frequency: 1, ...projections } },
-    ];
-  }
-
-  private async writeToCSV(csv: string, fieldName: string): Promise<void> {
-=======
   private async writeToCSV(csv: string, fileName: string): Promise<void> {
->>>>>>> eslint
     const outputDir = path.resolve("analysis");
     const filePath = path.join(outputDir, `${fileName}.csv`);
 
@@ -432,11 +357,7 @@ class AnalyzeOrchestrator {
       await fs.mkdir(outputDir, { recursive: true });
       await fs.writeFile(filePath, csv, "utf8");
     } catch (error) {
-<<<<<<< HEAD
-      const message = `Error writing CSV for ${fieldName} frequencies`;
-=======
       const message = `Error writing CSV file ${fileName}`;
->>>>>>> eslint
       throw new Error(message, { cause: error });
     }
 

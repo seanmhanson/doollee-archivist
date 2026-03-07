@@ -6,10 +6,7 @@ import type {
   AuthorNameData,
   RawFields,
   AuthorData,
-<<<<<<< HEAD
-=======
   AuthorArchive,
->>>>>>> eslint
 } from "#/db-types/author/author.types";
 import type { ObjectId as ObjectIdType } from "mongodb";
 
@@ -38,10 +35,7 @@ import { toTitleCase, removeDisambiguationSuffix, isAllCaps, stringArraysEqual }
 
 export default class Author {
   private _id: ObjectIdType;
-<<<<<<< HEAD
-=======
   private _archive: AuthorArchive;
->>>>>>> eslint
   private metadata: InitialMetadata;
   private rawFields: RawFields;
 

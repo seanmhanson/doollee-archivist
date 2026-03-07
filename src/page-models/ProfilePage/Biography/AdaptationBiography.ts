@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import type { ScrapedAuthorData } from "#/db-types/author/author.types";
-=======
 import type { AuthorArchive, ScrapedAuthorData } from "#/db-types/author/author.types";
->>>>>>> eslint
 import type { Page } from "playwright";
 
 import BaseBiography from "#/page-models/ProfilePage/Biography/__BaseBiography";
@@ -62,11 +58,7 @@ export default class AdaptationBiography extends BaseBiography {
       const imageSelector = "#table table:first-child tr:first-child > td:first-child > p img";
 
       const bio = document.querySelector(bioSelector)?.textContent?.trim() ?? "";
-<<<<<<< HEAD
-      const dateString = document.querySelector(dateSelector)?.textContent?.trim() ?? "";
-=======
       const dates = document.querySelector(dateSelector)?.textContent?.trim() ?? "";
->>>>>>> eslint
       const imageNode = document.querySelector(imageSelector);
       const imageSrc = imageNode?.getAttribute("src") ?? "";
       const imageAlt = imageNode?.getAttribute("alt") ?? "";

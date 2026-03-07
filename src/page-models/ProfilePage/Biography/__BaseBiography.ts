@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import type { ScrapedAuthorData } from "#/db-types/author/author.types";
-=======
 import type { LabeledContents, ScrapedAuthorData } from "#/db-types/author/author.types";
->>>>>>> eslint
 import type { Page } from "playwright";
 
 export default abstract class BaseBiography {

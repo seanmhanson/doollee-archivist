@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import type { ScrapedAuthorData } from "#/db-types/author/author.types";
-=======
 import type { AuthorArchive, ScrapedAuthorData } from "#/db-types/author/author.types";
->>>>>>> eslint
 import type { Page } from "playwright";
 
 import BaseBiography from "#/page-models/ProfilePage/Biography/__BaseBiography";
@@ -60,11 +56,7 @@ export default class StandardBiography extends BaseBiography {
 
       const name = document.querySelector(nameSelector)?.textContent?.trim() ?? "";
       const altName = document.querySelector(imageSelector)?.getAttribute("alt")?.trim() ?? "";
-<<<<<<< HEAD
-      const dateString = document.querySelector(datesSelector)?.textContent?.trim() ?? "";
-=======
       const dates = document.querySelector(datesSelector)?.textContent?.trim() ?? "";
->>>>>>> eslint
       const innerHTML = document.querySelector(sectionSelector)?.innerHTML ?? "";
 
       return { altName, name, dates, innerHTML };

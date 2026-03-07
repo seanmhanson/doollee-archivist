@@ -5,16 +5,9 @@ type ExtractedISBN = {
   normalized: string;
 };
 
-<<<<<<< HEAD
-type ISBNResult = [
-  numericFormatted: string, // numeric value for database storage
-  originalFormatted: string, // original value with hyphens for reference
-];
-=======
 const RE_ISBN13 = /(?<!\d)(97[89][\s-]*(?:\d[\s-]*){10})(?!\d)/g;
 const RE_ISBN10 = /(?<![\dA-Z])((?:\d[\s-]*){9}[\dX])(?![\dA-Z])/gi;
 const RE_POSSIBLE_ISBN = /(?<!\d)(97[89][\s-]*(?:\d[\s-]*){6,})(?!\d)|(?<!\d)((?:\d[\s-]*){8,}[\dX])(?!\d)/gi;
->>>>>>> eslint
 
 export function extractIsbn(text = ""): ExtractedISBN | null {
   const isbn13Match = text.match(RE_ISBN13);

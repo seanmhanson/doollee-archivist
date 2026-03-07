@@ -19,11 +19,6 @@ export default class PlaysList extends BaseWorksList {
         const parts = this.parseParts(partsText);
         const genres = this.formatGenres(rawGenres);
 
-<<<<<<< HEAD
-        return {
-          publishingInfo: publisher,
-          productionInfo: production,
-=======
         const _archive: PlayArchive = {
           _type: "play",
           playId: playIdText,
@@ -38,7 +33,6 @@ export default class PlaysList extends BaseWorksList {
           publishingInfo: publisher,
           productionInfo: production,
           _archive,
->>>>>>> eslint
           playId,
           genres,
           ...publicationDetails,
