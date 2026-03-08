@@ -108,6 +108,10 @@ export default class Author {
     };
   }
 
+  public get archiveData() {
+    return this._archive;
+  }
+
   constructor(input: AuthorData) {
     const { name, displayName, isOrganization, lastName, firstName, middleNames, suffixes } = this.parseName(input);
 
