@@ -114,5 +114,4 @@ const getConfig = () => Config.getInstance();
 
 const resetConfig = () => Config.resetInstance();
 
-
 export { defaults, getConfig, resetConfig };
