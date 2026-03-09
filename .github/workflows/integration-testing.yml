@@ -29,6 +29,6 @@ jobs:
         run: yarn playwright install
 
       - name: Run integration tests
-        env: 
+        env:
           MONGO_URI: mongodb://test:10000
         run: yarn test:int
