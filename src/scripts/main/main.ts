@@ -1,4 +1,4 @@
-import getConfig from "#/core/Config";
+import { getConfig } from "#/core/Config";
 import DatabaseService from "#/core/DatabaseService";
 import ModuleWriter from "#/core/ModuleWriter";
 import WebScraper from "#/core/WebScraper";

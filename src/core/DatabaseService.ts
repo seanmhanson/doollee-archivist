@@ -2,7 +2,7 @@ import { MongoClient } from "mongodb";
 
 import type { Db, Collection, CreateIndexesOptions } from "mongodb";
 
-import getConfig from "#/core/Config";
+import { getConfig } from "#/core/Config";
 import authorSchema from "#/db-types/author/author.schema";
 import playSchema from "#/db-types/play/play.schema";
 

@@ -3,7 +3,7 @@ import path from "path";
 
 import type { IndexUrlsData } from "#/types";
 
-import getConfig from "#/core/Config";
+import { getConfig } from "#/core/Config";
 import WebScraper from "#/core/WebScraper";
 import IndexPage from "#/page-models/IndexPage";
 

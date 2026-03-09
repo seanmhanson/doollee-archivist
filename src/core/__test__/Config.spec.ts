@@ -1,36 +1,31 @@
 import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
 
-import getConfig, { ConfigClass } from "../Config";
+import { getConfig, resetConfig, defaults } from "../Config";
 
 describe("core/Config", () => {
   let initialEnv: NodeJS.ProcessEnv;
-  let initialDefaults: typeof ConfigClass.defaults;
 
   beforeEach(() => {
     initialEnv = { ...process.env };
-    initialDefaults = { ...ConfigClass.defaults };
   });
 
   afterEach(() => {
     process.env = initialEnv;
-    ConfigClass.defaults = initialDefaults;
-    ConfigClass.resetInstance();
+    resetConfig();
   });
 
   describe("default behavior", () => {
     it("should have default values for all configuration options", () => {
-      const defaultValues = ConfigClass.defaults;
       const defaultInstance = getConfig();
 
       // selected standard required properties
-      expect(defaultInstance.mongoUri).toBe(defaultValues.MONGO_URI);
-      expect(defaultInstance.dbName).toBe(defaultValues.DB_NAME);
+      expect(defaultInstance.dbName).toBe(defaults.DB_NAME);
 
       // selected custom required properties
-      expect(defaultInstance.writeTo).toBe(defaultValues.WRITE_TO);
-      expect(defaultInstance.maxBatches).toBe(parseInt(defaultValues.MAX_BATCHES, 10));
-      expect(defaultInstance.tailLength).toBe(parseInt(defaultValues.TAIL_LENGTH, 10));
-      expect(defaultInstance.logFile).toBe(defaultValues.LOG_FILE);
+      expect(defaultInstance.writeTo).toBe(defaults.WRITE_TO);
+      expect(defaultInstance.maxBatches).toBe(parseInt(defaults.MAX_BATCHES, 10));
+      expect(defaultInstance.tailLength).toBe(parseInt(defaults.TAIL_LENGTH, 10));
+      expect(defaultInstance.logFile).toBe(defaults.LOG_FILE);
     });
   });
 
@@ -56,7 +51,6 @@ describe("core/Config", () => {
   describe("validation", () => {
     it("throws an error for missing required env variables", () => {
       const expectedError = /Missing required configuration for MONGO_URI/;
-      delete ConfigClass.defaults.MONGO_URI;
       delete process.env.MONGO_URI;
 
       expect(() => getConfig()).toThrow(expectedError);

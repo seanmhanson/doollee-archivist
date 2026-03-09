@@ -18,7 +18,7 @@ import type {
 } from "#/scripts/main/ProgressDisplay.types";
 import type { ObjectId } from "mongodb";
 
-import getConfig from "#/core/Config";
+import { getConfig } from "#/core/Config";
 import Author from "#/db-types/author/Author.class";
 import Play from "#/db-types/play/Play.class";
 import ProfilePage from "#/page-models/ProfilePage";

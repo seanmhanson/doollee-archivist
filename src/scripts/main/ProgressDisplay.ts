@@ -9,7 +9,7 @@ import type {
   DisplayData,
 } from "#/scripts/main/ProgressDisplay.types";
 
-import getConfig from "#/core/Config";
+import { getConfig } from "#/core/Config";
 import { defaults } from "#/scripts/main/ProgressDisplay.types";
 import debounce from "#/utils/debounce";
 

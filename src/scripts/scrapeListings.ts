@@ -1,4 +1,4 @@
-import getConfig from "#/core/Config";
+import { getConfig } from "#/core/Config";
 import ModuleWriter from "#/core/ModuleWriter";
 import WebScraper from "#/core/WebScraper";
 import listingUrls from "#/input/listingUrls";

@@ -1,4 +1,4 @@
-import getConfig from "#/core/Config";
+import { getConfig } from "#/core/Config";
 import DatabaseService from "#/core/DatabaseService";
 
 async function main() {

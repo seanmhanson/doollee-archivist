@@ -4,23 +4,24 @@ dotenv.config({ quiet: true });
 const WRITE_TO_VALUES = ["db", "file", "stage"] as const;
 type WriteTo = (typeof WRITE_TO_VALUES)[number];
 
+const defaults: Record<string, string> = {
+  DB_NAME: "doollee-archive",
+  BASE_URL: "https://www.doollee.com",
+  PAGE_TIMEOUT: "60000",
+  ELEMENT_TIMEOUT: "30000",
+  RATE_LIMIT_DELAY: "3000",
+  WRITE_TO: "db",
+  BATCH_SIZE: "100",
+  MAX_BATCHES: "0",
+  TAIL_LENGTH: "3",
+  AUTHOR_LIST_PATH: "input/authors",
+  LOG_DIRECTORY: "output/logs",
+  LOG_FILE: "",
+};
+
 export class Config {
   private static instance: Config;
-  public static defaults: Record<string, string> = {
-    MONGO_URI: "mongodb://localhost:27017",
-    DB_NAME: "doollee-archive",
-    BASE_URL: "https://www.doollee.com",
-    PAGE_TIMEOUT: "60000",
-    ELEMENT_TIMEOUT: "30000",
-    RATE_LIMIT_DELAY: "3000",
-    WRITE_TO: "db",
-    BATCH_SIZE: "100",
-    MAX_BATCHES: "0",
-    TAIL_LENGTH: "3",
-    AUTHOR_LIST_PATH: "input/authors",
-    LOG_DIRECTORY: "output/logs",
-    LOG_FILE: "",
-  };
+  public static defaults = defaults;
 
   public readonly mongoUri: string;
   public readonly dbName: string;
@@ -104,11 +105,14 @@ export class Config {
   }
 
   public static resetInstance(): void {
+    Config.defaults = { ...defaults };
     Config.instance = undefined as unknown as Config;
   }
 }
 
 const getConfig = () => Config.getInstance();
-export default getConfig;
 
-export { Config as ConfigClass };
+const resetConfig = () => Config.resetInstance();
+
+
+export { defaults, getConfig, resetConfig };

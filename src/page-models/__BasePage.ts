@@ -1,7 +1,7 @@
 import type { PageMetadata, WaitUntilConditions } from "#/types";
 import type { Page } from "playwright";
 
-import getConfig from "#/core/Config";
+import { getConfig } from "#/core/Config";
 
 /**
  * Supports both direct URL scraping and parameterized URL construction.
