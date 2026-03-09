@@ -5,6 +5,8 @@ import type { Page } from "@playwright/test";
 
 type UrlArgs = { letter: string };
 type Data = Record<string, string>;
+type LinkContent = { text: string | null; href: string | null };
+type LinkData = { key: string | null; url: string | null };
 
 /**
  * Scraper for top-level index pages for authors on doollee.com.
@@ -66,6 +68,16 @@ export default class IndexPage extends BasePage<UrlArgs, Data> {
     const directory = `Playwrights${uppercase}`;
     const pageName = `3Playwrights${uppercase}data.php`;
     return `${BasePage.baseUrl}/${directory}/${pageName}`;
+  }
+
+  public static parseLink({ text, href }: LinkContent): LinkData | null {
+    if (!text || !href) return null;
+    const match = /\(([a-z]{2}) - ([a-z]{2})\)/.exec(text);
+    if (!match) return null;
+    const rangeStart = match[1];
+    const rangeEnd = match[2];
+    const key = `${rangeStart}-${rangeEnd}`;
+    return { key, url: href };
   }
 
   /**

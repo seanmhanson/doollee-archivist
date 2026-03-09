@@ -3,7 +3,7 @@ module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
   roots: ["<rootDir>/src"],
-  testMatch: ["**/*.test.ts", "**/*.spec.ts"],
+  testMatch: ["**/*.test.ts", "**/*.spec.ts", "**/*.int.ts"],
   moduleNameMapper: {
     "^#/(.*)$": "<rootDir>/src/$1",
   },
@@ -11,4 +11,5 @@ module.exports = {
   coverageDirectory: "coverage",
   coverageReporters: ["text", "lcov", "html"],
   verbose: true,
+  testTimeout: 30000, // 30 seconds for integration tests with browser
 };
