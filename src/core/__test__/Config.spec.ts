@@ -1,12 +1,26 @@
 import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
 
-import Config, { ConfigClass } from "../Config";
+import getConfig, { ConfigClass } from "../Config";
 
 describe("core/Config", () => {
+  let initialEnv: NodeJS.ProcessEnv;
+  let initialDefaults: typeof ConfigClass.defaults;
+
+  beforeEach(() => {
+    initialEnv = { ...process.env };
+    initialDefaults = { ...ConfigClass.defaults };
+  });
+
+  afterEach(() => {
+    process.env = initialEnv;
+    ConfigClass.defaults = initialDefaults;
+    ConfigClass.resetInstance();
+  });
+
   describe("default behavior", () => {
     it("should have default values for all configuration options", () => {
       const defaultValues = ConfigClass.defaults;
-      const defaultInstance = Config;
+      const defaultInstance = getConfig();
 
       // selected standard required properties
       expect(defaultInstance.mongoUri).toBe(defaultValues.MONGO_URI);
@@ -28,9 +42,7 @@ describe("core/Config", () => {
       process.env.MAX_BATCHES = "5";
       process.env.TAIL_LENGTH = "50";
       process.env.LOG_FILE = "test.log";
-
-      ConfigClass.resetInstance();
-      const config = ConfigClass.getInstance();
+      const config = getConfig();
 
       expect(config.mongoUri).toEqual("mongodb://test-uri");
       expect(config.dbName).toEqual("test-db");
@@ -42,57 +54,40 @@ describe("core/Config", () => {
   });
 
   describe("validation", () => {
-    let initialEnv: NodeJS.ProcessEnv;
-    let initialDefaults: typeof ConfigClass.defaults;
-
-    beforeEach(() => {
-      initialEnv = { ...process.env };
-      initialDefaults = { ...ConfigClass.defaults };
-    });
-
-    afterEach(() => {
-      process.env = initialEnv;
-      ConfigClass.defaults = initialDefaults;
-    });
     it("throws an error for missing required env variables", () => {
       const expectedError = /Missing required configuration for MONGO_URI/;
       delete ConfigClass.defaults.MONGO_URI;
       delete process.env.MONGO_URI;
 
-      ConfigClass.resetInstance();
-      expect(() => ConfigClass.getInstance()).toThrow(expectedError);
+      expect(() => getConfig()).toThrow(expectedError);
     });
 
     it("throws an error for invalid integer values", () => {
       const expectedError = /Invalid integer value for PAGE_TIMEOUT/;
       process.env.PAGE_TIMEOUT = "not-an-integer";
 
-      ConfigClass.resetInstance();
-      expect(() => ConfigClass.getInstance()).toThrow(expectedError);
+      expect(() => getConfig()).toThrow(expectedError);
     });
 
     it("throws an error for invalid WRITE_TO values", () => {
       const expectedError = /Invalid value for WRITE_TO/;
       process.env.WRITE_TO = "invalid-value";
 
-      ConfigClass.resetInstance();
-      expect(() => ConfigClass.getInstance()).toThrow(expectedError);
+      expect(() => getConfig()).toThrow(expectedError);
     });
 
     it("throws an error for invalid TAIL_LENGTH values", () => {
       const expectedError = /Invalid value for TAIL_LENGTH/;
       process.env.TAIL_LENGTH = "0";
 
-      ConfigClass.resetInstance();
-      expect(() => ConfigClass.getInstance()).toThrow(expectedError);
+      expect(() => getConfig()).toThrow(expectedError);
     });
 
     it("throws an error for invalid LOG_FILE values", () => {
       const expectedError = /Invalid value for LOG_FILE/;
       process.env.LOG_FILE = "invalid-file-name.txt";
 
-      ConfigClass.resetInstance();
-      expect(() => ConfigClass.getInstance()).toThrow(expectedError);
+      expect(() => getConfig()).toThrow(expectedError);
     });
   });
 });

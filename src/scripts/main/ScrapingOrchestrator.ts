@@ -18,7 +18,7 @@ import type {
 } from "#/scripts/main/ProgressDisplay.types";
 import type { ObjectId } from "mongodb";
 
-import config from "#/core/Config";
+import getConfig from "#/core/Config";
 import Author from "#/db-types/author/Author.class";
 import Play from "#/db-types/play/Play.class";
 import ProfilePage from "#/page-models/ProfilePage";
@@ -201,14 +201,14 @@ class ScrapingOrchestrator {
 
   /**
    * Initial setup before starting the scraping process, ensuring all
-   * dependencies are correctly intialized and that the input author/url pairs are
+   * dependencies are correctly initialized and that the input author/url pairs are
    * prepared into batches for processing.
    * @throws {SetupError} If there is an error during setup. Fatal error.
    */
   private async setup() {
     await this.getBatches();
     this.globalStats.startTime = new Date();
-    this.globalStats.globalBatchSize = config.batchSize;
+    this.globalStats.globalBatchSize = getConfig().batchSize;
     this.globalStats.globalBatchCount = this.state.batches.length;
     await this.checkDependencies();
     await this.setupReviewWriter();
@@ -336,7 +336,7 @@ class ScrapingOrchestrator {
    * @throws {SetupError} If there is an error loading or processing the author index files. Fatal error.
    */
   private async getBatches() {
-    const { batchSize, maxBatches } = config;
+    const { batchSize, maxBatches } = getConfig();
 
     const letters: string[] = [];
     const firstLetter = `A`.charCodeAt(0);
@@ -383,6 +383,7 @@ class ScrapingOrchestrator {
     const dbConnected = await this.services.dbService.isConnected();
     const scraperConnected = this.services.scraper.isConnected();
     const progressDisplayReady = this.services.progressDisplay.isReady;
+    const { writeTo } = getConfig();
 
     if (!dbConnected) {
       try {
@@ -400,7 +401,7 @@ class ScrapingOrchestrator {
     }
 
     // Only check ModuleWriter readiness when writing to files
-    if (config.writeTo === "file") {
+    if (writeTo === "file") {
       const authorWriterReady = this.services.authorModuleWriter?.isReady;
       const playWriterReady = this.services.playModuleWriter?.isReady;
 
@@ -487,7 +488,7 @@ class ScrapingOrchestrator {
    * @throws {ScrapingError} If there is an error during scraping. Recoverable Error (skip current author)
    */
   private async scrapeAuthor(): Promise<PageData> {
-    const profileUrl = `${config.baseUrl}${this.currentStats.currentAuthorUrl}`.trim();
+    const profileUrl = `${getConfig().baseUrl}${this.currentStats.currentAuthorUrl}`.trim();
     let profilePage;
 
     try {
@@ -615,8 +616,9 @@ class ScrapingOrchestrator {
 
     const document = this.state.currentAuthor.toDocument();
     const authorId = this.state.currentAuthor.id;
+    const { writeTo } = getConfig();
 
-    if (config.writeTo === "db") {
+    if (writeTo === "db") {
       try {
         const authorsCollection = await this.services.dbService.getCollection("authors");
         const { _id, ...authorDocument } = document;
@@ -636,7 +638,7 @@ class ScrapingOrchestrator {
       }
     }
 
-    if (config.writeTo === "file") {
+    if (writeTo === "file") {
       if (!this.services.authorModuleWriter) {
         throw new WriteAuthorError("AuthorModuleWriter is not initialized for file output");
       }
@@ -678,8 +680,9 @@ class ScrapingOrchestrator {
     }
 
     const document = this.state.currentPlay.toDocument();
+    const { writeTo } = getConfig();
 
-    if (config.writeTo === "db") {
+    if (writeTo === "db") {
       try {
         const playsCollection = await this.services.dbService.getCollection("plays");
         const { _id, ...documentWithoutId } = document;
@@ -699,7 +702,7 @@ class ScrapingOrchestrator {
       }
     }
 
-    if (config.writeTo === "file") {
+    if (writeTo === "file") {
       if (!this.services.playModuleWriter) {
         throw new WritePlayError("PlayModuleWriter is not initialized for file output");
       }
@@ -759,8 +762,8 @@ class ScrapingOrchestrator {
     // Helper to log specific fields rather than entire trace, as this is a common
     // and expected error that will occur frequently and is written to the log file
     const logSkipError = (error: unknown) => {
-      const errorIsObjectlike = error && typeof error === "object";
-      if (!errorIsObjectlike) {
+      const errorIsObjectLike = error && typeof error === "object";
+      if (!errorIsObjectLike) {
         return;
       }
 
@@ -849,11 +852,13 @@ class ScrapingOrchestrator {
     const sourceUrlLine = `Source URL: ${document.metadata.sourceUrl}`;
     const scrapedAtLine = `Scraped At: ${document.metadata.scrapedAt.toDateString()}`;
 
+    const { writeTo } = getConfig();
+
     // this is a safeguard and should never happen, but if it does, we will return a message
     // that does not rely on type-specific fields and allow the caller to handle it appropriately
     if (!isAuthor && !isPlay) {
       const summaryLine =
-        config.writeTo === "db"
+        writeTo === "db"
           ? `No identifiable document type provided when writing to database:`
           : `No identifiable document type provided when writing to file ${this.state.profileSlug}.json:`;
       return `${summaryLine}\n` + `    ${documentIdLine}\n` + `    ${sourceUrlLine}\n` + `    ${scrapedAtLine}`;
@@ -861,7 +866,7 @@ class ScrapingOrchestrator {
 
     const documentType = isAuthor ? "author" : "play";
     const summaryLine =
-      config.writeTo === "db"
+      writeTo === "db"
         ? `Error writing ${documentType} to database:`
         : `Error writing ${documentType} to file ${this.state.profileSlug}.json:\n`;
 

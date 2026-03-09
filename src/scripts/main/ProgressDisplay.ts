@@ -9,7 +9,7 @@ import type {
   DisplayData,
 } from "#/scripts/main/ProgressDisplay.types";
 
-import config from "#/core/Config";
+import getConfig from "#/core/Config";
 import { defaults } from "#/scripts/main/ProgressDisplay.types";
 import debounce from "#/utils/debounce";
 
@@ -67,11 +67,12 @@ class ProgressDisplay {
   }
 
   private initializeLogging() {
+    const { logDirectory, logFile, tailLength } = getConfig();
     this.loggingStats = {
       ...this.loggingStats,
-      logDirectory: config.logDirectory,
-      logFile: config.logFile,
-      tailLength: config.tailLength,
+      logDirectory,
+      logFile,
+      tailLength,
     };
     this.globalStats.startTime = new Date();
     this.setupLogFile();
@@ -138,9 +139,10 @@ class ProgressDisplay {
     const logToFile = (level: string, message: string) => {
       const timestamp = new Date().toISOString();
       const severity = level.toUpperCase();
+      const { baseUrl } = getConfig();
 
       const includeUrl = level === "warn" || level === "error";
-      const strippedUrl = (this.currentStats.currentAuthorUrl ?? "").replace(config.baseUrl, "");
+      const strippedUrl = (this.currentStats.currentAuthorUrl ?? "").replace(baseUrl, "");
       const url = includeUrl && strippedUrl ? ` (${strippedUrl}) -` : "";
       const logMessage = `[${timestamp}] ${severity}:${url} ${message} \n`;
 
@@ -190,8 +192,8 @@ class ProgressDisplay {
     process.stdout.write("\x1b[2J\x1b[H");
     process.stdout.write(
       `${this.renderDataHeader()}\n` +
-        `${this.renderglobalStatsSection()}\n\n` +
-        `${this.rendercurrentStatsSection()}\n` +
+        `${this.renderGlobalStatsSection()}\n\n` +
+        `${this.renderCurrentStatsSection()}\n` +
         `${this.renderOutputDataSection()}\n\n` +
         `${this.renderLoggingSection()}`,
     );
@@ -205,7 +207,7 @@ class ProgressDisplay {
     );
   }
 
-  private renderglobalStatsSection() {
+  private renderGlobalStatsSection() {
     const startTime = this.getStartTime();
     const elapsedTime = this.getElapsedTime();
     const batchSize = this.toPaddedString(this.globalStats.globalBatchSize, 4);
@@ -219,7 +221,7 @@ class ProgressDisplay {
     );
   }
 
-  private rendercurrentStatsSection() {
+  private renderCurrentStatsSection() {
     const totalBatches = this.toPaddedString(this.globalStats.globalBatchCount, 3);
     const currentBatchIndex = this.toPaddedString(this.currentStats.currentBatchIndex + 1, 3);
     const currentAuthorIndex = this.toPaddedString(this.currentStats.currentAuthorIndex + 1, 4);
@@ -228,7 +230,7 @@ class ProgressDisplay {
     const playsByAuthorCount = this.toPaddedString(this.currentStats.playsByAuthorCount, 3);
     const firstAuthorName = this.currentStats.firstAuthorName?.toLowerCase().replace(/\s+/g, "").slice(0, 10);
     const lastAuthorName = this.currentStats.lastAuthorName?.toLowerCase().replace(/\s+/g, "").slice(0, 10);
-    const currentAuthorUrl = this.currentStats.currentAuthorUrl?.replace(config.baseUrl, "").slice(0, 21);
+    const currentAuthorUrl = this.currentStats.currentAuthorUrl?.replace(getConfig().baseUrl, "").slice(0, 21);
 
     return (
       `┌─ Current Batch:    ` +
@@ -369,13 +371,13 @@ class ProgressDisplay {
   }
 
   private renderOutputSummary() {
-    const outputType = config.writeTo;
+    const { writeTo } = getConfig();
 
     let outputLocationLine = "";
-    if (outputType === "db") {
+    if (writeTo === "db") {
       outputLocationLine = `Database:   Connected to MongoDB cluster`;
     }
-    if (outputType === "file") {
+    if (writeTo === "file") {
       outputLocationLine = `Files:     Directories written to ./output/`;
     }
 
@@ -389,7 +391,7 @@ class ProgressDisplay {
   }
 
   private renderReviewSummary() {
-    const outputType = config.writeTo;
+    const { writeTo } = getConfig();
     const flaggedAuthors = this.authorStats.totalAuthorsFlagged;
     const flaggedPlays = this.playStats.totalPlaysFlagged;
     const scrapeErrors = 0; // TODO
@@ -399,10 +401,10 @@ class ProgressDisplay {
     const reviewFilePath = ""; // TODO
 
     let writeErrorLine = "";
-    if (outputType === "file") {
+    if (writeTo === "file") {
       writeErrorLine = `Write Errors:      ${writeErrors} errors encountered when writing files`;
     }
-    if (outputType === "db") {
+    if (writeTo === "db") {
       writeErrorLine = `Write Errors:      ${writeErrors} errors encountered when inserting documents`;
     }
 

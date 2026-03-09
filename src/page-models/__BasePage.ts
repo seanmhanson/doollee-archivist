@@ -1,7 +1,7 @@
 import type { PageMetadata, WaitUntilConditions } from "#/types";
 import type { Page } from "playwright";
 
-import config from "#/core/Config";
+import getConfig from "#/core/Config";
 
 /**
  * Supports both direct URL scraping and parameterized URL construction.
@@ -20,7 +20,7 @@ export default abstract class BasePage<Args extends object, Data extends object>
   /**
    * Base URL used in construction any full page URLs
    */
-  protected static baseUrl: string = config.baseUrl;
+  protected static baseUrl: string = getConfig().baseUrl;
 
   /**
    * Playwright Page instance providing browser context for DOM interaction and navigation.
@@ -77,7 +77,7 @@ export default abstract class BasePage<Args extends object, Data extends object>
   async goto(options?: { waitUntil?: WaitUntilConditions; timeout?: number }): Promise<void> {
     const defaultOptions = {
       waitUntil: "domcontentloaded" as const,
-      timeout: config.pageTimeout,
+      timeout: getConfig().pageTimeout,
     };
     const gotoOptions = { ...defaultOptions, ...options };
 
@@ -136,7 +136,7 @@ export default abstract class BasePage<Args extends object, Data extends object>
    * @param selector Selector of the element to wait for.
    * @param timeout Maximum wait time in milliseconds.
    */
-  protected async waitForSelector(selector: string, timeout = config.elementTimeout): Promise<void> {
+  protected async waitForSelector(selector: string, timeout = getConfig().elementTimeout): Promise<void> {
     await this.page.waitForSelector(selector, { timeout });
   }
 

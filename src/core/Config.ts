@@ -108,5 +108,7 @@ export class Config {
   }
 }
 
+const getConfig = () => Config.getInstance();
+export default getConfig;
+
 export { Config as ConfigClass };
-export default Config.getInstance();

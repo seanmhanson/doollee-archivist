@@ -2,7 +2,7 @@ import { MongoClient } from "mongodb";
 
 import type { Db, Collection, CreateIndexesOptions } from "mongodb";
 
-import config from "#/core/Config";
+import getConfig from "#/core/Config";
 import authorSchema from "#/db-types/author/author.schema";
 import playSchema from "#/db-types/play/play.schema";
 
@@ -30,8 +30,8 @@ export default class DatabaseService {
   private db: Db | null = null;
 
   constructor(
-    private mongoUri: string = config.mongoUri,
-    private dbName: string = config.dbName,
+    private mongoUri: string = getConfig().mongoUri,
+    private dbName: string = getConfig().dbName,
   ) {
     if (!this.mongoUri || !this.dbName) {
       throw new Error("MongoDB URI and database name are required");

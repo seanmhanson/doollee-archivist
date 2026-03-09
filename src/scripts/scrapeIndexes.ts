@@ -3,13 +3,14 @@ import path from "path";
 
 import type { IndexUrlsData } from "#/types";
 
-import config from "#/core/Config";
+import getConfig from "#/core/Config";
 import WebScraper from "#/core/WebScraper";
 import IndexPage from "#/page-models/IndexPage";
 
 async function main() {
   const data: IndexUrlsData = {};
   const scraper = await WebScraper.create();
+  const { rateLimitDelay } = getConfig();
 
   const uppercaseLetters: string[] = [];
   const firstLetter = `A`.charCodeAt(0);
@@ -39,7 +40,7 @@ async function main() {
     };
 
     // Rate limiting: 3 second delay to stay under 10 requests per 30 seconds by default
-    await new Promise((resolve) => setTimeout(resolve, config.rateLimitDelay));
+    await new Promise((resolve) => setTimeout(resolve, rateLimitDelay));
   }
 
   try {
