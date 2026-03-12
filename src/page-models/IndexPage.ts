@@ -5,6 +5,8 @@ import type { Page } from "@playwright/test";
 
 type UrlArgs = { letter: string };
 type Data = Record<string, string>;
+type LinkContent = { text: string; href: string };
+type LinkData = { key: string; url: string };
 
 /**
  * Scraper for top-level index pages for authors on doollee.com.
@@ -68,6 +70,16 @@ export default class IndexPage extends BasePage<UrlArgs, Data> {
     return `${BasePage.baseUrl}/${directory}/${pageName}`;
   }
 
+  public static parseLink({ text, href }: LinkContent): LinkData | null {
+    if (!text || !href) return null;
+    const match = /\(([a-z]{2}) - ([a-z]{2})\)/.exec(text);
+    if (!match) return null;
+    const rangeStart = match[1];
+    const rangeEnd = match[2];
+    const key = `${rangeStart}-${rangeEnd}`;
+    return { key, url: href };
+  }
+
   /**
    * @inheritDoc
    */
@@ -83,15 +95,15 @@ export default class IndexPage extends BasePage<UrlArgs, Data> {
 
     for (let i = 0; i < linkCount; i++) {
       const link = links.nth(i);
-      const href = await link.getAttribute("href");
-      const text = await link.textContent();
-      const match = text?.match(/\(([a-z]{2}) - ([a-z]{2})\)/);
+      const href = (await link.getAttribute("href")) ?? "";
+      const text = (await link.textContent()) ?? "";
 
-      if (!href || !match) continue;
-      const rangeStart = match[1];
-      const rangeEnd = match[2];
-      const key = `${rangeStart}-${rangeEnd}`;
-      this.data[key] = href;
+      const linkData = IndexPage.parseLink({ text, href });
+      if (!linkData) continue;
+
+      if (linkData) {
+        this.data[linkData.key] = linkData.url;
+      }
     }
   }
 }

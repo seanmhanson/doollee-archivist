@@ -1,8 +1,9 @@
-import config from "#/core/Config";
+import { getConfig } from "#/core/Config";
 import DatabaseService from "#/core/DatabaseService";
 
 async function main() {
-  const dbService = new DatabaseService(config.mongoUri, config.dbName);
+  const { mongoUri, dbName } = getConfig();
+  const dbService = new DatabaseService(mongoUri, dbName);
   await dbService.initDatabase();
   await dbService.close();
   process.exit(0);

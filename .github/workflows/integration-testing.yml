@@ -1,4 +1,4 @@
-name: Lint and Format Check
+name: Integration Tests
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: ["main"]
 
 jobs:
-  lint-and-format:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -29,8 +29,18 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Run ESLint
-        run: yarn lint
+      - name: Download Playwright Browsers
+        run: yarn dlx playwright install --with-deps
 
-      - name: Run Prettier
-        run: yarn format:check
+      - name: Run integration tests
+        env:
+          MONGO_URI: mongodb://test:10000
+        run: yarn test:int
+
+      - name: Upload Playwright Report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30

@@ -31,7 +31,7 @@ export default class WebScraper {
     return this.browser?.isConnected() ?? false;
   }
 
-  private constructor() {}
+  protected constructor() {}
 
   static async create({ headless = true, slowMo = 50 }: BrowserOptions = {}): Promise<WebScraper> {
     console.log("--------------------------------");
@@ -117,3 +117,14 @@ export default class WebScraper {
 }
 
 export { WebScraper };
+
+// For testing: allows direct instantiation without initialization
+export class TestWebScraper extends WebScraper {
+  constructor() {
+    if (process.env.NODE_ENV !== "test") {
+      throw new Error("TestWebScraper can only be instantiated in test environment");
+    }
+
+    super();
+  }
+}

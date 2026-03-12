@@ -98,6 +98,14 @@ export default [
     },
   },
 
+  // Allow unbound methods in testing
+  {
+    files: ["src/**/*.spec.ts"],
+    rules: {
+      "@typescript-eslint/unbound-method": "off",
+    },
+  },
+
   // Allow scripts to exit
   {
     files: ["src/scripts/**/*.ts"],

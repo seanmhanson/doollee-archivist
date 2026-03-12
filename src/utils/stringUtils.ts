@@ -61,7 +61,8 @@ export function toTitleCase(str: string): string {
 
 export function removeDisambiguationSuffix(name = ""): string {
   return name
-    .replace(/^\(\d{1,2}\)$/, "")
+    .trim()
+    .replace(/\(\d{1,2}\)$/, "")
     .replace(/\s+/g, " ")
     .trim();
 }

@@ -1,15 +1,16 @@
-import config from "#/core/Config";
+import { getConfig } from "#/core/Config";
 import ModuleWriter from "#/core/ModuleWriter";
 import WebScraper from "#/core/WebScraper";
 import listingUrls from "#/input/listingUrls";
 import ListingPage from "#/page-models/ListingPage";
 
 async function main() {
-  // intentially empty console.debug by default due to very high volume of logs
+  // intentionally empty console.debug by default due to very high volume of logs
   // and reenable if needed when running locally, though this didn't arise during use
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   console.debug = () => {};
 
+  const { rateLimitDelay } = getConfig();
   const rootDir = "profile-urls";
   const scraper = await WebScraper.create();
 
@@ -29,7 +30,7 @@ async function main() {
 
       const listingPage = new ListingPage(scraper.getPage(), { url });
       await listingPage.goto();
-      const rateLimitTimeout = new Promise((resolve) => setTimeout(resolve, config.rateLimitDelay));
+      const rateLimitTimeout = new Promise((resolve) => setTimeout(resolve, rateLimitDelay));
 
       try {
         await listingPage.extractPage();
