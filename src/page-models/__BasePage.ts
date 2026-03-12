@@ -18,11 +18,6 @@ export type BasePageArgs<T> = { url: string } | T;
  */
 export default abstract class BasePage<Args extends object, Data extends object> {
   /**
-   * Base URL used in construction any full page URLs
-   */
-  protected static baseUrl: string = getConfig().baseUrl;
-
-  /**
    * Playwright Page instance providing browser context for DOM interaction and navigation.
    */
   protected readonly page: Page;
@@ -41,6 +36,13 @@ export default abstract class BasePage<Args extends object, Data extends object>
    * Structured content extracted from page DOM.
    */
   public abstract readonly data: Data;
+
+  /**
+   * Base URL used in construction any full page URLs
+   */
+  protected static get baseUrl(): string {
+    return getConfig().baseUrl;
+  }
 
   /**
    * Initializes scraper with browser context and target URL resolution.

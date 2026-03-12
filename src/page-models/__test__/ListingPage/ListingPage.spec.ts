@@ -13,7 +13,8 @@ const mockPage = {
   waitForSelector: jest.fn(),
 } as unknown as Page;
 
-const { baseUrl } = Config.getInstance();
+const baseUrl = Config.defaults.BASE_URL;
+
 describe("ListingPage", () => {
   it("should construct the correct URL for the given arguments", () => {
     const args: UrlArgs = {

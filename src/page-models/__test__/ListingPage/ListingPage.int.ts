@@ -6,7 +6,7 @@ import expectedFixtureOutput from "./fixtures/listing-page-output";
 
 import setupBrowserTest from "#/test-utils/setupBrowserTest";
 
-describe("IndexPage (integration tests)", () => {
+describe("ListingPage (integration tests)", () => {
   const { getPage, loadFixture } = setupBrowserTest(__dirname);
 
   it("should extract the expected data from a full page fixture", async () => {

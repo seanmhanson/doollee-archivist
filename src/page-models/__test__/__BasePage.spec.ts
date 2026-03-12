@@ -6,7 +6,8 @@ import type { PageMetadata } from "#/types";
 import type { BasePageArgs } from "../__BasePage";
 import type { Page } from "playwright";
 
-import { mockConfig } from "#/test-utils/mockConfig";
+import * as Config from "#/core/Config";
+import { DEFAULT_TEST_CONFIG } from "#/test-utils/mockConfig";
 
 type StatusFn = () => number;
 type MockResponse = { status: StatusFn } | null;
@@ -50,8 +51,6 @@ class TestBasePage extends BasePage<{ id: string }, { title: string }> {
   }
 }
 
-mockConfig();
-
 describe("BasePage", () => {
   const originalLog = console.log;
   const originalDebug = console.debug;
@@ -59,12 +58,13 @@ describe("BasePage", () => {
   beforeEach(() => {
     console.log = jest.fn();
     console.debug = jest.fn();
+    jest.spyOn(Config, "getConfig").mockReturnValue(DEFAULT_TEST_CONFIG as Config.Config);
   });
 
   afterEach(() => {
     console.log = originalLog;
     console.debug = originalDebug;
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   function getMockPage(overrides: Record<string, unknown> = {}): Page {
@@ -134,7 +134,7 @@ describe("BasePage", () => {
 
       expect(mockGoto).toHaveBeenCalledWith(DEFAULT_URL, {
         waitUntil: "domcontentloaded",
-        timeout: 10000,
+        timeout: DEFAULT_TEST_CONFIG.pageTimeout,
       });
       expect(console.debug).toHaveBeenCalledWith(`🔗 Attempting navigation to: ${DEFAULT_URL}`);
       expect(console.debug).toHaveBeenCalledWith(`✅ Successfully navigated to: ${DEFAULT_URL}`);

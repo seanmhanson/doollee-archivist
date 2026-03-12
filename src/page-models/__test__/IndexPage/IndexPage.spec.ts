@@ -19,8 +19,8 @@ describe("IndexPage", () => {
   });
 
   it("should return null for links without text or href", () => {
-    expect(IndexPage.parseLink({ text: null, href: "https://example.com" })).toBeNull();
-    expect(IndexPage.parseLink({ text: "Playwright Name (aa - zz)", href: null })).toBeNull();
+    expect(IndexPage.parseLink({ text: "", href: "https://example.com" })).toBeNull();
+    expect(IndexPage.parseLink({ text: "Playwright Name (aa - zz)", href: "" })).toBeNull();
   });
 
   it("should return null for links that do not match the expected format", () => {

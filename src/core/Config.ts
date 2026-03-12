@@ -20,7 +20,7 @@ const defaults: Record<string, string> = {
 };
 
 export class Config {
-  private static instance: Config;
+  private static instance: Config | null = null;
   public static defaults = defaults;
 
   public readonly mongoUri: string;
@@ -98,15 +98,13 @@ export class Config {
   }
 
   public static getInstance(): Config {
-    if (!Config.instance) {
-      Config.instance = new Config();
-    }
+    Config.instance ??= new Config();
     return Config.instance;
   }
 
   public static resetInstance(): void {
     Config.defaults = { ...defaults };
-    Config.instance = undefined as unknown as Config;
+    Config.instance = null;
   }
 }
 
