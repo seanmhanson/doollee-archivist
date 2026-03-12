@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: "20"
+          node-version: lts/*
           package-manager-cache: false
 
       - name: Enable Corepack
