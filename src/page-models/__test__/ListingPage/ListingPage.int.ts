@@ -8,7 +8,7 @@ import setupBrowserTest from "#/test-utils/setupBrowserTest";
 
 describe("IndexPage (integration tests)", () => {
   const { getPage, loadFixture } = setupBrowserTest(__dirname);
-  
+
   it("should extract the expected data from a full page fixture", async () => {
     const html = loadFixture("listing-page.fixture.html");
     const page = getPage();
