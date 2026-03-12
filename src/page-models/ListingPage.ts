@@ -1,9 +1,9 @@
 import BasePage from "./__BasePage";
 
 import type { BasePageArgs } from "./__BasePage";
-import type { Page, Locator } from "@playwright/test";
+import type { Page } from "@playwright/test";
 
-type UrlArgs = {
+export type UrlArgs = {
   indexLetter: string;
   firstLetter: string;
   lastLetter: string;
@@ -41,18 +41,9 @@ type Data = Record<string, string>;
  */
 export default class ListingPage extends BasePage<UrlArgs, Data> {
   /**
-   * Selectors for locating table rows that containt links to
-   * individual author pages, and those links.
-   */
-  static selectors = {
-    tableRows: "#table > table > tbody > tr",
-    tableLink: "td > p > a",
-  };
-
-  /**
    * @inheritDoc
    */
-  public readonly data: Data = {};
+  public data: Data = {};
 
   /**
    * @inheritDoc
@@ -65,12 +56,26 @@ export default class ListingPage extends BasePage<UrlArgs, Data> {
    * @inheritDoc
    */
   public constructUrl(pageArgs: UrlArgs): string {
-    const indexLetter = pageArgs.indexLetter.toUpperCase();
-    const firstLetter = pageArgs.firstLetter.toLowerCase();
-    const lastLetter = pageArgs.lastLetter.toLowerCase();
+    const { indexLetter = "", firstLetter = "", lastLetter = "" } = pageArgs;
+    const argsArray = [indexLetter, firstLetter, lastLetter];
 
-    const directory = `Playwrights${indexLetter}`;
-    const pageName = `${indexLetter}_playwrights_${firstLetter}-${lastLetter}.php`;
+    const missingArgs = argsArray.some((arg) => !arg);
+    const invalidArgs = argsArray.some((arg) => /[^a-zA-Z]/.test(arg) || arg.length !== 1);
+
+    if (missingArgs) {
+      throw new Error("Missing required URL arguments");
+    }
+
+    if (invalidArgs) {
+      throw new Error("Invalid URL arguments");
+    }
+
+    const index = pageArgs.indexLetter.toUpperCase();
+    const first = pageArgs.firstLetter.toLowerCase();
+    const last = pageArgs.lastLetter.toLowerCase();
+
+    const directory = `Playwrights${index}`;
+    const pageName = `${index}_playwrights_${first}-${last}.php`;
     return `${BasePage.baseUrl}/${directory}/${pageName}`;
   }
 
@@ -78,58 +83,37 @@ export default class ListingPage extends BasePage<UrlArgs, Data> {
    * @inheritDoc
    */
   public async extractPage(): Promise<void> {
-    const rows = this.page.locator(ListingPage.selectors.tableRows);
-    const rowCount = await rows.count();
-    for (let i = 0; i < rowCount; i++) {
-      const row = rows.nth(i);
-
-      // omit rows with group labels or navigation links
-      if (await this.isPresentationRow(row)) {
-        continue;
+    this.data = await this.page.evaluate(() => {
+      /**
+       * Given a table row, determine if it is a presentation-only row based off whether or not it
+       * does not contain links (corresponding to the initial header), or if it contains navigation
+       * links ("Top of Page").
+       */
+      function isPresentationRow(row: Element): boolean {
+        const linkElement = row.querySelector("td > p")?.querySelector("a");
+        const linkText = linkElement?.textContent?.trim() ?? "";
+        return !linkElement || linkText.includes("Top of Page");
       }
+      const data: Record<string, string> = {};
 
-      // some rows are malformed, so we can't assume a fixed number of cells
-      const links = row.locator(ListingPage.selectors.tableLink);
-      const linkCount = await links.count();
-
-      for (let j = 0; j < linkCount; j++) {
-        const link = links.nth(j);
-        const href = await link.getAttribute("href");
-        const text = await link.textContent();
-        if (!href || !text) {
-          continue;
+      document.querySelectorAll("#table > table > tbody > tr").forEach((row) => {
+        if (isPresentationRow(row)) {
+          return;
         }
 
-        const url = /Playwrights[A-Z]\/([a-z0-9\-()]+)\.php/.exec(href);
-        if (!url) {
-          continue;
-        }
+        row.querySelectorAll("td > p > a").forEach((link) => {
+          const text = link.textContent?.trim() ?? "";
+          const href = link.getAttribute("href") ?? "";
+          const urlMatch = /Playwrights[A-Z]\/([a-z0-9\-()]+)\.php/.exec(href);
 
-        // for now store and move on; handling name data found
-        // here is especially complicated
-        this.data[text] = url[1];
-      }
-    }
-  }
+          if (!text || !urlMatch) {
+            return;
+          }
 
-  /**
-   * Determines if a table row is a presentation row (header or navigation).
-   * This addresses discrepancies in the table, such as rows with headers,
-   * unrelated navigation or incorrectly number of cells.
-   * @param row Locator for the table row to evaluate.
-   * @returns whether or not the row is presentation-only (no author links)
-   */
-  private async isPresentationRow(row: Locator): Promise<boolean> {
-    // check for the header row, which has no anchor tags
-    const firstCell = row.locator("td > p").first();
-    const firstLink = firstCell.locator("a");
-    const count = await firstLink.count();
-    if (count === 0) {
-      return true;
-    }
-
-    // check for the "top of page" rows, based on the first cell's link
-    const label = (await firstLink.textContent()) ?? "";
-    return label.includes("Top of Page");
+          data[text] = urlMatch[1];
+        });
+      });
+      return data;
+    });
   }
 }
