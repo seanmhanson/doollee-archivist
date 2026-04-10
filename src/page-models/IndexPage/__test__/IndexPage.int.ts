@@ -4,7 +4,7 @@ import { join } from "path";
 import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from "@jest/globals";
 import { firefox } from "playwright";
 
-import IndexPage from "../../IndexPage";
+import IndexPage from "../IndexPage";
 
 import type { Browser, Page } from "playwright";
 
@@ -95,7 +95,7 @@ describe("IndexPage (integration tests)", () => {
   });
 
   it("should extract the expected data from a full page fixture", async () => {
-    const html = loadFixture("index-page.fixture.html");
+    const html = loadFixture("index-page.html");
     await page.setContent(html, { waitUntil: "domcontentloaded" });
 
     const indexPage = new IndexPage(page, { letter: "H" });

@@ -1,6 +1,6 @@
 import { jest, describe, it, expect } from "@jest/globals";
 
-import IndexPage from "../../IndexPage";
+import IndexPage from "../IndexPage";
 
 import type { Page } from "playwright";
 

@@ -1,8 +1,8 @@
 import { jest, describe, it, expect } from "@jest/globals";
 
-import ListingPage from "../../ListingPage";
+import ListingPage from "..";
 
-import type { UrlArgs } from "../../ListingPage";
+import type { UrlArgs } from "..";
 import type { Page } from "playwright";
 
 import { Config } from "#/core/Config";
