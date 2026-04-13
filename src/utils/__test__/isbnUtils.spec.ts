@@ -42,12 +42,21 @@ describe("utils/isbnUtils", () => {
   });
 
   describe("for ISBN13 formats", () => {
-    it("should extract and classify valid ISBN13", () => {
+    it("should extract and classify valid ISBN13 with check digit 0", () => {
       const result = extractIsbn("This is a book with ISBN 978-3-16-148410-0.");
       expect(result).toEqual({
         type: "ISBN13",
         raw: "978-3-16-148410-0",
         normalized: "9783161484100",
+      });
+    });
+
+    it("should extract and classify valid ISBN13 with non-zero check digit", () => {
+      const result = extractIsbn("Published by Faber >>> 978-0-571-28840-3");
+      expect(result).toEqual({
+        type: "ISBN13",
+        raw: "978-0-571-28840-3",
+        normalized: "9780571288403",
       });
     });
 

@@ -75,13 +75,11 @@ function validateIsbn13(isbn: string) {
     return false;
   }
 
-  const initialChecksum = [...normalized].reduce((sum, char, index) => {
+  const checksum = [...normalized].reduce((sum, char, index) => {
     const value = parseInt(char, 10);
     const coefficient = index % 2 === 0 ? 1 : 3;
     return sum + value * coefficient;
   }, 0);
 
-  const checksum = (10 - (initialChecksum % 10)) % 10;
-  const lastDigit = parseInt(normalized[12], 10);
-  return checksum === lastDigit;
+  return checksum % 10 === 0;
 }

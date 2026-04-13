@@ -16693,5 +16693,5 @@ export default {
       publisher: "",
       publicationYear: "",
     },
-  ] as ScrapedPlayData[],
+  ] as unknown as ScrapedPlayData[],
 };
