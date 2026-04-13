@@ -23,11 +23,11 @@ export default class ProfilePage extends BasePage<UrlArgs, Data> {
     sectionIdentifier: "#osborne",
   };
 
-  private template: TemplateType = null;
-
   private biographyComponent: StandardBiography | AdaptationBiography | null = null;
 
   private worksListComponent: PlaysList | AdaptationList | null = null;
+
+  public template: TemplateType = null;
 
   public readonly data: Data = {
     biography: {} as ScrapedAuthorData,

@@ -13,7 +13,7 @@ export default abstract class BaseBiography {
   };
   private static readonly labelString = Object.keys(BaseBiography.labelMap).join("|");
 
-  private static readonly placeholders = [
+  protected static readonly placeholders = [
     "including biography, theatres, agent, synopses, cast sizes, production and published dates",
     "please send me a biography and information about this playwright",
     "i do not have a biography of this playwright",

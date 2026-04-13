@@ -1,6 +1,6 @@
 import { describe, it, expect } from "@jest/globals";
 
-import ListingPage from "../../ListingPage";
+import ListingPage from "..";
 
 import expectedFixtureOutput from "./fixtures/listing-page-output";
 
@@ -10,7 +10,7 @@ describe("ListingPage (integration tests)", () => {
   const { getPage, loadFixture } = setupBrowserTest(__dirname);
 
   it("should extract the expected data from a full page fixture", async () => {
-    const html = loadFixture("listing-page.fixture.html");
+    const html = loadFixture("listing-page.html");
     const page = getPage();
 
     await page.setContent(html, { waitUntil: "domcontentloaded" });

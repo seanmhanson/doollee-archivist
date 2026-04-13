@@ -5,4 +5,4 @@ output
 input
 src/input
 *.md
-*.fixture.html
+**/fixtures/*.html
