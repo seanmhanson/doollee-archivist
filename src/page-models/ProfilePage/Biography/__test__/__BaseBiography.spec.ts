@@ -86,7 +86,15 @@ describe("BaseBiography", () => {
     });
 
     it("returns an empty string if the biography text contains placeholder phrases", () => {
-      const phrases = TestBiography.placeholderPhrases;
+      const lowercasePhrases = TestBiography.placeholderPhrases;
+      const mixedcasePhrases = TestBiography.placeholderPhrases.map((phrase) =>
+        phrase
+          .split(" ")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" "),
+      );
+
+      const phrases = [...lowercasePhrases, ...mixedcasePhrases];
       const biography = new TestBiography(mockPage);
 
       phrases.forEach((phrase) => {

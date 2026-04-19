@@ -100,7 +100,7 @@ export default abstract class BaseBiography {
       .replace(/\s+/g, " "); // Normalize whitespace
 
     const isPlaceholderText = BaseBiography.placeholders.some((placeholder) => {
-      return bioText.includes(placeholder);
+      return bioText.toLowerCase().includes(placeholder);
     });
 
     return isPlaceholderText ? "" : bioText;
