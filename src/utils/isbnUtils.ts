@@ -75,7 +75,7 @@ function validateIsbn13(isbn: string) {
     return false;
   }
 
-  const initialChecksum = [...normalized].reduce((sum, char, index) => {
+  const initialChecksum = [...normalized.slice(0, 12)].reduce((sum, char, index) => {
     const value = parseInt(char, 10);
     const coefficient = index % 2 === 0 ? 1 : 3;
     return sum + value * coefficient;
