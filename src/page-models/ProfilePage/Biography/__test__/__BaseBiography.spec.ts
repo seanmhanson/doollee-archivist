@@ -103,4 +103,42 @@ describe("BaseBiography", () => {
       });
     });
   });
+
+  describe("parseLabeledContent", () => {
+    it("should extract labeled values from standard bold-label HTML", () => {
+      const biography = new TestBiography(mockPage);
+      const html = `<strong>Nationality:</strong> British<br />`;
+      const result = biography.parseLabeledContent(html);
+      expect(result.nationality).toBe("British");
+    });
+
+    it("should extract the link text for labeled values with an anchor tag", () => {
+      const biography = new TestBiography(mockPage);
+      const html = `<strong>Literary Agent:</strong> <a href="/agents/foo.php">Some Agency</a>`;
+      const result = biography.parseLabeledContent(html);
+      expect(result.literaryAgent).toBe("Some Agency");
+    });
+
+    it("should set the field to empty string when the value is n/a", () => {
+      const biography = new TestBiography(mockPage);
+      const html = `<strong>email:</strong> n/a`;
+      const result = biography.parseLabeledContent(html);
+      expect(result.email).toBe("");
+    });
+
+    it("should not leave a trailing space when &nbsp; entities follow the value text", () => {
+      const biography = new TestBiography(mockPage);
+      const html = `<strong>Nationality:&nbsp;&nbsp;</strong> Greek&nbsp;&nbsp;&nbsp;&nbsp;<strong>Email:</strong> n/a`;
+      const result = biography.parseLabeledContent(html);
+      expect(result.nationality).toBe("Greek");
+    });
+
+    it("should be case-insensitive for label matching", () => {
+      const biography = new TestBiography(mockPage);
+      const html = `<strong>NATIONALITY:</strong> British<br /><strong>Email:</strong> n/a`;
+      const result = biography.parseLabeledContent(html);
+      expect(result.nationality).toBe("British");
+      expect(result.email).toBe("");
+    });
+  });
 });

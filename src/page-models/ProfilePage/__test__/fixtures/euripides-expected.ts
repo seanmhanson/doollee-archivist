@@ -5,22 +5,22 @@ export default {
   biography: {
     _archive: {
       name: "EURIPIDES",
-      altName: " Euripides",
+      altName: "Euripides",
       biography:
         'Euripides was the son of a retailer - Mnesarchus. When he was a boy the Oracle predicted that he would "win crowns of victory" - so his father had him enrolled in a school for athletics. His victories, however, were all on the stage. He served as a ritualistic dancer and torch bearer. Both his wives were unfaithful. He became a recluse and lived in a cave - which was well furnished with books. In his later life he went to live at the court of King Archelaus of Macedonia where he died.',
       dates: "EURIPIDES   (480 BC? - 406 BC)",
-      nationality: "Greek ",
+      nationality: "Greek",
       email: "",
       website: "",
       literaryAgent: "",
     },
     name: "EURIPIDES",
-    altName: " Euripides",
+    altName: "Euripides",
     yearBorn: "480 BC?",
     yearDied: "406 BC",
     biography:
       'Euripides was the son of a retailer - Mnesarchus. When he was a boy the Oracle predicted that he would "win crowns of victory" - so his father had him enrolled in a school for athletics. His victories, however, were all on the stage. He served as a ritualistic dancer and torch bearer. Both his wives were unfaithful. He became a recluse and lived in a cave - which was well furnished with books. In his later life he went to live at the court of King Archelaus of Macedonia where he died.',
-    nationality: "Greek ",
+    nationality: "Greek",
     email: "",
     website: "",
     literaryAgent: "",

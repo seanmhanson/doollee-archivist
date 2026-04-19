@@ -84,7 +84,8 @@ export default abstract class BaseBiography {
       const normalizedValue = rawValue
         .trim() // Remove leading/trailing whitespace and newlines
         .replace(/&nbsp;/g, " ") // Replace non-breaking spaces
-        .replace(/\s+/g, " "); // Normalize multiple whitespace to single spaces
+        .replace(/\s+/g, " ") // Normalize multiple whitespace to single spaces
+        .trim(); // Remove any trailing whitespace introduced by &nbsp; replacement
 
       results[key] = normalizedValue || "";
     }

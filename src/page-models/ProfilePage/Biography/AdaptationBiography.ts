@@ -61,7 +61,7 @@ export default class AdaptationBiography extends BaseBiography {
       const dates = document.querySelector(dateSelector)?.textContent?.trim() ?? "";
       const imageNode = document.querySelector(imageSelector);
       const imageSrc = imageNode?.getAttribute("src") ?? "";
-      const imageAlt = imageNode?.getAttribute("alt") ?? "";
+      const imageAlt = imageNode?.getAttribute("alt")?.trim() ?? "";
       const innerHTML = document.querySelector(tableSelector)?.innerHTML ?? "";
 
       return {
