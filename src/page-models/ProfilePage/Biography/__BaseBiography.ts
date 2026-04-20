@@ -52,6 +52,7 @@ export default abstract class BaseBiography {
    * This method parses these sections and normalizes the text or attributes corresponding
    * to the biographical fields.
    * @param sectionHTML the HTML content that should be parsed into biography fields.
+   * @param authorName optional author name for logging purposes when parsing labeled content that may contain PII (e.g. address, telephone)
    * @returns an object containing the parsed biography fields as key-value pairs.
    */
   protected parseLabeledContent(sectionHTML: string, authorName?: string): LabeledContents {
