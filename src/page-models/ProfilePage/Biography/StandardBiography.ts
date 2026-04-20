@@ -83,7 +83,7 @@ export default class StandardBiography extends BaseBiography {
 
     const lastLabelMatch = labelMatches[labelMatches.length - 1];
     const lastLabelHTML = lastLabelMatch[0];
-    const lastLabelIndex = lastLabelMatch.index;
+    const lastLabelIndex = lastLabelMatch.index ?? 0;
 
     const isResearchLastLabel = researchLabelPattern.test(lastLabelHTML);
     if (!isResearchLastLabel) {
@@ -95,7 +95,7 @@ export default class StandardBiography extends BaseBiography {
     if (labelMatches.length > 1) {
       const previousLabelMatch = labelMatches[labelMatches.length - 2];
       const previousLabelHTML = previousLabelMatch[0];
-      const previousLabelIndex = previousLabelMatch.index;
+      const previousLabelIndex = previousLabelMatch.index ?? 0;
       biographyStartIndex = previousLabelIndex + previousLabelHTML.length;
     }
     const biographySection = sectionHTML.substring(biographyStartIndex, lastLabelIndex);
