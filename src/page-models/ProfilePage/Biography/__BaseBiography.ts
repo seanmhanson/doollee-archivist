@@ -124,7 +124,7 @@ export default abstract class BaseBiography {
   }
 
   protected parseDateString(dateString: string, includeName = false) {
-    const rangePattern = /\s*\(([^-)]+?)\s*-\s*([^)]+?)\)$/;
+    const rangePattern = /\s*\(([^-)]+?)\s*-\s*([^)]*?)\)$/;
     const singleYearPattern = /\s*\(([^)]+?)\)$/;
     const rangeMatch = rangePattern.exec(dateString);
     if (rangeMatch) {
