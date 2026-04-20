@@ -55,9 +55,10 @@ export default abstract class BaseBiography {
    * @returns an object containing the parsed biography fields as key-value pairs.
    */
   protected parseLabeledContent(sectionHTML: string): LabeledContents {
-    const labelTextPattern = `<strong>(${BaseBiography.labelString})[^<]*</strong>`;
+    const strongOpenTagPattern = `<strong\\b[^>]*>`;
+    const labelTextPattern = `${strongOpenTagPattern}(${BaseBiography.labelString})[^<]*</strong>`;
     const htmlContentPattern = `(.*?)`;
-    const delimiterPattern = `(?=<br\\s*/?>\\s*<br|<strong>|$)`;
+    const delimiterPattern = `(?=<br\\s*/?>\\s*<br|${strongOpenTagPattern}|$)`;
 
     const labelRegExp = new RegExp(labelTextPattern + htmlContentPattern + delimiterPattern, "gis");
 
