@@ -88,4 +88,45 @@ describe("StandardBiography", () => {
       expect(biography.biographyData.biography).not.toContain("Member of the Dramatists Guild");
     });
   });
+
+  describe("extractData / parseDates", () => {
+    it("should extract both yearBorn and yearDied from a date range", async () => {
+      const mockPage = createMockPage({
+        altName: "Harold Pinter",
+        name: "HAROLD PINTER",
+        dates: "HAROLD PINTER  (1930 - 2008)",
+        innerHTML: "",
+      });
+
+      const biography = await StandardBiography.create(mockPage);
+      expect(biography.biographyData.yearBorn).toBe("1930");
+      expect(biography.biographyData.yearDied).toBe("2008");
+    });
+
+    it("should extract yearBorn and leave yearDied empty for a living author", async () => {
+      const mockPage = createMockPage({
+        altName: "David Mamet",
+        name: "DAVID MAMET",
+        dates: "DAVID MAMET  (1947)",
+        innerHTML: "",
+      });
+
+      const biography = await StandardBiography.create(mockPage);
+      expect(biography.biographyData.yearBorn).toBe("1947");
+      expect(biography.biographyData.yearDied).toBe("");
+    });
+
+    it("should return empty strings for both when no year is present", async () => {
+      const mockPage = createMockPage({
+        altName: "Some Author",
+        name: "SOME AUTHOR",
+        dates: "SOME AUTHOR",
+        innerHTML: "",
+      });
+
+      const biography = await StandardBiography.create(mockPage);
+      expect(biography.biographyData.yearBorn).toBe("");
+      expect(biography.biographyData.yearDied).toBe("");
+    });
+  });
 });

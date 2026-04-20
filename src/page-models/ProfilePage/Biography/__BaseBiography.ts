@@ -122,4 +122,24 @@ export default abstract class BaseBiography {
       .replace(whitespacePattern, " ") // normalize internal whitespace
       .trim();
   }
+
+  protected parseDateString(dateString: string, includeName = false) {
+    const rangePattern = /\s*\(([^-)]+?)\s*-\s*([^)]+?)\)$/;
+    const singleYearPattern = /\s*\(([^)]+?)\)$/;
+    const rangeMatch = rangePattern.exec(dateString);
+    if (rangeMatch) {
+      return {
+        name: includeName ? dateString.replace(rangePattern, "").trim() : "",
+        yearBorn: rangeMatch[1].trim(),
+        yearDied: rangeMatch[2].trim(),
+      };
+    }
+
+    const singleYearMatch = singleYearPattern.exec(dateString);
+    return {
+      name: includeName ? (singleYearMatch ? dateString.replace(singleYearPattern, "").trim() : dateString) : "",
+      yearBorn: singleYearMatch?.[1]?.trim() ?? "",
+      yearDied: "",
+    };
+  }
 }

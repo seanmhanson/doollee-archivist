@@ -10,7 +10,7 @@ type ScrapedData = {
   innerHTML: string;
 };
 
-type ParseDates = {
+type ParsedDates = {
   yearBorn: string;
   yearDied: string;
 };
@@ -108,13 +108,8 @@ export default class StandardBiography extends BaseBiography {
     return this.normalizeBiography(biographySection.substring(breakMatch.index + breakMatch[0].length));
   }
 
-  private parseDates(dateString: string): ParseDates {
-    const datePattern = /\s*\(([^-]+?)\s*-\s*([^)]+?)\)$/;
-    const match = datePattern.exec(dateString);
-
-    return {
-      yearBorn: match?.[1]?.trim() ?? "",
-      yearDied: match?.[2]?.trim() ?? "",
-    };
+  private parseDates(dateString: string): ParsedDates {
+    const { name, ...dates } = this.parseDateString(dateString, true);
+    return dates;
   }
 }

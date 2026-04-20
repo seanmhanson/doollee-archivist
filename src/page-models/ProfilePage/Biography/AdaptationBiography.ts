@@ -75,14 +75,7 @@ export default class AdaptationBiography extends BaseBiography {
   }
 
   private parseAdaptationNameAndDates(dateString: string): ParsedNameAndDates {
-    const datePattern = /\s*\(([^-]+?)\s*-\s*([^)]+?)\)$/;
-    const match = datePattern.exec(dateString);
-
-    return {
-      name: match ? dateString.replace(datePattern, "").trim() : dateString,
-      yearBorn: match?.[1]?.trim() ?? "",
-      yearDied: match?.[2]?.trim() ?? "",
-    };
+    return this.parseDateString(dateString, true);
   }
 
   private getAltName(imageSrc: string, imageAlt: string): string {
