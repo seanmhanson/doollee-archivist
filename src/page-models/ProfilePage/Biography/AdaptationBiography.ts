@@ -3,7 +3,7 @@ import type { Page } from "playwright";
 
 import BaseBiography from "#/page-models/ProfilePage/Biography/__BaseBiography";
 
-type ScrapedData = {
+export type ScrapedData = {
   bio: string;
   dates: string;
   imageSrc: string;
@@ -11,7 +11,7 @@ type ScrapedData = {
   innerHTML: string;
 };
 
-type ParsedNameAndDates = {
+export type ParsedNameAndDates = {
   name: string;
   yearBorn: string;
   yearDied: string;
@@ -27,7 +27,7 @@ export default class AdaptationBiography extends BaseBiography {
   protected async extractData(): Promise<void> {
     const { bio, dates, imageSrc, imageAlt, innerHTML } = await this.scrapeData();
     const { name, yearBorn, yearDied } = this.parseAdaptationNameAndDates(dates);
-    const labeledContents = this.parseLabeledContent(innerHTML);
+    const labeledContents = this.parseLabeledContent(innerHTML, name);
     const altName = this.getAltName(imageSrc, imageAlt);
     const biography = this.normalizeBiography(bio);
 
@@ -74,11 +74,11 @@ export default class AdaptationBiography extends BaseBiography {
     });
   }
 
-  private parseAdaptationNameAndDates(dateString: string): ParsedNameAndDates {
+  protected parseAdaptationNameAndDates(dateString: string): ParsedNameAndDates {
     return this.parseDateString(dateString, true);
   }
 
-  private getAltName(imageSrc: string, imageAlt: string): string {
+  protected getAltName(imageSrc: string, imageAlt: string): string {
     const hasNoImage = imageSrc === "" || imageSrc.includes("/Images-playwrights/Blank");
     return hasNoImage ? "" : imageAlt;
   }

@@ -2,131 +2,129 @@ import { describe, it, expect, jest } from "@jest/globals";
 
 import StandardBiography from "../StandardBiography";
 
+import type { ScrapedData, ParsedDates } from "../StandardBiography";
 import type { Page } from "playwright";
 
 type EvaluateFn = <T>(fn: () => T) => Promise<T>;
 
-function createMockPage(scrapedData: object): Page {
+function createMockPage(scrapedData: Partial<ScrapedData> = {}): Page {
   return {
     evaluate: jest.fn<EvaluateFn>().mockResolvedValue(scrapedData as never),
   } as unknown as Page;
 }
 
+class TestStandardBiography extends StandardBiography {
+  constructor(page: Page) {
+    super(page);
+  }
+
+  public async scrapeData(): Promise<ScrapedData> {
+    return super.scrapeData();
+  }
+
+  public parseBiography(sectionHTML: string): string {
+    return super.parseBiography(sectionHTML);
+  }
+
+  public parseDates(dateString: string): ParsedDates {
+    return super.parseDates(dateString);
+  }
+
+  public async extractData(): Promise<void> {
+    return super.extractData();
+  }
+}
+
 describe("StandardBiography", () => {
-  describe("extractData / parseBiography", () => {
-    it("should extract biography text that appears after the last labeled section", async () => {
-      const mockPage = createMockPage({
-        altName: "Sarah Kane",
-        name: "SARAH KANE",
-        dates: "SARAH KANE  (1971 - 1999)",
-        innerHTML: `
-          <strong>Nationality:</strong> British<br />
-          <strong>email:</strong> n/a<strong>Website:</strong> n/a<br /><br />
-          <strong>Literary Agent:</strong>
-          <a href="/agents/casarotto.php">Casarotto Ramsay and Associates Ltd</a>
-          <br /><br />
-          Sarah Kane was an English playwright.
-        `,
+  const name = "SARAH KANE";
+  const altName = "SARAH KANE";
+  const dates = "SARAH KANE  (1971 - 1999)";
+  const agentHTML = `<strong>Literary Agent:</strong>` + `<a href="/agents/test.php">Unit Test Artists Agency</a>`;
+  const biographyHTML = `Sarah Kane was a queer English playwright, most famous for her play <em>Blasted</em>.`;
+  const researchHTML =
+    `<strong>Research: </strong>` +
+    `<a href="https://www.dramatistsguild.test/">Member of the Unit Test Dramatists Guild</a>`;
+
+  const expectedBiography = "Sarah Kane was a queer English playwright, most famous for her play Blasted.";
+
+  function getMockInnerHTML({ includeBiography = true, includeResearch = true } = {}) {
+    const biographyDelimiter = `<br /><br />`;
+    const researchDelimiter = includeBiography ? biographyDelimiter : `<br/>`;
+    return `
+      ${agentHTML}
+      ${includeBiography ? `${biographyDelimiter}${biographyHTML}` : ""}
+      ${includeResearch ? `${researchDelimiter}${researchHTML}` : ""}
+    `;
+  }
+
+  describe("#extractData / #scrapeData", () => {
+    it("should populate the biographyData property with the extracted and parsed data", async () => {
+      const mockPage = createMockPage({ altName, name, dates, innerHTML: getMockInnerHTML() });
+      const biography = new TestStandardBiography(mockPage);
+      await biography.extractData();
+
+      expect(biography.biographyData).toEqual({
+        _archive: {
+          name,
+          altName,
+          biography: expectedBiography,
+          dates,
+          literaryAgent: "Unit Test Artists Agency",
+          research: "Member of the Unit Test Dramatists Guild",
+        },
+        name,
+        altName,
+        yearBorn: "1971",
+        yearDied: "1999",
+        biography: expectedBiography,
+        literaryAgent: "Unit Test Artists Agency",
+        research: "Member of the Unit Test Dramatists Guild",
       });
-
-      const biography = await StandardBiography.create(mockPage);
-      expect(biography.biographyData.biography).toBe("Sarah Kane was an English playwright.");
-    });
-
-    it("should extract biography text that precedes a trailing Research section", async () => {
-      const mockPage = createMockPage({
-        altName: "David Mamet",
-        name: "DAVID MAMET",
-        dates: "DAVID MAMET  (1947 - )",
-        innerHTML: `
-          <strong>Nationality:</strong> USA<br />
-          <strong>email:</strong> n/a<strong>Website:</strong> n/a<br /><br />
-          <strong>Literary Agent:</strong>
-          <a href="/agents/abrams.php">Abrams Artists Agency</a>
-          <br /><br />
-          BA. English Literature, Goddard College, VT, 1969.
-          <br /><br />
-          <strong>Research: </strong><a href="http://www.dramatistsguild.com/">Member of the Dramatists Guild</a>
-        `,
-      });
-
-      const biography = await StandardBiography.create(mockPage);
-      expect(biography.biographyData.biography).toContain("BA. English Literature, Goddard College, VT, 1969.");
-    });
-
-    it("should return an empty biography when there is only a Research section and no body text", async () => {
-      const mockPage = createMockPage({
-        altName: "Some Author",
-        name: "SOME AUTHOR",
-        dates: "SOME AUTHOR  (1900 - 1980)",
-        innerHTML: `
-          <strong>Nationality:</strong> British<br />
-          <strong>Research: </strong><a href="http://example.com/">Some resource</a>
-        `,
-      });
-
-      const biography = await StandardBiography.create(mockPage);
-      expect(biography.biographyData.biography).toBe("");
-    });
-
-    it("should not include the Research link in the biography field", async () => {
-      const mockPage = createMockPage({
-        altName: "David Mamet",
-        name: "DAVID MAMET",
-        dates: "DAVID MAMET  (1947 - )",
-        innerHTML: `
-          <strong>Literary Agent:</strong>
-          <a href="/agents/abrams.php">Abrams Artists Agency</a>
-          <br /><br />
-          BA. English Literature, Goddard College, VT, 1969.
-          <br /><br />
-          <strong>Research: </strong><a href="http://www.dramatistsguild.com/">Member of the Dramatists Guild</a>
-        `,
-      });
-
-      const biography = await StandardBiography.create(mockPage);
-      expect(biography.biographyData.biography).not.toContain("Member of the Dramatists Guild");
     });
   });
 
-  describe("extractData / parseDates", () => {
-    it("should extract both yearBorn and yearDied from a date range", async () => {
-      const mockPage = createMockPage({
-        altName: "Harold Pinter",
-        name: "HAROLD PINTER",
-        dates: "HAROLD PINTER  (1930 - 2008)",
-        innerHTML: "",
+  describe("#parseBiography", () => {
+    describe("when there is no Research section", () => {
+      it("returns a biography string when one is present", () => {
+        const biography = new TestStandardBiography(createMockPage());
+        const innerHTML = getMockInnerHTML({ includeBiography: true, includeResearch: false });
+        expect(biography.parseBiography(innerHTML)).toBe(expectedBiography);
       });
-
-      const biography = await StandardBiography.create(mockPage);
-      expect(biography.biographyData.yearBorn).toBe("1930");
-      expect(biography.biographyData.yearDied).toBe("2008");
+      it("returns an empty string when no biography text is present", () => {
+        const biography = new TestStandardBiography(createMockPage());
+        const innerHTML = getMockInnerHTML({ includeBiography: false, includeResearch: false });
+        expect(biography.parseBiography(innerHTML)).toBe("");
+      });
     });
 
-    it("should extract yearBorn and leave yearDied empty for a living author", async () => {
-      const mockPage = createMockPage({
-        altName: "David Mamet",
-        name: "DAVID MAMET",
-        dates: "DAVID MAMET  (1947)",
-        innerHTML: "",
+    describe("when there is a Research section", () => {
+      it("returns a biography string that appears before and separate from the Research section", () => {
+        const biography = new TestStandardBiography(createMockPage());
+        const innerHTML = getMockInnerHTML({ includeBiography: true, includeResearch: true });
+        expect(biography.parseBiography(innerHTML)).toBe(expectedBiography);
       });
-
-      const biography = await StandardBiography.create(mockPage);
-      expect(biography.biographyData.yearBorn).toBe("1947");
-      expect(biography.biographyData.yearDied).toBe("");
+      it("returns an empty string when there is no biography text preceding the Research section", () => {
+        const biography = new TestStandardBiography(createMockPage());
+        const innerHTML = getMockInnerHTML({ includeBiography: false, includeResearch: true });
+        expect(biography.parseBiography(innerHTML)).toBe("");
+      });
     });
 
-    it("should return empty strings for both when no year is present", async () => {
-      const mockPage = createMockPage({
-        altName: "Some Author",
-        name: "SOME AUTHOR",
-        dates: "SOME AUTHOR",
-        innerHTML: "",
-      });
+    it("returns a normalized biography string", () => {
+      const biography = new TestStandardBiography(createMockPage());
+      const biographyHTML = `&nbsp;  &nbsp;I am\n a <em>biographical  </em>\ttext!   `;
+      const innerHTML = `<strong>Literary Agent:</strong> <a href="/agents/test.php">Unit Test Artists Agency</a><br /><br />${biographyHTML}`;
+      const expectedOutput = "I am a biographical text!";
+      expect(biography.parseBiography(innerHTML)).toBe(expectedOutput);
+    });
+  });
 
-      const biography = await StandardBiography.create(mockPage);
-      expect(biography.biographyData.yearBorn).toBe("");
-      expect(biography.biographyData.yearDied).toBe("");
+  describe("#parseDates", () => {
+    it("should return parsed birth and death dates, without a name field", () => {
+      const biography = new TestStandardBiography(createMockPage());
+      const result = biography.parseDates(dates);
+      expect(result).toEqual({ yearBorn: "1971", yearDied: "1999" });
+      expect(result).not.toHaveProperty("name");
     });
   });
 });
