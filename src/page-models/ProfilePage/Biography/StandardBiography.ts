@@ -10,7 +10,7 @@ type ScrapedData = {
   innerHTML: string;
 };
 
-type ParseDates = {
+type ParsedDates = {
   yearBorn: string;
   yearDied: string;
 };
@@ -63,30 +63,53 @@ export default class StandardBiography extends BaseBiography {
     });
   }
 
+  // Note: typically the biography text appears after the set of labeled sections, and has no label itself;
+  // however if there is a research section, the biography text appears prior to the research label,
+  // so we have to check and identify this exception separately, then split on the double line break that
+  // separates the preceding section and the biography text.
   private parseBiography(sectionHTML: string): string {
+    const researchLabelPattern = new RegExp(`<strong[^>]*>\\s*research`, "i");
+    const paragraphBreakPattern = /(?:<br\s*\/?>\s*){2}/i;
     const lastStrongPattern = new RegExp(
       `<strong[^>]*>.*?<\\/strong>` + // bold label
         `(?:\\s*<a[^>]*>.*?<\\/a>)?`, // optional anchor tag from literary agent
       "g", // global match flag
     );
-    const labelMatches = [...sectionHTML.matchAll(lastStrongPattern)];
 
+    const labelMatches = [...sectionHTML.matchAll(lastStrongPattern)];
     if (labelMatches.length === 0) {
       return "";
     }
 
-    const lastMatch = labelMatches[labelMatches.length - 1];
-    const biography = sectionHTML.substring(lastMatch.index + lastMatch[0].length);
-    return this.normalizeBiography(biography);
+    const lastLabelMatch = labelMatches[labelMatches.length - 1];
+    const lastLabelHTML = lastLabelMatch[0];
+    const lastLabelIndex = lastLabelMatch.index ?? 0;
+
+    const isResearchLastLabel = researchLabelPattern.test(lastLabelHTML);
+    if (!isResearchLastLabel) {
+      const biography = sectionHTML.substring(lastLabelIndex + lastLabelHTML.length);
+      return this.normalizeBiography(biography);
+    }
+
+    let biographyStartIndex = 0;
+    if (labelMatches.length > 1) {
+      const previousLabelMatch = labelMatches[labelMatches.length - 2];
+      const previousLabelHTML = previousLabelMatch[0];
+      const previousLabelIndex = previousLabelMatch.index ?? 0;
+      biographyStartIndex = previousLabelIndex + previousLabelHTML.length;
+    }
+    const biographySection = sectionHTML.substring(biographyStartIndex, lastLabelIndex);
+    const breakMatch = paragraphBreakPattern.exec(biographySection);
+
+    if (!breakMatch) {
+      return "";
+    }
+
+    return this.normalizeBiography(biographySection.substring(breakMatch.index + breakMatch[0].length));
   }
 
-  private parseDates(dateString: string): ParseDates {
-    const datePattern = /\s*\(([^-]+?)\s*-\s*([^)]+?)\)$/;
-    const match = datePattern.exec(dateString);
-
-    return {
-      yearBorn: match?.[1]?.trim() ?? "",
-      yearDied: match?.[2]?.trim() ?? "",
-    };
+  private parseDates(dateString: string): ParsedDates {
+    const { yearBorn, yearDied } = this.parseDateString(dateString, true);
+    return { yearBorn, yearDied };
   }
 }

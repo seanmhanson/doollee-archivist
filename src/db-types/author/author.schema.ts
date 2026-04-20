@@ -21,6 +21,7 @@ const AuthorSchema: Document = {
       additionalProperties: false,
       required: ["name"],
       properties: {
+        name: { bsonType: "string" },
         altName: { bsonType: "string" },
         dates: { bsonType: "string" },
         biography: { bsonType: "string" },

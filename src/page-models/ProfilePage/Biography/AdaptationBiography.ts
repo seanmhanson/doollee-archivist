@@ -61,7 +61,7 @@ export default class AdaptationBiography extends BaseBiography {
       const dates = document.querySelector(dateSelector)?.textContent?.trim() ?? "";
       const imageNode = document.querySelector(imageSelector);
       const imageSrc = imageNode?.getAttribute("src") ?? "";
-      const imageAlt = imageNode?.getAttribute("alt") ?? "";
+      const imageAlt = imageNode?.getAttribute("alt")?.trim() ?? "";
       const innerHTML = document.querySelector(tableSelector)?.innerHTML ?? "";
 
       return {
@@ -75,14 +75,7 @@ export default class AdaptationBiography extends BaseBiography {
   }
 
   private parseAdaptationNameAndDates(dateString: string): ParsedNameAndDates {
-    const datePattern = /\s*\(([^-]+?)\s*-\s*([^)]+?)\)$/;
-    const match = datePattern.exec(dateString);
-
-    return {
-      name: match ? dateString.replace(datePattern, "").trim() : dateString,
-      yearBorn: match?.[1]?.trim() ?? "",
-      yearDied: match?.[2]?.trim() ?? "",
-    };
+    return this.parseDateString(dateString, true);
   }
 
   private getAltName(imageSrc: string, imageAlt: string): string {

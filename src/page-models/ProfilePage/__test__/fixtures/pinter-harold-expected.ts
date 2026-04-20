@@ -11,8 +11,8 @@ export default {
       dates: "HAROLD PINTER  (1930 - 2008)",
       nationality: "British",
       email: "",
-      website: "Click here",
-      literaryAgent: "Judy Daish Associates Ltd",
+      website: "http://www.haroldpinter.org",
+      literaryAgent: "Judy Daish Associates Ltd (Estate of)",
     },
     name: "HAROLD PINTER",
     altName: "Harold Pinter",
@@ -22,8 +22,8 @@ export default {
       "(Estate of) Playwright, poet, actor, political activist and Nobel laureate. NOBEL PRIZE &gt;&gt;&gt;Obituary by Michael Billington &gt;&gt;&gt;",
     nationality: "British",
     email: "",
-    website: "Click here",
-    literaryAgent: "Judy Daish Associates Ltd",
+    website: "http://www.haroldpinter.org",
+    literaryAgent: "Judy Daish Associates Ltd (Estate of)",
   } as ScrapedAuthorData,
   works: [
     {
