@@ -152,7 +152,7 @@ describe("BaseBiography", () => {
     );
     const phrases = [...lowercasePhrases, ...mixedCasePhrases];
 
-    it("calls to normalize the biography text", () => {
+    it("normalizes the biography text", () => {
       const input = "&nbsp;  &nbsp;I am\n a <strong>biography  </strong>\ttext!   ";
       const expectedOutput = "I am a biography text!";
       const result = biography.normalizeBiography(input);
