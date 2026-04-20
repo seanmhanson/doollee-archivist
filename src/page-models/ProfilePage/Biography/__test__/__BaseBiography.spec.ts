@@ -168,5 +168,19 @@ describe("BaseBiography", () => {
       const result = biography.parseLabeledContent(html);
       expect(result.website).toBe("");
     });
+
+    it("should extract the email address from a mailto: href", () => {
+      const biography = new TestBiography(mockPage);
+      const html = `<strong>email:</strong> <a href="mailto:author@example.com">Click here to contact</a>`;
+      const result = biography.parseLabeledContent(html);
+      expect(result.email).toBe("author@example.com");
+    });
+
+    it("should extract email text directly when no anchor is present", () => {
+      const biography = new TestBiography(mockPage);
+      const html = `<strong>email:</strong> author@example.com`;
+      const result = biography.parseLabeledContent(html);
+      expect(result.email).toBe("author@example.com");
+    });
   });
 });

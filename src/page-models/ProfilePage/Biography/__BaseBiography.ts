@@ -74,13 +74,17 @@ export default abstract class BaseBiography {
         continue;
       }
 
-      // for author websites, we capture the href value rather than display text;
+      // for author websites and emails, we capture the href value rather than display text;
       // if no href is found, we fall back to parsing the text content
-      if (key === "website") {
+      if (key === "website" || key === "email") {
         const hrefPattern = /href="([^"]+)"/i;
         const href = hrefPattern.exec(htmlContent)?.[1];
         if (href) {
-          results[key] = href;
+          if (key === "email") {
+            results[key] = href.replace(/^mailto:/i, "");
+          } else {
+            results[key] = href;
+          }
           continue;
         }
       }
