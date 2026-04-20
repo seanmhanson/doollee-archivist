@@ -66,7 +66,7 @@ export default class StandardBiography extends BaseBiography {
   // Note: typically the biography text appears after the set of labeled sections, and has no label itself;
   // however if there is a research section, the biography text appears prior to the research label,
   // so we have to check and identify this exception separately, then split on the double line break that
-  // appears separates the preceding section and the biography text.
+  // separates the preceding section and the biography text.
   private parseBiography(sectionHTML: string): string {
     const researchLabelPattern = new RegExp(`<strong[^>]*>\\s*research`, "i");
     const paragraphBreakPattern = /(?:<br\s*\/?>\s*){2}/i;
@@ -109,7 +109,7 @@ export default class StandardBiography extends BaseBiography {
   }
 
   private parseDates(dateString: string): ParsedDates {
-    const { name, ...dates } = this.parseDateString(dateString, true);
-    return dates;
+    const { yearBorn, yearDied } = this.parseDateString(dateString, true);
+    return { yearBorn, yearDied };
   }
 }
