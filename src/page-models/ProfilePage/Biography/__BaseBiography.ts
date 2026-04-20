@@ -2,7 +2,7 @@ import type { LabeledContents, ScrapedAuthorData } from "#/db-types/author/autho
 import type { Page } from "playwright";
 
 export default abstract class BaseBiography {
-  private static readonly labelMap: Record<string, keyof ScrapedAuthorData> = {
+  private static readonly labelMap: Record<string, keyof LabeledContents> = {
     nationality: "nationality",
     email: "email",
     website: "website",
@@ -44,66 +44,78 @@ export default abstract class BaseBiography {
 
   protected abstract extractData(): Promise<void>;
 
+  /**
+   * Given HTML content that contains:
+   *  - label content wrapped in <strong> tags
+   *  - possible biography text following labeled content, separated by two <br> tags
+   *  - possible anchor tags within labeled content (e.g. literary agent)
+   * This method parses these sections and normalizes the text or attributes corresponding
+   * to the biographical fields.
+   * @param sectionHTML the HTML content that should be parsed into biography fields.
+   * @returns an object containing the parsed biography fields as key-value pairs.
+   */
   protected parseLabeledContent(sectionHTML: string): LabeledContents {
-    /**
-     * Construct a case-insensitive regex that will find bolded labels, then omit
-     * whitespace and any optional anchor tags, capturing the text content that follows
-     */
-    const labelRegex = new RegExp(
-      `<strong>(${BaseBiography.labelString})[^<]*</strong>` + // any of the bold label text
-        `\\s*` + // optional whitespace
-        `(?:<a[^>]*>)?` + // optional opening anchor tag
-        `([^<]+)` + // capture text content (greedy now)
-        `(?:</a>)?`, // optional closing anchor tag
-      "gi", // global, case-insensitive flag
-    );
+    const labelTextPattern = `<strong>(${BaseBiography.labelString})[^<]*</strong>`;
+    const htmlContentPattern = `(.*?)`;
+    const delimiterPattern = `(?=<br\\s*/?>\\s*<br|<strong>|$)`;
 
-    const matches = sectionHTML.matchAll(labelRegex);
-    const results: Partial<Record<keyof ScrapedAuthorData, string>> = {};
+    const labelRegExp = new RegExp(labelTextPattern + htmlContentPattern + delimiterPattern, "gis");
+
+    const matches = sectionHTML.matchAll(labelRegExp);
+    const results: LabeledContents = {};
 
     for (const match of matches) {
-      const key = BaseBiography.labelMap[match[1].toLowerCase()];
+      const label = match[1].toLowerCase();
+      const htmlContent = match[2] || "";
 
-      // the current regex should guarantee this exists, provided case-insensitive matching,
-      // but we check defensively in case this should change
+      // If the label doesn't map to a known key, defensively skip this match
+      const key = BaseBiography.labelMap[label];
       if (!key) {
         continue;
       }
 
-      const rawValue = match[2] || "";
-      const trimmedValue = rawValue
-        .replace(/&nbsp;/g, "")
-        ?.replace(/\s/g, "")
-        .toLowerCase();
-
-      if (trimmedValue === "n/a" || trimmedValue === "") {
-        results[key] = "";
-        continue;
+      // for author websites, we capture the href value rather than display text;
+      // if no href is found, we fall back to parsing the text content
+      if (key === "website") {
+        const hrefPattern = /href="([^"]+)"/i;
+        const href = hrefPattern.exec(htmlContent)?.[1];
+        if (href) {
+          results[key] = href;
+          continue;
+        }
       }
 
-      const normalizedValue = rawValue
-        .trim() // Remove leading/trailing whitespace and newlines
-        .replace(/&nbsp;/g, " ") // Replace non-breaking spaces
-        .replace(/\s+/g, " ") // Normalize multiple whitespace to single spaces
-        .trim(); // Remove any trailing whitespace introduced by &nbsp; replacement
-
-      results[key] = normalizedValue || "";
+      const textValue = this.normalizeHtmlString(htmlContent);
+      const hasValue = textValue && textValue.toLowerCase() !== "n/a";
+      results[key] = hasValue ? textValue : "";
     }
 
-    return results as Partial<ScrapedAuthorData>;
+    return results;
   }
 
   protected normalizeBiography(bio: string): string {
-    const bioText = bio
-      .replace(/<[^>]*>/g, "") // Remove HTML
-      .replace(/&nbsp;/g, " ") // Replace entities for non-breaking spaces
-      .trim()
-      .replace(/\s+/g, " "); // Normalize whitespace
+    const bioText = this.normalizeHtmlString(bio);
 
     const isPlaceholderText = BaseBiography.placeholders.some((placeholder) => {
       return bioText.toLowerCase().includes(placeholder);
     });
 
     return isPlaceholderText ? "" : bioText;
+  }
+
+  /**
+   * Strip out HTML tags, decode non-breaking spaces, and normalize/trim whitespace characters in a given HTML string.
+   * @param html the HTML string to be normalized
+   * @returns the normalized string
+   */
+  protected normalizeHtmlString(html: string): string {
+    const htmlTagPattern = /<[^>]*>/g;
+    const nbspPattern = /&nbsp;/g;
+    const whitespacePattern = /\s+/g;
+    return html
+      .replace(htmlTagPattern, "") // remove all tags
+      .replace(nbspPattern, " ") // decode non-breaking spaces
+      .replace(whitespacePattern, " ") // normalize internal whitespace
+      .trim();
   }
 }

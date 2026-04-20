@@ -140,5 +140,33 @@ describe("BaseBiography", () => {
       expect(result.nationality).toBe("British");
       expect(result.email).toBe("");
     });
+
+    it("should include text that follows a closing anchor tag", () => {
+      const biography = new TestBiography(mockPage);
+      const html = `<strong>Literary Agent:</strong>\n      <a href="/agents/foo.php">Some Agency</a>&nbsp;&nbsp;(Estate of)\n      <br><br>`;
+      const result = biography.parseLabeledContent(html);
+      expect(result.literaryAgent).toBe("Some Agency (Estate of)");
+    });
+
+    it("should concatenate text across multiple anchor tags", () => {
+      const biography = new TestBiography(mockPage);
+      const html = `<strong>Literary Agent:</strong>\n      <a href="/agents/one.php">First Agency</a> UK representative <a href="/agents/two.php">Second Agency</a>\n      <br><br>`;
+      const result = biography.parseLabeledContent(html);
+      expect(result.literaryAgent).toBe("First Agency UK representative Second Agency");
+    });
+
+    it("should extract the URL from the href attribute for the website field", () => {
+      const biography = new TestBiography(mockPage);
+      const html = `<strong>Website:</strong>\n      <a href="http://www.example.com" target="_blank">Click here</a>\n      <br><br>`;
+      const result = biography.parseLabeledContent(html);
+      expect(result.website).toBe("http://www.example.com");
+    });
+
+    it("should return empty string for a website field with n/a text and no anchor", () => {
+      const biography = new TestBiography(mockPage);
+      const html = `<strong>Website:</strong> n/a`;
+      const result = biography.parseLabeledContent(html);
+      expect(result.website).toBe("");
+    });
   });
 });
