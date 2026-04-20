@@ -103,11 +103,11 @@ export default abstract class BaseWorksList {
         const { type, normalized, raw } = extractedIsbn;
         if (type === "ISBN10" || type === "ISBN13") {
           isbn.isbn = normalized;
-          workingString = publicationText.replace(raw, "");
+          workingString = publicationText.replace(raw, "").replace(/ISBN(?:-\d+)?\s*:?\s*/i, "");
         } else {
           // flag needs review and provide data for manual review
           console.warn(`Extracted ISBN is invalid (${type}): "${raw}" from publication text: "${publicationText}"`);
-          workingString = publicationText.replace(raw, "");
+          workingString = publicationText.replace(raw, "").replace(/ISBN(?:-\d+)?\s*:?\s*/i, "");
         }
       }
     }
@@ -139,7 +139,7 @@ export default abstract class BaseWorksList {
    * Strips the ISBN value of any ISBN prefixes, whitespace, or dashes
    */
   protected formatISBN(isbnString = ""): string {
-    return isbnString.replace(/ISBN\s*[:-]?\s*/i, "").trim();
+    return isbnString.replace(/ISBN(?:-\d+)?\s*:?\s*/i, "").trim();
   }
 
   protected formatReference(reference: string): string {

@@ -3,6 +3,21 @@ import type { Page } from "playwright";
 
 import BaseWorksList from "#/page-models/ProfilePage/WorksList/__BaseWorksList";
 
+export type ScrapedPlayRow = {
+  playId: string;
+  title: string;
+  altTitle: string;
+  synopsis: string;
+  notes: string;
+  production: string;
+  organizations: string;
+  publisher: string;
+  music: string;
+  genres: string;
+  parts: string;
+  reference: string;
+};
+
 export default class PlaysList extends BaseWorksList {
   public constructor(page: Page) {
     super(page);
@@ -105,7 +120,7 @@ export default class PlaysList extends BaseWorksList {
     });
   }
 
-  private parseParts(partsText: string) {
+  protected parseParts(partsText: string) {
     if (!/\d/.exec(partsText)) {
       return null;
     }
@@ -119,7 +134,8 @@ export default class PlaysList extends BaseWorksList {
     const match = pattern.exec(normalizedText);
 
     if (!match) {
-      throw new Error(`Parts text does not match expected format: ${partsText}`);
+      console.warn(`Parts text does not match expected format: ${partsText}`);
+      return null;
     }
 
     const partsTextMale = match[1].trim();
