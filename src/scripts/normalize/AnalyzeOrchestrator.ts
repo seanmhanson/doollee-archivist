@@ -90,15 +90,15 @@ class AnalyzeOrchestrator {
   public async run() {
     await this.connect();
 
-    // await this.analyzeGenres();
-    // await this.analyzePublishers();
-    // await this.analyzeParts();
-    // await this.analyzePublicationDates();
-    // await this.analyzeProductionDates();
-    // await this.analyzePlaysFieldPresence();
-    // await this.analyzeAuthorsFieldPresence();
-    // await this.getSamplePlays();
-    // await this.getSampleAuthors();
+    await this.analyzeGenres();
+    await this.analyzePublishers();
+    await this.analyzeParts();
+    await this.analyzePublicationDates();
+    await this.analyzeProductionDates();
+    await this.analyzePlaysFieldPresence();
+    await this.analyzeAuthorsFieldPresence();
+    await this.getSamplePlays();
+    await this.getSampleAuthors();
 
     await this.getPublicationProductionInfoCSV();
 

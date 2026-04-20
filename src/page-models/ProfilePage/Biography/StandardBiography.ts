@@ -26,7 +26,7 @@ export default class StandardBiography extends BaseBiography {
     const { altName, name, dates, innerHTML } = await this.scrapeData();
     const { yearBorn, yearDied } = this.parseDates(dates);
     const biography = this.parseBiography(innerHTML);
-    const labeledContent = this.parseLabeledContent(innerHTML);
+    const labeledContent = this.parseLabeledContent(innerHTML, name);
 
     const _archive: AuthorArchive = {
       name,

@@ -27,7 +27,7 @@ export default class AdaptationBiography extends BaseBiography {
   protected async extractData(): Promise<void> {
     const { bio, dates, imageSrc, imageAlt, innerHTML } = await this.scrapeData();
     const { name, yearBorn, yearDied } = this.parseAdaptationNameAndDates(dates);
-    const labeledContents = this.parseLabeledContent(innerHTML);
+    const labeledContents = this.parseLabeledContent(innerHTML, name);
     const altName = this.getAltName(imageSrc, imageAlt);
     const biography = this.normalizeBiography(bio);
 
