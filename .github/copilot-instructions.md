@@ -5,20 +5,20 @@ A TypeScript/Node.js scraper that archives playwright data from doollee.com into
 ## Build and Test
 
 ```sh
-npm run build:noEmit   # type-check without emitting
-npm run build          # compile TypeScript
-npm test               # run unit tests (*.spec.ts)
-npm run test:int       # run integration tests (*.int.ts)
-npm run test:all       # run all tests
-npm run test:coverage  # coverage report
-npm run lint           # ESLint
-npm run format         # Prettier
+yarn build:noEmit   # type-check without emitting
+yarn build          # compile TypeScript
+yarn test               # run unit tests (*.spec.ts)
+yarn test:int       # run integration tests (*.int.ts)
+yarn test:all       # run all tests
+yarn test:coverage  # coverage report
+yarn lint           # ESLint
+yarn format         # Prettier
 ```
 
 Database setup (requires running MongoDB):
 ```sh
-npm run db:init        # initialize collections with schema validators
-npm run db:reset       # drop and reinitialize
+yarn db:init        # initialize collections with schema validators
+yarn db:reset       # drop and reinitialize
 ```
 
 ## Architecture
@@ -62,6 +62,26 @@ Biography/
 ```
 
 ## Conventions
+
+### Verification Standards
+
+Before considering any changeset complete, run these steps in order and confirm each passes:
+
+1. **Unit tests** — `yarn test` — all `.spec.ts` tests must pass
+2. **Type check + lint** — `yarn build:noEmit && yarn lint` — no TypeScript errors, no ESLint errors
+3. **Format** — `yarn format` — run Prettier over all changed files
+4. **Integration tests** — run the integration tests relevant to the changeset (see below)
+
+**Determining relevant integration tests:**
+For each changed file, walk up the directory tree from that file toward the project root. At each level, check for a `__test__/` directory and collect any `*.int.ts` files found there. Run all collected integration tests.
+
+Example: a change to `src/page-models/ProfilePage/WorksList/PlaysList.ts` should run:
+- `src/page-models/ProfilePage/WorksList/__test__/*.int.ts`
+- `src/page-models/ProfilePage/__test__/*.int.ts`
+- `src/page-models/__test__/*.int.ts`
+- `src/__test__/*.int.ts`
+
+GitHub Actions enforces the full integration test suite (`yarn test:int`) on every push. Local verification only requires the traversal-scoped subset.
 
 ### Naming
 See `docs/naming.md`. Key points:

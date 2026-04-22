@@ -112,10 +112,17 @@ export default abstract class BaseWorksList {
       }
     }
 
-    const [extractedDate, updatedString] = stringUtils.searchForAndRemove(workingString, [
-      DATE_PATTERNS.MONTH_YEAR,
-      DATE_PATTERNS.YEAR,
-    ]);
+    let extractedDate = "";
+    let updatedString = workingString;
+
+    try {
+      [extractedDate, updatedString] = stringUtils.searchForAndRemove(workingString, [
+        DATE_PATTERNS.MONTH_YEAR,
+        DATE_PATTERNS.YEAR,
+      ]);
+    } catch (error) {
+      console.error("Error parsing publication details, multiple matches found:", error);
+    }
 
     return {
       publisher: removeAndNormalize(updatedString, ">>>"),

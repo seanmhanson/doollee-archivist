@@ -78,10 +78,13 @@ describe("PlaysList", () => {
 
     it("should return null and warn when the parts text has digits but does not match the expected format", () => {
       const warnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
-      const result = plays.parseParts("3 Male 2 Female");
-      expect(result).toBeNull();
-      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("does not match expected format"));
-      warnSpy.mockRestore();
+      try {
+        const result = plays.parseParts("3 Male 2 Female");
+        expect(result).toBeNull();
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("does not match expected format"));
+      } finally {
+        warnSpy.mockRestore();
+      }
     });
   });
 

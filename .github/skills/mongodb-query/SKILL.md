@@ -14,9 +14,7 @@ argument-hint: 'Describe what to query or inspect in the database'
 
 ## Connection
 
-The project connects via `MONGO_URI` and `DB_NAME` environment variables loaded from `.env` by `src/core/Config.ts`. The `DatabaseService` class (`src/core/DatabaseService.ts`) wraps the MongoClient and manages the connection lifecycle.
-
-**Do not connect directly** — use `DatabaseService` or write a short `ts-node` script using the project's existing config pattern (see below).
+The project connects via `MONGO_URI` and `DB_NAME` environment variables loaded from `.env`.
 
 ## Procedure
 
