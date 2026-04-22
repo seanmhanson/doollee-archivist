@@ -184,7 +184,7 @@ export default class AdaptationsList extends BaseWorksList {
   protected parseOriginalAuthor(notesString: string): string {
     const regex = /Original Playwright\s*[-:]\s*(.+?)(;|$)/i;
     const match = regex.exec(notesString);
-    return match?.[1].trim() ?? "";
+    return match?.[1].trim().replace(/\.$/, "") ?? "";
   }
 
   protected parseParts({ maleParts, femaleParts, otherParts }: UnparsedParts) {

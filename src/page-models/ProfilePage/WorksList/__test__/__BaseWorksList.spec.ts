@@ -150,9 +150,10 @@ describe("BaseWorksList", () => {
       expect(result.productionLocation).toBe("Broadway");
     });
 
-    it("should strip '>>>' from the location", () => {
+    it("should strip '>>>' from the location and still extract the year", () => {
       const result = worksList.parseProductionDetails("The Yard >>> 18 Oct 2011");
       expect(result.productionLocation).toBe("The Yard");
+      expect(result.productionYear).toBe("18 Oct 2011");
     });
   });
 

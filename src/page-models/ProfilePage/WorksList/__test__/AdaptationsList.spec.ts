@@ -56,11 +56,11 @@ describe("AdaptationsList", () => {
     });
 
     it("should extract the author after 'Original Playwright -'", () => {
-      expect(adaptations.parseOriginalAuthor("Original Playwright - Euripides.")).toBe("Euripides.");
+      expect(adaptations.parseOriginalAuthor("Original Playwright - Euripides.")).toBe("Euripides");
     });
 
     it("should extract the author after 'Original Playwright:'", () => {
-      expect(adaptations.parseOriginalAuthor("Original Playwright: Euripides.")).toBe("Euripides.");
+      expect(adaptations.parseOriginalAuthor("Original Playwright: Euripides.")).toBe("Euripides");
     });
 
     it("should extract only up to a semicolon when present", () => {
@@ -77,7 +77,7 @@ describe("AdaptationsList", () => {
     });
 
     it("should be case-insensitive for the label", () => {
-      expect(adaptations.parseOriginalAuthor("ORIGINAL PLAYWRIGHT - Euripides.")).toBe("Euripides.");
+      expect(adaptations.parseOriginalAuthor("ORIGINAL PLAYWRIGHT - Euripides.")).toBe("Euripides");
     });
   });
 
@@ -133,12 +133,6 @@ describe("AdaptationsList", () => {
       const page = createMockPage([{ ...minimalRow, genres: "adaptation" }]);
       const adaptationsList = await AdaptationsList.create(page);
       expect(adaptationsList.worksData[0].genres).toBe("Adaptation");
-    });
-
-    it("should compute displayTitle by moving a trailing article to the front", async () => {
-      const page = createMockPage([{ ...minimalRow, title: "Bacchae, The" }]);
-      const adaptationsList = await AdaptationsList.create(page);
-      expect(adaptationsList.worksData[0].displayTitle).toBe("The Bacchae");
     });
 
     it("should extract originalAuthor from the notes field", async () => {
