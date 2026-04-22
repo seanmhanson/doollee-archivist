@@ -87,28 +87,30 @@ export default abstract class BaseWorksList {
   }
 
   protected parsePublicationDetails(publicationText: string, includeISBN: boolean): PublicationDetails {
-    let workingString = publicationText;
-    const isbn = includeISBN ? { isbn: "" } : {};
-
     const isBlank = !hasAlphanumericCharacters(publicationText);
     const isMissing = publicationText.includes(BaseWorksList.publisherException);
+    const isbn = includeISBN ? { isbn: "" } : {};
 
     if (isBlank || isMissing) {
       return { publisher: "", publicationYear: "", ...isbn };
     }
 
+    let workingString = publicationText;
+
     if (includeISBN) {
       const extractedIsbn = extractIsbn(publicationText);
+
       if (extractedIsbn) {
+        const isbnLabelPattern = /ISBN(?:-\d+)?\s*:?\s*/i;
         const { type, normalized, raw } = extractedIsbn;
+
         if (type === "ISBN10" || type === "ISBN13") {
           isbn.isbn = normalized;
-          workingString = publicationText.replace(raw, "").replace(/ISBN(?:-\d+)?\s*:?\s*/i, "");
         } else {
           // flag needs review and provide data for manual review
           console.warn(`Extracted ISBN is invalid (${type}): "${raw}" from publication text: "${publicationText}"`);
-          workingString = publicationText.replace(raw, "").replace(/ISBN(?:-\d+)?\s*:?\s*/i, "");
         }
+        workingString = publicationText.replace(raw, "").replace(isbnLabelPattern, "");
       }
     }
 

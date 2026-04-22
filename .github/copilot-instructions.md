@@ -101,6 +101,7 @@ See `docs/naming.md`. Key points:
 - `#MethodName` convention for describe block names when testing a specific method
 
 ### TypeScript
+- Regex patterns are declared as named constants at the top of the relevant block, not used inline. This gives them semantic meaning at the call site. Patterns shared across multiple files belong in `src/patterns.ts`; single-use patterns are declared locally.
 - Exported types for scraped/parsed data shapes that tests need to import (e.g. `ScrapedData`, `ParsedDates` from `StandardBiography.ts`)
 - `removeEmptyFields` prunes `undefined`, `""`, `"n/a"`, and `"-"` before DB writes — don't defensively set fields to these values expecting them to persist
 - Path alias `#/` maps to `src/` (configured in `tsconfig.json` and `jest.config.js`)
