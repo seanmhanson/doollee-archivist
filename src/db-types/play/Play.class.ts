@@ -2,12 +2,7 @@ import { ObjectId } from "mongodb";
 
 import type { InitialMetadata, RawFields, PlayDocument, PlayData, PlayArchive } from "#/db-types/play/play.types";
 
-import { DATE_PATTERNS } from "#/patterns";
 import * as dbUtils from "#/utils/dbUtils";
-import { extractIsbn } from "#/utils/isbnUtils";
-import * as stringUtils from "#/utils/stringUtils";
-
-const publisherException = "I don't think it has been published.";
 
 export default class Play {
   private _id: ObjectId;
@@ -48,6 +43,7 @@ export default class Play {
   private needsReviewData?: Record<string, Record<string, string>> = {};
 
   public title: string;
+  private displayTitle?: string;
 
   public get id(): ObjectId {
     return this._id;
@@ -71,6 +67,7 @@ export default class Play {
 
   public get mainData() {
     return {
+      displayTitle: this.displayTitle,
       genres: this.genres,
       synopsis: this.synopsis,
       notes: this.notes,
@@ -126,6 +123,7 @@ export default class Play {
     };
 
     this.title = input.title;
+    this.displayTitle = input.displayTitle;
     this.author = input.originalAuthor ?? "";
     this.authorId = input.authorId;
     this.adaptingAuthor = input.adaptingAuthor;
@@ -152,125 +150,6 @@ export default class Play {
     this.partsCountFemale = input.partsCountFemale;
     this.partsCountOther = input.partsCountOther;
     this.partsCountTotal = input.partsCountTotal;
-  }
-
-  private parseProductionDetails(productionText: string) {
-    const isBlank = !stringUtils.hasAlphanumericCharacters(productionText);
-    if (isBlank) {
-      this.productionLocation = "";
-      this.productionYear = "";
-      return;
-    }
-
-    try {
-      const [extractedDate, updatedString] = stringUtils.searchForAndRemove(productionText, [
-        DATE_PATTERNS.DAY_MONTH_YEAR,
-        DATE_PATTERNS.MONTH_YEAR,
-        DATE_PATTERNS.YEAR,
-      ]);
-      this.productionLocation = stringUtils.removeAndNormalize(updatedString, ">>>");
-      this.productionYear = stringUtils.normalizeWhitespace(extractedDate);
-    } catch (error) {
-      console.error("Error parsing production details, multiple matches found:", error);
-    }
-  }
-
-  private parsePublicationDetails(publicationText: string) {
-    let workingString = publicationText;
-
-    const isBlank = !stringUtils.hasAlphanumericCharacters(publicationText);
-    const isMissing = publicationText.includes(publisherException);
-
-    if (isBlank || isMissing) {
-      this.publisher = "";
-      this.publicationYear = "";
-      return;
-    }
-
-    if (!this.isbn) {
-      workingString = this.extractIsbn(workingString);
-    }
-
-    const [extractedDate, updatedString] = stringUtils.searchForAndRemove(workingString, [
-      DATE_PATTERNS.MONTH_YEAR,
-      DATE_PATTERNS.YEAR,
-    ]);
-
-    this.publisher = stringUtils.removeAndNormalize(updatedString, ">>>");
-    this.publicationYear = stringUtils.normalizeWhitespace(extractedDate);
-  }
-
-  private extractIsbn(publicationText: string): string {
-    const extractedIsbn = extractIsbn(publicationText);
-    if (extractedIsbn) {
-      const { type, normalized, raw } = extractedIsbn;
-
-      if (type === "ISBN10" || type === "ISBN13") {
-        this.isbn = normalized;
-        return publicationText.replace(raw, "");
-      }
-
-      // flag needs review and provide data for manual review
-      console.warn(`Extracted ISBN is invalid (${type}): "${raw}" from publication text: "${publicationText}"`);
-      this.needsReview = true;
-      this.needsReviewReason = "Invalid ISBN extracted from publication details";
-      this.needsReviewData = {
-        publicationDetails: {
-          extractedIsbn: raw,
-          extractedIsbnType: type,
-        },
-      };
-      return publicationText.replace(raw, "");
-    }
-    return publicationText;
-  }
-
-  private processPartsString(partsString: string) {
-    if (!/\d/.exec(partsString)) {
-      return null;
-    }
-
-    const normalizedText = partsString
-      .replace(/&nbsp;/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-
-    const pattern = /Male:\s*(.+?)\s+Female:\s*(.+?)\s+Other:\s*(.+)$/;
-    const match = pattern.exec(normalizedText);
-
-    if (!match) {
-      throw new Error(`Parts text does not match expected format: ${partsString}`);
-    }
-
-    return [match[1], match[2], match[3]];
-  }
-
-  private extractParts(partsMale: string, partsFemale: string, partsOther: string): void {
-    function isEmpty(text: string) {
-      return !text || text === "-" || text === "0";
-    }
-
-    function parseCount(text: string): number {
-      if (text === "-" || text === "") return 0;
-      const num = parseInt(text, 10);
-      return isNaN(num) ? 0 : num;
-    }
-
-    const partsTextMale = partsMale?.trim() ?? "";
-    const partsTextFemale = partsFemale?.trim() ?? "";
-    const partsTextOther = partsOther?.trim() ?? "";
-
-    if ([partsTextMale, partsTextFemale, partsTextOther].every(isEmpty)) {
-      return;
-    }
-
-    this.partsTextMale = partsTextMale;
-    this.partsTextFemale = partsTextFemale;
-    this.partsTextOther = partsTextOther;
-    this.partsCountMale = parseCount(partsTextMale);
-    this.partsCountFemale = parseCount(partsTextFemale);
-    this.partsCountOther = parseCount(partsTextOther);
-    this.partsCountTotal = this.partsCountMale + this.partsCountFemale + this.partsCountOther;
   }
 
   toDocument(): PlayDocument {

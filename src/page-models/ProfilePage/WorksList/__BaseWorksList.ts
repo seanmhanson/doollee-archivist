@@ -87,35 +87,44 @@ export default abstract class BaseWorksList {
   }
 
   protected parsePublicationDetails(publicationText: string, includeISBN: boolean): PublicationDetails {
-    let workingString = publicationText;
-    const isbn = includeISBN ? { isbn: "" } : {};
-
     const isBlank = !hasAlphanumericCharacters(publicationText);
     const isMissing = publicationText.includes(BaseWorksList.publisherException);
+    const isbn = includeISBN ? { isbn: "" } : {};
 
     if (isBlank || isMissing) {
       return { publisher: "", publicationYear: "", ...isbn };
     }
 
+    let workingString = publicationText;
+
     if (includeISBN) {
       const extractedIsbn = extractIsbn(publicationText);
+
       if (extractedIsbn) {
+        const isbnLabelPattern = /ISBN(?:-\d+)?\s*:?\s*/i;
         const { type, normalized, raw } = extractedIsbn;
+
         if (type === "ISBN10" || type === "ISBN13") {
           isbn.isbn = normalized;
-          workingString = publicationText.replace(raw, "");
         } else {
           // flag needs review and provide data for manual review
           console.warn(`Extracted ISBN is invalid (${type}): "${raw}" from publication text: "${publicationText}"`);
-          workingString = publicationText.replace(raw, "");
         }
+        workingString = publicationText.replace(raw, "").replace(isbnLabelPattern, "");
       }
     }
 
-    const [extractedDate, updatedString] = stringUtils.searchForAndRemove(workingString, [
-      DATE_PATTERNS.MONTH_YEAR,
-      DATE_PATTERNS.YEAR,
-    ]);
+    let extractedDate = "";
+    let updatedString = workingString;
+
+    try {
+      [extractedDate, updatedString] = stringUtils.searchForAndRemove(workingString, [
+        DATE_PATTERNS.MONTH_YEAR,
+        DATE_PATTERNS.YEAR,
+      ]);
+    } catch (error) {
+      console.error("Error parsing publication details, multiple matches found:", error);
+    }
 
     return {
       publisher: removeAndNormalize(updatedString, ">>>"),
@@ -139,7 +148,7 @@ export default abstract class BaseWorksList {
    * Strips the ISBN value of any ISBN prefixes, whitespace, or dashes
    */
   protected formatISBN(isbnString = ""): string {
-    return isbnString.replace(/ISBN\s*[:-]?\s*/i, "").trim();
+    return isbnString.replace(/ISBN(?:-\d+)?\s*:?\s*/i, "").trim();
   }
 
   protected formatReference(reference: string): string {
@@ -161,7 +170,7 @@ export default abstract class BaseWorksList {
     for (const word of initialWords) {
       const suffix = `, ${word}`;
       if (displayTitle.endsWith(suffix)) {
-        const mainTitle = title.slice(0, -suffix.length).trim();
+        const mainTitle = displayTitle.slice(0, -suffix.length).trim();
         displayTitle = `${word} ${mainTitle}`;
       }
     }

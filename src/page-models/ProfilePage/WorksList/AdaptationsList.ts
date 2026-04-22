@@ -4,10 +4,28 @@ import type { Page } from "playwright";
 import BaseWorksList from "#/page-models/ProfilePage/WorksList/__BaseWorksList";
 import * as stringUtils from "#/utils/stringUtils";
 
-type UnparsedParts = {
+export type UnparsedParts = {
   maleParts: string;
   femaleParts: string;
   otherParts: string;
+};
+
+export type ScrapedAdaptationRow = {
+  playId: string;
+  adaptingAuthor: string;
+  title: string;
+  productionLocation: string;
+  productionYear: string;
+  organizations: string;
+  publisher: string;
+  isbn: string;
+  music: string;
+  genres: string;
+  notes: string;
+  imgAlt: string;
+  synopsis: string;
+  reference: string;
+  parts: UnparsedParts;
 };
 
 export default class AdaptationsList extends BaseWorksList {
@@ -19,60 +37,63 @@ export default class AdaptationsList extends BaseWorksList {
     const data = this.normalizeStringFields(await this.scrapeTableData());
 
     // destructure values we will remove before returning
-    this.data = data.map(({ productionLocation, productionYear, publisher, imgAlt, ...adaptation }) => {
-      // scraped values that we will add before returning
-      const productionInfo = `${productionLocation ?? ""} ${productionYear ?? ""}`.trim();
-      const publishingInfo = publisher ?? "";
+    this.data = data.map(
+      ({ productionLocation, productionYear, publisher, imgAlt, parts: rawParts, ...adaptation }) => {
+        // scraped values that we will add before returning
+        const productionInfo = `${productionLocation ?? ""} ${productionYear ?? ""}`.trim();
+        const publishingInfo = publisher ?? "";
 
-      const productionDetails = {
-        productionLocation,
-        productionYear,
-      };
-      const publicationDetails = {
-        ...this.parsePublicationDetails(publisher, false),
-        isbn: this.formatISBN(adaptation.isbn),
-      };
+        const productionDetails = {
+          productionLocation,
+          productionYear,
+        };
+        const publicationDetails = {
+          ...this.parsePublicationDetails(publisher, false),
+          isbn: this.formatISBN(adaptation.isbn),
+        };
 
-      const altTitle = imgAlt || "";
+        const altTitle = imgAlt || "";
 
-      // scraped values that we will overwrite before returning
-      const playId = this.getPlayId(adaptation.playId);
+        // scraped values that we will overwrite before returning
+        const playId = this.getPlayId(adaptation.playId);
 
-      const parts = this.parseParts(adaptation.parts);
-      const organizations = this.formatOrganizations(adaptation.organizations);
-      const displayTitle = this.formatDisplayTitle(adaptation.title);
-      const originalAuthor = this.parseOriginalAuthor(adaptation.notes);
-      const reference = this.formatReference(adaptation.reference);
-      const genres = this.formatGenres(adaptation.genres);
-      const adaptingAuthor = stringUtils.toTitleCase(adaptation.adaptingAuthor);
+        const parts = this.parseParts(rawParts);
+        const organizations = this.formatOrganizations(adaptation.organizations);
+        const displayTitle = this.formatDisplayTitle(adaptation.title);
+        const originalAuthor = this.parseOriginalAuthor(adaptation.notes);
+        const reference = this.formatReference(adaptation.reference);
+        const genres = this.formatGenres(adaptation.genres);
+        const adaptingAuthor = stringUtils.toTitleCase(adaptation.adaptingAuthor);
 
-      const _archive: PlayArchive = {
-        _type: "adaptation",
-        productionLocation,
-        productionYear,
-        publisher,
-        imgAlt,
-        ...adaptation,
-      };
+        const _archive: PlayArchive = {
+          _type: "adaptation",
+          productionLocation,
+          productionYear,
+          publisher,
+          imgAlt,
+          ...adaptation,
+          ...rawParts,
+        };
 
-      return {
-        _archive,
-        ...adaptation,
-        playId,
-        altTitle,
-        displayTitle,
-        originalAuthor,
-        adaptingAuthor,
-        productionInfo,
-        publishingInfo,
-        organizations,
-        reference,
-        ...parts,
-        genres,
-        ...productionDetails,
-        ...publicationDetails,
-      };
-    });
+        return {
+          _archive,
+          ...adaptation,
+          playId,
+          altTitle,
+          displayTitle,
+          originalAuthor,
+          adaptingAuthor,
+          productionInfo,
+          publishingInfo,
+          organizations,
+          reference,
+          ...parts,
+          genres,
+          ...productionDetails,
+          ...publicationDetails,
+        };
+      },
+    );
   }
 
   protected async scrapeTableData() {
@@ -160,13 +181,13 @@ export default class AdaptationsList extends BaseWorksList {
     });
   }
 
-  private parseOriginalAuthor(notesString: string): string {
+  protected parseOriginalAuthor(notesString: string): string {
     const regex = /Original Playwright\s*[-:]\s*(.+?)(;|$)/i;
     const match = regex.exec(notesString);
-    return match?.[1].trim() ?? "";
+    return match?.[1].trim().replace(/\.$/, "") ?? "";
   }
 
-  private parseParts({ maleParts, femaleParts, otherParts }: UnparsedParts) {
+  protected parseParts({ maleParts, femaleParts, otherParts }: UnparsedParts) {
     const partsTextMale = maleParts.trim();
     const partsTextFemale = femaleParts.trim();
     const partsTextOther = otherParts.trim();

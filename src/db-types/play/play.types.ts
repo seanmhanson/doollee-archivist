@@ -68,6 +68,7 @@ export type PlayDocument = {
   };
 
   title: string;
+  displayTitle?: string;
   author: string;
   authorId?: ObjectId;
   adaptingAuthor?: string;
