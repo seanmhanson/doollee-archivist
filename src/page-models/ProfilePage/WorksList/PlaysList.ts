@@ -33,6 +33,7 @@ export default class PlaysList extends BaseWorksList {
         const playId = this.getPlayId(playIdText);
         const parts = this.parseParts(partsText);
         const genres = this.formatGenres(rawGenres);
+        const displayTitle = this.formatDisplayTitle(rest.title);
 
         const _archive: PlayArchive = {
           _type: "play",
@@ -50,6 +51,7 @@ export default class PlaysList extends BaseWorksList {
           _archive,
           playId,
           genres,
+          displayTitle,
           ...publicationDetails,
           ...productionDetails,
           ...parts,

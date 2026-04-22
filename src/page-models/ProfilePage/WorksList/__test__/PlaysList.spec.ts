@@ -113,6 +113,12 @@ describe("PlaysList", () => {
       expect(plays.worksData[0].genres).toBe("Comedy Drama");
     });
 
+    it("should compute displayTitle by moving a trailing article to the front", async () => {
+      const page = createMockPage([{ ...minimalRow, title: "Bacchae, The" }]);
+      const plays = await PlaysList.create(page);
+      expect(plays.worksData[0].displayTitle).toBe("The Bacchae");
+    });
+
     it("should extract publicationYear from the publisher text", async () => {
       const page = createMockPage([{ ...minimalRow, publisher: "Samuel French 1972" }]);
       const plays = await PlaysList.create(page);
