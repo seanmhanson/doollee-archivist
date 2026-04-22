@@ -74,61 +74,41 @@ class TestBaseWorksList extends BaseWorksList {
 
 describe("BaseWorksList", () => {
   const mockPage = {} as Page;
+  let worksList: TestBaseWorksList;
+
+  beforeEach(() => {
+    worksList = new TestBaseWorksList(mockPage);
+  });
 
   describe("constructor", () => {
     it("should initialize with a Page instance without extracting data", () => {
-      const works = new TestBaseWorksList(mockPage);
-      expect(works).toBeInstanceOf(BaseWorksList);
-      expect(works.getPage()).toBe(mockPage);
-      expect(works.worksData).toEqual([]);
+      expect(worksList).toBeInstanceOf(BaseWorksList);
+      expect(worksList.getPage()).toBe(mockPage);
+      expect(worksList.worksData).toEqual([]);
     });
 
     it("when created via the static create method, it should extract and populate worksData", async () => {
-      const works = await TestBaseWorksList.create(mockPage);
-      expect(works).toBeInstanceOf(BaseWorksList);
-      expect(works.worksData).toHaveLength(1);
-      expect(works.worksData[0].playId).toBe("123");
-    });
-  });
-
-  describe("worksData getter", () => {
-    it("should return an empty array before extractData is called", () => {
-      const works = new TestBaseWorksList(mockPage);
-      expect(works.worksData).toEqual([]);
-    });
-
-    it("should return the extracted data after create is called", async () => {
-      const works = await TestBaseWorksList.create(mockPage);
-      expect(works.worksData).toHaveLength(1);
+      const worksList = await TestBaseWorksList.create(mockPage);
+      expect(worksList).toBeInstanceOf(BaseWorksList);
+      expect(worksList.worksData).toHaveLength(1);
+      expect(worksList.worksData[0].playId).toBe("123");
     });
   });
 
   describe("#getPlayId", () => {
-    let works: TestBaseWorksList;
-
-    beforeEach(() => {
-      works = new TestBaseWorksList(mockPage);
-    });
-
     it("should return the trimmed id string", () => {
-      expect(works.getPlayId("  12345  ")).toBe("12345");
+      expect(worksList.getPlayId("  12345  ")).toBe("12345");
     });
 
     it("should return '0000000' when given an empty string", () => {
-      expect(works.getPlayId("")).toBe("0000000");
+      expect(worksList.getPlayId("")).toBe("0000000");
     });
   });
 
   describe("#normalizeStringFields", () => {
-    let works: TestBaseWorksList;
-
-    beforeEach(() => {
-      works = new TestBaseWorksList(mockPage);
-    });
-
     it("should apply checkScrapedString to all string fields", () => {
       const data = [{ title: "  Hello World  ", count: 3 }];
-      const result = works.normalizeStringFields(data);
+      const result = worksList.normalizeStringFields(data);
       expect(result[0].title).toBe("Hello World");
       expect(result[0].count).toBe(3);
     });
@@ -136,256 +116,186 @@ describe("BaseWorksList", () => {
     it("should pass through non-string values unchanged", () => {
       const nested = { foo: "bar" };
       const data = [{ title: "Test", nested }];
-      const result = works.normalizeStringFields(data);
+      const result = worksList.normalizeStringFields(data);
       expect(result[0].nested).toBe(nested);
     });
   });
 
   describe("#parseProductionDetails", () => {
-    let works: TestBaseWorksList;
-
-    beforeEach(() => {
-      works = new TestBaseWorksList(mockPage);
-    });
+    const emptyResult = { productionLocation: "", productionYear: "" };
 
     it("should return empty strings for blank input", () => {
-      expect(works.parseProductionDetails("")).toEqual({
-        productionLocation: "",
-        productionYear: "",
-      });
+      expect(worksList.parseProductionDetails("")).toEqual(emptyResult);
     });
 
     it("should return empty strings for input with no alphanumeric characters", () => {
-      expect(works.parseProductionDetails("---")).toEqual({
-        productionLocation: "",
-        productionYear: "",
-      });
+      expect(worksList.parseProductionDetails("---")).toEqual(emptyResult);
     });
 
     it("should extract a day-month-year date and the remaining text as location", () => {
-      const result = works.parseProductionDetails("National Theatre, London 18 Oct 2011");
+      const result = worksList.parseProductionDetails("National Theatre, London 18 Oct 2011");
       expect(result.productionYear).toBe("18 Oct 2011");
       expect(result.productionLocation).toBe("National Theatre, London");
     });
 
     it("should extract a month-year date and the remaining text as location", () => {
-      const result = works.parseProductionDetails("RSC Stratford Oct 2010");
+      const result = worksList.parseProductionDetails("RSC Stratford Oct 2010");
       expect(result.productionYear).toBe("Oct 2010");
       expect(result.productionLocation).toBe("RSC Stratford");
     });
 
     it("should extract a year-only date and the remaining text as location", () => {
-      const result = works.parseProductionDetails("Broadway 1965");
+      const result = worksList.parseProductionDetails("Broadway 1965");
       expect(result.productionYear).toBe("1965");
       expect(result.productionLocation).toBe("Broadway");
     });
 
     it("should strip '>>>' from the location", () => {
-      const result = works.parseProductionDetails("The Yard >>> 18 Oct 2011");
+      const result = worksList.parseProductionDetails("The Yard >>> 18 Oct 2011");
       expect(result.productionLocation).toBe("The Yard");
     });
   });
 
   describe("#parsePublicationDetails", () => {
-    let works: TestBaseWorksList;
-
-    beforeEach(() => {
-      works = new TestBaseWorksList(mockPage);
-    });
-
+    const emptyResult = { publisher: "", publicationYear: "" };
     it("should return empty strings for blank input", () => {
-      expect(works.parsePublicationDetails("", false)).toEqual({
-        publisher: "",
-        publicationYear: "",
-      });
+      expect(worksList.parsePublicationDetails("", false)).toEqual(emptyResult);
     });
 
     it("should return empty strings when text contains the publisher exception phrase", () => {
-      const result = works.parsePublicationDetails(TestBaseWorksList.publisherExceptionString, false);
-      expect(result).toEqual({ publisher: "", publicationYear: "" });
+      const result = worksList.parsePublicationDetails(TestBaseWorksList.publisherExceptionString, false);
+      expect(result).toEqual(emptyResult);
     });
 
     it("should extract publisher and year from publication text", () => {
-      const result = works.parsePublicationDetails("Samuel French Ltd 1972", false);
+      const result = worksList.parsePublicationDetails("Samuel French Ltd 1972", false);
       expect(result.publisher).toBe("Samuel French Ltd");
       expect(result.publicationYear).toBe("1972");
     });
 
     it("should include an empty isbn field when includeISBN is true", () => {
-      const result = works.parsePublicationDetails("Samuel French 1972", true);
+      const result = worksList.parsePublicationDetails("Samuel French 1972", true);
       expect(result).toHaveProperty("isbn");
     });
 
     it("should extract a valid ISBN13 when includeISBN is true", () => {
-      const result = works.parsePublicationDetails("Samuel French ISBN: 9780573016509 1972", true);
+      const result = worksList.parsePublicationDetails("Samuel French ISBN: 9780573016509 1972", true);
       expect(result.isbn).toBe("9780573016509");
       expect(result.publisher).toBe("Samuel French");
       expect(result.publicationYear).toBe("1972");
     });
 
     it("should not include isbn when includeISBN is false", () => {
-      const result = works.parsePublicationDetails("Samuel French 1972", false);
+      const result = worksList.parsePublicationDetails("Samuel French 1972", false);
       expect(result).not.toHaveProperty("isbn");
     });
   });
 
   describe("#formatPlayId", () => {
-    let works: TestBaseWorksList;
-
-    beforeEach(() => {
-      works = new TestBaseWorksList(mockPage);
-    });
-
     it("should return the playId unchanged for a standard play", () => {
-      expect(works.formatPlayId("12345", "play")).toBe("12345");
+      expect(worksList.formatPlayId("12345", "play")).toBe("12345");
     });
 
     it("should prefix the playId with 'A' for adaptations", () => {
-      expect(works.formatPlayId("12345", "adaptation")).toBe("A12345");
+      expect(worksList.formatPlayId("12345", "adaptation")).toBe("A12345");
     });
 
     it("should return '0000000' for an empty string play id", () => {
-      expect(works.formatPlayId("", "play")).toBe("0000000");
+      expect(worksList.formatPlayId("", "play")).toBe("0000000");
     });
 
     it("should return 'A0000000' for an empty string adaptation id", () => {
-      expect(works.formatPlayId("", "adaptation")).toBe("A0000000");
+      expect(worksList.formatPlayId("", "adaptation")).toBe("A0000000");
     });
   });
 
   describe("#formatISBN", () => {
-    let works: TestBaseWorksList;
-
-    beforeEach(() => {
-      works = new TestBaseWorksList(mockPage);
-    });
-
     it("should strip an 'ISBN:' prefix", () => {
-      expect(works.formatISBN("ISBN: 9780573016509")).toBe("9780573016509");
+      expect(worksList.formatISBN("ISBN: 9780573016509")).toBe("9780573016509");
     });
 
     it("should strip an 'ISBN-13:' prefix", () => {
-      expect(works.formatISBN("ISBN-13: 9780573016509")).toBe("9780573016509");
+      expect(worksList.formatISBN("ISBN-13: 9780573016509")).toBe("9780573016509");
     });
 
     it("should return an already-clean ISBN unchanged", () => {
-      expect(works.formatISBN("9780573016509")).toBe("9780573016509");
+      expect(worksList.formatISBN("9780573016509")).toBe("9780573016509");
     });
 
     it("should return an empty string for empty input", () => {
-      expect(works.formatISBN("")).toBe("");
+      expect(worksList.formatISBN("")).toBe("");
     });
   });
 
   describe("#formatReference", () => {
-    let works: TestBaseWorksList;
-
-    beforeEach(() => {
-      works = new TestBaseWorksList(mockPage);
-    });
-
     it("should strip '>>>' from a reference string", () => {
-      expect(works.formatReference("Theatre Record >>> Volume XXXI")).toBe("Theatre Record Volume XXXI");
+      expect(worksList.formatReference("Theatre Record >>> Volume XXXI")).toBe("Theatre Record Volume XXXI");
     });
 
     it("should return an empty string for empty input", () => {
-      expect(works.formatReference("")).toBe("");
+      expect(worksList.formatReference("")).toBe("");
     });
   });
 
   describe("#formatOrganizations", () => {
-    let works: TestBaseWorksList;
-
-    beforeEach(() => {
-      works = new TestBaseWorksList(mockPage);
-    });
-
     it("should strip '>>>' from an organizations string", () => {
-      expect(works.formatOrganizations("RSC >>> National Theatre")).toBe("RSC National Theatre");
+      expect(worksList.formatOrganizations("RSC >>> National Theatre")).toBe("RSC National Theatre");
     });
 
     it("should return an empty string for empty input", () => {
-      expect(works.formatOrganizations("")).toBe("");
+      expect(worksList.formatOrganizations("")).toBe("");
     });
   });
 
   describe("#formatDisplayTitle", () => {
-    let works: TestBaseWorksList;
-
-    beforeEach(() => {
-      works = new TestBaseWorksList(mockPage);
+    it("should move trailing suffixes to the front and return in title case", () => {
+      expect(worksList.formatDisplayTitle("bacchae, the")).toBe("The Bacchae");
+      expect(worksList.formatDisplayTitle("BACCHAE, A")).toBe("A Bacchae");
+      expect(worksList.formatDisplayTitle("aNNual baCChanal, An")).toBe("An Annual Bacchanal");
+      expect(worksList.formatDisplayTitle("Bacchae, The")).toBe("The Bacchae");
     });
 
-    it("should move a trailing ', The' suffix to the front", () => {
-      expect(works.formatDisplayTitle("Basement, The")).toBe("The Basement");
+    it("should return titles without suffixes in title case, unaltered", () => {
+      expect(worksList.formatDisplayTitle("the bacchae")).toBe("The Bacchae");
+      expect(worksList.formatDisplayTitle("tHe baCChae")).toBe("The Bacchae");
+      expect(worksList.formatDisplayTitle("THE BACCHAE")).toBe("The Bacchae");
+      expect(worksList.formatDisplayTitle("The Bacchae")).toBe("The Bacchae");
     });
 
-    it("should move a trailing ', A' suffix to the front", () => {
-      expect(works.formatDisplayTitle("Trip, A")).toBe("A Trip");
-    });
-
-    it("should move a trailing ', An' suffix to the front", () => {
-      expect(works.formatDisplayTitle("Annual Trip, An")).toBe("An Annual Trip");
-    });
-
-    it("should title-case a title without a suffix", () => {
-      expect(works.formatDisplayTitle("hello world")).toBe("Hello World");
-    });
-
-    it("should return a normal title unchanged (except for casing)", () => {
-      expect(works.formatDisplayTitle("The Bacchae")).toBe("The Bacchae");
+    it("should move trailing suffixes to the front and title-case the result", () => {
+      expect(worksList.formatDisplayTitle("bacchaE, The")).toBe("The Bacchae");
+      expect(worksList.formatDisplayTitle("Baccha, A")).toBe("A Baccha");
+      expect(worksList.formatDisplayTitle("annual bacchanal, An")).toBe("An Annual Bacchanal");
     });
   });
 
   describe("#formatGenres", () => {
-    let works: TestBaseWorksList;
-
-    beforeEach(() => {
-      works = new TestBaseWorksList(mockPage);
+    it("should title-case valid genre strings", () => {
+      expect(worksList.formatGenres("adaptation")).toBe("Adaptation");
+      expect(worksList.formatGenres("COMEDY DRAMA")).toBe("Comedy Drama");
+      expect(worksList.formatGenres("tragedy/one-act")).toBe("Tragedy/one-act");
+      expect(worksList.formatGenres("hisTORIcal comedy")).toBe("Historical Comedy");
     });
 
-    it("should title-case a lowercase genre string", () => {
-      expect(works.formatGenres("adaptation")).toBe("Adaptation");
-    });
-
-    it("should title-case a multi-word genre string", () => {
-      expect(works.formatGenres("COMEDY DRAMA")).toBe("Comedy Drama");
-    });
-
-    it("should return an empty string for empty input", () => {
-      expect(works.formatGenres("")).toBe("");
-    });
-
-    it("should return an empty string for whitespace-only input", () => {
-      expect(works.formatGenres("   ")).toBe("");
+    it("should return an empty string for empty input after trimming", () => {
+      expect(worksList.formatGenres("")).toBe("");
+      expect(worksList.formatGenres("   ")).toBe("");
     });
   });
 
   describe("#parseCount", () => {
-    let works: TestBaseWorksList;
-
-    beforeEach(() => {
-      works = new TestBaseWorksList(mockPage);
+    it("should return the parsed integer for a numeric parts string", () => {
+      expect(worksList.exposedParseCount("3")).toBe(3);
     });
 
-    it("should return 0 for a dash", () => {
-      expect(works.exposedParseCount("-")).toBe(0);
+    it("should return the leading integer for a parts string like '6 m/f'", () => {
+      expect(worksList.exposedParseCount("6 m/f")).toBe(6);
     });
 
-    it("should return 0 for an empty string", () => {
-      expect(works.exposedParseCount("")).toBe(0);
-    });
-
-    it("should return the parsed integer for a numeric string", () => {
-      expect(works.exposedParseCount("3")).toBe(3);
-    });
-
-    it("should return the leading integer for a string like '6 m/f'", () => {
-      expect(works.exposedParseCount("6 m/f")).toBe(6);
-    });
-
-    it("should return 0 for a non-numeric string", () => {
-      expect(works.exposedParseCount("abc")).toBe(0);
+    it("should return 0 for empty or non-numeric strings", () => {
+      expect(worksList.exposedParseCount("")).toBe(0);
+      expect(worksList.exposedParseCount("-")).toBe(0);
+      expect(worksList.exposedParseCount("abc")).toBe(0);
     });
   });
 });

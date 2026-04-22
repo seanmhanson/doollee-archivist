@@ -170,7 +170,7 @@ export default abstract class BaseWorksList {
     for (const word of initialWords) {
       const suffix = `, ${word}`;
       if (displayTitle.endsWith(suffix)) {
-        const mainTitle = title.slice(0, -suffix.length).trim();
+        const mainTitle = displayTitle.slice(0, -suffix.length).trim();
         displayTitle = `${word} ${mainTitle}`;
       }
     }

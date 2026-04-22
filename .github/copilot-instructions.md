@@ -97,7 +97,9 @@ See `docs/naming.md`. Key points:
 - Subclass-based test helpers (e.g. `TestBiography extends BaseBiography`) to expose `protected` methods
 - Private methods that need testing are promoted to `protected`
 - Mock pages use `jest.fn<EvaluateFn>().mockResolvedValue(...)` to simulate `page.evaluate()`
-- Shared fixture variables declared at `describe` scope; `beforeEach` for instance setup
+- When a suite broadly shares one test instance, declare it as `let instance: T` at the root `describe` scope and assign it in a single root-level `beforeEach`; do not repeat `beforeEach` in nested `describe` blocks or construct instances inline
+- When an instance needs to be created in many different configurations across tests, define a factory function that accepts override props and spreads them after defaults, rather than repeating construction logic
+- Group multiple `expect` calls into a single `it` block when they test the same behaviour across trivially similar inputs
 - `#MethodName` convention for describe block names when testing a specific method
 
 ### TypeScript
