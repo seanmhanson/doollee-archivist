@@ -83,7 +83,7 @@ export default class ProfilePage extends BasePage<UrlArgs, Data> {
     }
   }
 
-  private async identifyTemplate(): Promise<TemplateType> {
+  protected async identifyTemplate(): Promise<TemplateType> {
     const regularLocator = this.page.locator(ProfilePage.selectors.sectionIdentifier);
     const tableLocator = this.page.locator(ProfilePage.selectors.tableIdentifier).first();
 
