@@ -7,8 +7,10 @@ import pinterSnapshot from "./fixtures/pinter-harold-snapshot";
 
 import setupBrowserTest from "#/test-utils/setupBrowserTest";
 
+type TemplateType = ProfilePage["template"];
+
 class TestProfilePage extends ProfilePage {
-  async testIdentifyTemplate(): Promise<"standard" | "adaptations" | null> {
+  async testIdentifyTemplate(): Promise<TemplateType> {
     return this.identifyTemplate();
   }
 }
@@ -26,7 +28,7 @@ describe("ProfilePage — standard template (integration)", () => {
   });
 
   it("detects standard template from real HTML selectors", async () => {
-    const template = await testPage.testIdentifyTemplate();
+    const template: TemplateType = await testPage.testIdentifyTemplate();
     expect(template).toBe("standard");
   });
 
@@ -48,7 +50,7 @@ describe("ProfilePage — adaptations template (integration)", () => {
   });
 
   it("detects adaptations template from real HTML selectors", async () => {
-    const template = await testPage.testIdentifyTemplate();
+    const template: TemplateType = await testPage.testIdentifyTemplate();
     expect(template).toBe("adaptations");
   });
 

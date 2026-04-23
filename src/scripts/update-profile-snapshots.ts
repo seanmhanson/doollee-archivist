@@ -27,7 +27,7 @@ async function generateSnapshot(fixture: Fixture, browser: BrowserInstance): Pro
       profilePage.template = fixture.template;
       await profilePage.extractPage();
     } catch (err) {
-      throw new Error(`Extraction failed: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error("Extraction failed", { cause: err });
     }
 
     const outputPath = path.join(FIXTURES_DIR, `${fixture.name}-snapshot.ts`);
@@ -48,13 +48,13 @@ async function generateSnapshot(fixture: Fixture, browser: BrowserInstance): Pro
       const prettierConfig = await prettier.resolveConfig(outputPath);
       content = await prettier.format(raw, { ...(prettierConfig ?? {}), parser: "typescript" });
     } catch (err) {
-      throw new Error(`Prettier formatting failed: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error("Prettier formatting failed", { cause: err });
     }
 
     try {
       writeFileSync(outputPath, content, "utf-8");
     } catch (err) {
-      throw new Error(`File write failed: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error("File write failed", { cause: err });
     }
 
     console.log(`✅ Snapshot written: ${fixture.name}-snapshot.ts (${profilePage.data.works.length} works)`);
@@ -72,14 +72,14 @@ async function main(): Promise<void> {
       try {
         await generateSnapshot(fixture, browser);
       } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        console.error(`❌ [${fixture.name}] ${message}`);
+        console.error(`❌ [${fixture.name}]`, err);
         failures.push(fixture.name);
       }
     }
     if (failures.length > 0) {
       console.error(`\n❌ Snapshots failed for: ${failures.join(", ")}`);
-      process.exit(1);
+      process.exitCode = 1;
+      return;
     }
     console.log("✅ All snapshots updated.");
   } finally {
