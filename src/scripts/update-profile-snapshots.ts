@@ -40,7 +40,7 @@ async function generateSnapshot(
 
     const outputPath = path.join(FIXTURES_DIR, `${fixture.name}-snapshot.ts`);
     const prettierConfig = await prettier.resolveConfig(outputPath);
-    const content = await prettier.format(raw, { ...prettierConfig, parser: "typescript" });
+    const content = await prettier.format(raw, { ...(prettierConfig ?? {}), parser: "typescript" });
     writeFileSync(outputPath, content, "utf-8");
     console.log(`✅ Snapshot written: ${fixture.name}-snapshot.ts (${profilePage.data.works.length} works)`);
   } finally {
