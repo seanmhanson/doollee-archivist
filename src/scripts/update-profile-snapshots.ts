@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync } from "fs";
 import path from "path";
 
 import { firefox } from "playwright";
+import prettier from "prettier";
 
 import ProfilePage from "#/page-models/ProfilePage";
 
@@ -25,12 +26,12 @@ async function generateSnapshot(
     profilePage.template = fixture.template;
     await profilePage.extractPage();
 
-    const content = [
+    const raw = [
       `// AUTO-GENERATED — do not manually edit. Run \`yarn snapshots:update-profiles\` to regenerate.`,
       `import type { ScrapedAuthorData } from "#/db-types/author/author.types";`,
       `import type { ScrapedPlayData } from "#/db-types/play/play.types";`,
       ``,
-      `export default ${JSON.stringify(profilePage.data, null, 2)} as {`,
+      `export default ${JSON.stringify(profilePage.data, null, 2)} satisfies {`,
       `  biography: ScrapedAuthorData;`,
       `  works: ScrapedPlayData[];`,
       `};`,
@@ -38,6 +39,8 @@ async function generateSnapshot(
     ].join("\n");
 
     const outputPath = path.join(FIXTURES_DIR, `${fixture.name}-snapshot.ts`);
+    const prettierConfig = await prettier.resolveConfig(outputPath);
+    const content = await prettier.format(raw, { ...prettierConfig, parser: "typescript" });
     writeFileSync(outputPath, content, "utf-8");
     console.log(`✅ Snapshot written: ${fixture.name}-snapshot.ts (${profilePage.data.works.length} works)`);
   } finally {

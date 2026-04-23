@@ -2,20 +2,20 @@ import { describe, it, expect, beforeEach } from "@jest/globals";
 
 import ProfilePage from "..";
 
-import pinterSnapshot from "./fixtures/pinter-harold-snapshot";
 import euripidesSnapshot from "./fixtures/euripides-snapshot";
+import pinterSnapshot from "./fixtures/pinter-harold-snapshot";
 
 import setupBrowserTest from "#/test-utils/setupBrowserTest";
 
 class TestProfilePage extends ProfilePage {
-  async testIdentifyTemplate() {
+  async testIdentifyTemplate(): Promise<"standard" | "adaptations" | null> {
     return this.identifyTemplate();
   }
 }
 
-describe("ProfilePage — standard template (integration)", () => {
-  const { getPage, loadFixture } = setupBrowserTest(__dirname);
+const { getPage, loadFixture } = setupBrowserTest(__dirname);
 
+describe("ProfilePage — standard template (integration)", () => {
   let testPage: TestProfilePage;
 
   beforeEach(async () => {
@@ -26,8 +26,8 @@ describe("ProfilePage — standard template (integration)", () => {
   });
 
   it("detects standard template from real HTML selectors", async () => {
-    testPage.template = await testPage.testIdentifyTemplate();
-    expect(testPage.template).toBe("standard");
+    const template = await testPage.testIdentifyTemplate();
+    expect(template).toBe("standard");
   });
 
   it("produces correct scraped output", async () => {
@@ -38,8 +38,6 @@ describe("ProfilePage — standard template (integration)", () => {
 });
 
 describe("ProfilePage — adaptations template (integration)", () => {
-  const { getPage, loadFixture } = setupBrowserTest(__dirname);
-
   let testPage: TestProfilePage;
 
   beforeEach(async () => {
@@ -50,8 +48,8 @@ describe("ProfilePage — adaptations template (integration)", () => {
   });
 
   it("detects adaptations template from real HTML selectors", async () => {
-    testPage.template = await testPage.testIdentifyTemplate();
-    expect(testPage.template).toBe("adaptations");
+    const template = await testPage.testIdentifyTemplate();
+    expect(template).toBe("adaptations");
   });
 
   it("produces correct scraped output", async () => {

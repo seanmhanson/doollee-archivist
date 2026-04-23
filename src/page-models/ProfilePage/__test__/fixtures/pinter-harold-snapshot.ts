@@ -2314,7 +2314,7 @@ export default {
       reference: "",
     },
   ],
-} as {
+} satisfies {
   biography: ScrapedAuthorData;
   works: ScrapedPlayData[];
 };

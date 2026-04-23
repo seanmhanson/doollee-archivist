@@ -14451,7 +14451,7 @@ export default {
       publicationYear: "",
     },
   ],
-} as {
+} satisfies {
   biography: ScrapedAuthorData;
   works: ScrapedPlayData[];
 };
