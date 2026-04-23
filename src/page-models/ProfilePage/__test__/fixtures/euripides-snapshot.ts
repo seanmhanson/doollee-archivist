@@ -1,3 +1,4 @@
+// AUTO-GENERATED — do not manually edit. Run `yarn snapshots:update-profiles` to regenerate.
 import type { ScrapedAuthorData } from "#/db-types/author/author.types";
 import type { ScrapedPlayData } from "#/db-types/play/play.types";
 
@@ -24,7 +25,7 @@ export default {
     email: "",
     website: "",
     literaryAgent: "",
-  } as ScrapedAuthorData,
+  },
   works: [
     {
       _archive: {
@@ -172,8 +173,8 @@ export default {
       publishingInfo: "Oberon Books, London, 1995",
       productionLocation: "",
       productionYear: "",
-      publisher: "Oberon Books, London, 1995",
-      publicationYear: "",
+      publisher: "Oberon Books, London,",
+      publicationYear: "1995",
     },
     {
       _archive: {
@@ -256,8 +257,8 @@ export default {
       publishingInfo: "Prentice Hall 1974",
       productionLocation: "",
       productionYear: "",
-      publisher: "Prentice Hall 1974",
-      publicationYear: "",
+      publisher: "Prentice Hall",
+      publicationYear: "1974",
     },
     {
       _archive: {
@@ -297,8 +298,8 @@ export default {
       publishingInfo: 'Contained in: "Grief Lessons" published by New York Review of Books 2008',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Grief Lessons" published by New York Review of Books 2008',
-      publicationYear: "",
+      publisher: 'Contained in: "Grief Lessons" published by New York Review of Books',
+      publicationYear: "2008",
     },
     {
       _archive: {
@@ -338,8 +339,8 @@ export default {
       publishingInfo: "Aris and Phillips 1988",
       productionLocation: "",
       productionYear: "",
-      publisher: "Aris and Phillips 1988",
-      publicationYear: "",
+      publisher: "Aris and Phillips",
+      publicationYear: "1988",
     },
     {
       _archive: {
@@ -379,8 +380,8 @@ export default {
       publishingInfo: 'Contained in: "Medea and Other Plays" published by Penguin Books 2003',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Medea and Other Plays" published by Penguin Books 2003',
-      publicationYear: "",
+      publisher: 'Contained in: "Medea and Other Plays" published by Penguin Books',
+      publicationYear: "2003",
     },
     {
       _archive: {
@@ -429,8 +430,8 @@ export default {
       partsTextOther: "-",
       productionLocation: "Viaduct, Halifax",
       productionYear: "2000",
-      publisher: "Faber and Faber, London, 2000",
-      publicationYear: "",
+      publisher: "Faber and Faber, London,",
+      publicationYear: "2000",
     },
     {
       _archive: {
@@ -554,8 +555,8 @@ export default {
       publishingInfo: 'Contained in: "Euripides" published by Hackett Publishing 2007',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Euripides" published by Hackett Publishing 2007',
-      publicationYear: "",
+      publisher: 'Contained in: "Euripides" published by Hackett Publishing',
+      publicationYear: "2007",
     },
     {
       _archive: {
@@ -595,8 +596,8 @@ export default {
       publishingInfo: 'Contained in: "Three Plays" published by Penguin Books 1986',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Three Plays" published by Penguin Books 1986',
-      publicationYear: "",
+      publisher: 'Contained in: "Three Plays" published by Penguin Books',
+      publicationYear: "1986",
     },
     {
       _archive: {
@@ -678,8 +679,8 @@ export default {
       publishingInfo: "in Euripides Plays: Three, Methuen, 1997",
       productionLocation: "",
       productionYear: "",
-      publisher: "in Euripides Plays: Three, Methuen, 1997",
-      publicationYear: "",
+      publisher: "in Euripides Plays: Three, Methuen,",
+      publicationYear: "1997",
     },
     {
       _archive: {
@@ -813,8 +814,8 @@ export default {
       publishingInfo: 'Contained in: "Euripides II" published by University of Chicago Press 2013',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Euripides II" published by University of Chicago Press 2013',
-      publicationYear: "",
+      publisher: 'Contained in: "Euripides II" published by University of Chicago Press',
+      publicationYear: "2013",
     },
     {
       _archive: {
@@ -856,8 +857,8 @@ export default {
       publishingInfo: 'Contained in: "Children Of Heracles" published by Loeb 1996',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Children Of Heracles" published by Loeb 1996',
-      publicationYear: "",
+      publisher: 'Contained in: "Children Of Heracles" published by Loeb',
+      publicationYear: "1996",
     },
     {
       _archive: {
@@ -940,8 +941,8 @@ export default {
       publishingInfo: 'Contained in: "The Trojan Women and Other Plays" published by Oxford University Press 2008',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "The Trojan Women and Other Plays" published by Oxford University Press 2008',
-      publicationYear: "",
+      publisher: 'Contained in: "The Trojan Women and Other Plays" published by Oxford University Press',
+      publicationYear: "2008",
     },
     {
       _archive: {
@@ -981,8 +982,8 @@ export default {
       publishingInfo: 'Contained in: "Euripides II" published by University of Chicago Press 2013',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Euripides II" published by University of Chicago Press 2013',
-      publicationYear: "",
+      publisher: 'Contained in: "Euripides II" published by University of Chicago Press',
+      publicationYear: "2013",
     },
     {
       _archive: {
@@ -1064,8 +1065,8 @@ export default {
       publishingInfo: "Forgotten Books 2012",
       productionLocation: "",
       productionYear: "",
-      publisher: "Forgotten Books 2012",
-      publicationYear: "",
+      publisher: "Forgotten Books",
+      publicationYear: "2012",
     },
     {
       _archive: {
@@ -1156,8 +1157,8 @@ export default {
       publishingInfo: "Oxford University Press 2001",
       productionLocation: "",
       productionYear: "",
-      publisher: "Oxford University Press 2001",
-      publicationYear: "",
+      publisher: "Oxford University Press",
+      publicationYear: "2001",
     },
     {
       _archive: {
@@ -1199,8 +1200,8 @@ export default {
       publishingInfo: "Oxford University Press 2001",
       productionLocation: "",
       productionYear: "",
-      publisher: "Oxford University Press 2001",
-      publicationYear: "",
+      publisher: "Oxford University Press",
+      publicationYear: "2001",
     },
     {
       _archive: {
@@ -1243,8 +1244,8 @@ export default {
         'Contained in: "Andromache, Hecuba and Trojan Women" published by Hackett Publishing Company 2012',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Andromache, Hecuba and Trojan Women" published by Hackett Publishing Company 2012',
-      publicationYear: "",
+      publisher: 'Contained in: "Andromache, Hecuba and Trojan Women" published by Hackett Publishing Company',
+      publicationYear: "2012",
     },
     {
       _archive: {
@@ -1286,8 +1287,8 @@ export default {
       publishingInfo: 'Contained in: ""orestes and Other Plays" published by Penguin 2006',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: ""orestes and Other Plays" published by Penguin 2006',
-      publicationYear: "",
+      publisher: 'Contained in: ""orestes and Other Plays" published by Penguin',
+      publicationYear: "2006",
     },
     {
       _archive: {
@@ -1524,8 +1525,8 @@ export default {
       partsTextOther: "chorus",
       productionLocation: "Lyric Theatre Hammersmith, London, EUR >>>",
       productionYear: "2007",
-      publisher: "London : Faber & Faber, 2007",
-      publicationYear: "",
+      publisher: "London : Faber & Faber,",
+      publicationYear: "2007",
     },
     {
       _archive: {
@@ -1565,8 +1566,8 @@ export default {
       publishingInfo: 'Contained in: "Bacchae, Iphigenia At Aulis, Rhesus" published by Loeb Classical Library 2003',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Bacchae, Iphigenia At Aulis, Rhesus" published by Loeb Classical Library 2003',
-      publicationYear: "",
+      publisher: 'Contained in: "Bacchae, Iphigenia At Aulis, Rhesus" published by Loeb Classical Library',
+      publicationYear: "2003",
     },
     {
       _archive: {
@@ -1660,9 +1661,8 @@ export default {
         'Contained in: "Iphigenia Among The Taurians and Other Plays" published by Oxford University Press 2001',
       productionLocation: "",
       productionYear: "",
-      publisher:
-        'Contained in: "Iphigenia Among The Taurians and Other Plays" published by Oxford University Press 2001',
-      publicationYear: "",
+      publisher: 'Contained in: "Iphigenia Among The Taurians and Other Plays" published by Oxford University Press',
+      publicationYear: "2001",
     },
     {
       _archive: {
@@ -1711,8 +1711,8 @@ export default {
       partsTextOther: "-",
       productionLocation: "Manchester: Royal Exchange Theatre, St Anns Square, Manchester, M2 7DH >>>",
       productionYear: "40492",
-      publisher: "Oberon Books (2010)",
-      publicationYear: "",
+      publisher: "Oberon Books ()",
+      publicationYear: "2010",
     },
     {
       _archive: {
@@ -1895,8 +1895,8 @@ export default {
       publishingInfo: "Hackett Publishing Company 1998",
       productionLocation: "",
       productionYear: "",
-      publisher: "Hackett Publishing Company 1998",
-      publicationYear: "",
+      publisher: "Hackett Publishing Company",
+      publicationYear: "1998",
     },
     {
       _archive: {
@@ -2199,8 +2199,8 @@ export default {
       publishingInfo: 'Contained in: "The Bacchae and Other Plays" published by Penguin Books 2006',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "The Bacchae and Other Plays" published by Penguin Books 2006',
-      publicationYear: "",
+      publisher: 'Contained in: "The Bacchae and Other Plays" published by Penguin Books',
+      publicationYear: "2006",
     },
     {
       _archive: {
@@ -2282,8 +2282,8 @@ export default {
       publishingInfo: "Focus Publishing 1998",
       productionLocation: "",
       productionYear: "",
-      publisher: "Focus Publishing 1998",
-      publicationYear: "",
+      publisher: "Focus Publishing",
+      publicationYear: "1998",
     },
     {
       _archive: {
@@ -2323,8 +2323,8 @@ export default {
       publishingInfo: "Cambridge University Press 2000",
       productionLocation: "",
       productionYear: "",
-      publisher: "Cambridge University Press 2000",
-      publicationYear: "",
+      publisher: "Cambridge University Press",
+      publicationYear: "2000",
     },
     {
       _archive: {
@@ -2364,8 +2364,8 @@ export default {
       publishingInfo: "Applause Books 2001",
       productionLocation: "",
       productionYear: "",
-      publisher: "Applause Books 2001",
-      publicationYear: "",
+      publisher: "Applause Books",
+      publicationYear: "2001",
     },
     {
       _archive: {
@@ -2456,8 +2456,8 @@ export default {
       publishingInfo: "Richer Resources Publications 2008",
       productionLocation: "",
       productionYear: "",
-      publisher: "Richer Resources Publications 2008",
-      publicationYear: "",
+      publisher: "Richer Resources Publications",
+      publicationYear: "2008",
     },
     {
       _archive: {
@@ -2497,8 +2497,8 @@ export default {
       publishingInfo: "Prentice Hall 1970",
       productionLocation: "",
       productionYear: "",
-      publisher: "Prentice Hall 1970",
-      publicationYear: "",
+      publisher: "Prentice Hall",
+      publicationYear: "1970",
     },
     {
       _archive: {
@@ -2631,7 +2631,7 @@ export default {
       altTitle: "",
       displayTitle: "The Bacchae",
       originalAuthor:
-        "Euripides. With Blood Wedding and Hedda Gabler, The Bacchae forms part of 2012's unique trilogy of plays, Festival of Chaos. A two month celebration in Northampton, the Festival explores the contemporary relevance of the god Dionysus.",
+        "Euripides. With Blood Wedding and Hedda Gabler, The Bacchae forms part of 2012's unique trilogy of plays, Festival of Chaos. A two month celebration in Northampton, the Festival explores the contemporary relevance of the god Dionysus",
       productionInfo: "Northampton: Royal &Amp; Derngate Theatres, Guildhall Road, Northampton NN1 1DP >>> 18 May 2012",
       publishingInfo:
         "I don't think it has been published. Try emailing Playwright or Agent where listed at top of page.",
@@ -3086,8 +3086,8 @@ export default {
       publishingInfo: "Aris and Phillips 2011",
       productionLocation: "",
       productionYear: "",
-      publisher: "Aris and Phillips 2011",
-      publicationYear: "",
+      publisher: "Aris and Phillips",
+      publicationYear: "2011",
     },
     {
       _archive: {
@@ -3134,8 +3134,8 @@ export default {
       partsTextOther: "chorus",
       productionLocation: "London",
       productionYear: "1973",
-      publisher: "Eyre Methuen, London, 1973",
-      publicationYear: "",
+      publisher: "Eyre Methuen, London,",
+      publicationYear: "1973",
     },
     {
       _archive: {
@@ -3175,8 +3175,8 @@ export default {
       publishingInfo: "University of Nebraska Press 1968",
       productionLocation: "",
       productionYear: "",
-      publisher: "University of Nebraska Press 1968",
-      publicationYear: "",
+      publisher: "University of Nebraska Press",
+      publicationYear: "1968",
     },
     {
       _archive: {
@@ -3272,8 +3272,8 @@ export default {
       partsTextOther: "chorus",
       productionLocation: "",
       productionYear: "",
-      publisher: 'in "Euripides, Plays: One" Methuen, London, 1988',
-      publicationYear: "",
+      publisher: 'in "Euripides, Plays: One" Methuen, London,',
+      publicationYear: "1988",
     },
     {
       _archive: {
@@ -3313,8 +3313,8 @@ export default {
       publishingInfo: "Farrar, Straus, Giroux 1990",
       productionLocation: "BAC, London, EUR >>>",
       productionYear: "1992",
-      publisher: "Farrar, Straus, Giroux 1990",
-      publicationYear: "",
+      publisher: "Farrar, Straus, Giroux",
+      publicationYear: "1990",
     },
     {
       _archive: {
@@ -3455,8 +3455,8 @@ export default {
       partsTextOther: "-",
       productionLocation: "Almeida Theatre, London",
       productionYear: "23 Jul 2015",
-      publisher: "Oberon Books (2015)",
-      publicationYear: "",
+      publisher: "Oberon Books ()",
+      publicationYear: "2015",
     },
     {
       _archive: {
@@ -3498,8 +3498,8 @@ export default {
       publishingInfo: "Oxford University Press 1991",
       productionLocation: "",
       productionYear: "",
-      publisher: "Oxford University Press 1991",
-      publicationYear: "",
+      publisher: "Oxford University Press",
+      publicationYear: "1991",
     },
     {
       _archive: {
@@ -3541,8 +3541,8 @@ export default {
       publishingInfo: "Smith and Kraus 2006",
       productionLocation: "",
       productionYear: "",
-      publisher: "Smith and Kraus 2006",
-      publicationYear: "",
+      publisher: "Smith and Kraus",
+      publicationYear: "2006",
     },
     {
       _archive: {
@@ -3591,8 +3591,8 @@ export default {
       partsTextOther: "Female chorus and leader",
       productionLocation: "University of Utah, Salt Lake City",
       productionYear: "Aug 1978",
-      publisher: "University of Massachusetts Press, 1978",
-      publicationYear: "",
+      publisher: "University of Massachusetts Press,",
+      publicationYear: "1978",
     },
     {
       _archive: {
@@ -3632,8 +3632,8 @@ export default {
       publishingInfo: 'Contained in: "Medea and Other Plays" published by Penguin Books 2003',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Medea and Other Plays" published by Penguin Books 2003',
-      publicationYear: "",
+      publisher: 'Contained in: "Medea and Other Plays" published by Penguin Books',
+      publicationYear: "2003",
     },
     {
       _archive: {
@@ -3766,8 +3766,8 @@ export default {
       publishingInfo: "Oxford University Press 1981",
       productionLocation: "",
       productionYear: "",
-      publisher: "Oxford University Press 1981",
-      publicationYear: "",
+      publisher: "Oxford University Press",
+      publicationYear: "1981",
     },
     {
       _archive: {
@@ -3807,8 +3807,8 @@ export default {
       publishingInfo: "Oxford University Press 1981",
       productionLocation: "",
       productionYear: "",
-      publisher: "Oxford University Press 1981",
-      publicationYear: "",
+      publisher: "Oxford University Press",
+      publicationYear: "1981",
     },
     {
       _archive: {
@@ -4068,8 +4068,8 @@ export default {
       publishingInfo: "Oxford University Press 2001",
       productionLocation: "",
       productionYear: "",
-      publisher: "Oxford University Press 2001",
-      publicationYear: "",
+      publisher: "Oxford University Press",
+      publicationYear: "2001",
     },
     {
       _archive: {
@@ -4153,8 +4153,8 @@ export default {
       publishingInfo: "Oxford University Press 1988",
       productionLocation: "",
       productionYear: "",
-      publisher: "Oxford University Press 1988",
-      publicationYear: "",
+      publisher: "Oxford University Press",
+      publicationYear: "1988",
     },
     {
       _archive: {
@@ -4194,8 +4194,8 @@ export default {
       publishingInfo: "in Euripides Plays: Two, Methuen, 1991",
       productionLocation: "",
       productionYear: "",
-      publisher: "in Euripides Plays: Two, Methuen, 1991",
-      publicationYear: "",
+      publisher: "in Euripides Plays: Two, Methuen,",
+      publicationYear: "1991",
     },
     {
       _archive: {
@@ -4295,8 +4295,8 @@ export default {
       partsTextOther: "Male chorus of satyrs 4; Odysseus' sailors 2-6",
       productionLocation: "Amherst College",
       productionYear: "Jan 1957",
-      publisher: "In Liberations. Spiritus Mundi Press, PO Box 205 Worthington, MA 01098 (1969)",
-      publicationYear: "",
+      publisher: "In Liberations. Spiritus Mundi Press, PO Box 205 Worthington, MA 01098 ()",
+      publicationYear: "1969",
     },
     {
       _archive: {
@@ -4384,8 +4384,8 @@ export default {
       publishingInfo: "Longman, London, 1967",
       productionLocation: "Accra, Ghana",
       productionYear: "1962",
-      publisher: "Longman, London, 1967",
-      publicationYear: "",
+      publisher: "Longman, London,",
+      publicationYear: "1967",
     },
     {
       _archive: {
@@ -4425,8 +4425,8 @@ export default {
       publishingInfo: "Aris and Phillips 1988",
       productionLocation: "",
       productionYear: "",
-      publisher: "Aris and Phillips 1988",
-      publicationYear: "",
+      publisher: "Aris and Phillips",
+      publicationYear: "1988",
     },
     {
       _archive: {
@@ -4466,8 +4466,8 @@ export default {
       publishingInfo: 'Contained in: "Electra and Other Plays" published by Penguin Books 1999',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Electra and Other Plays" published by Penguin Books 1999',
-      publicationYear: "",
+      publisher: 'Contained in: "Electra and Other Plays" published by Penguin Books',
+      publicationYear: "1999",
     },
     {
       _archive: {
@@ -4550,8 +4550,8 @@ export default {
       publishingInfo: "Oxford University Press 1994",
       productionLocation: "",
       productionYear: "",
-      publisher: "Oxford University Press 1994",
-      publicationYear: "",
+      publisher: "Oxford University Press",
+      publicationYear: "1994",
     },
     {
       _archive: {
@@ -4600,8 +4600,8 @@ export default {
       partsTextOther: "-",
       productionLocation: "Tramway@Fruitmarket, Glasgow",
       productionYear: "2000",
-      publisher: "Capercaillie Books Limited, Edinburgh (2005)",
-      publicationYear: "",
+      publisher: "Capercaillie Books Limited, Edinburgh ()",
+      publicationYear: "2005",
     },
     {
       _archive: {
@@ -4641,8 +4641,8 @@ export default {
       publishingInfo: 'Contained in: "Medea and Other Plays" published by Oxford University Press 2008',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Medea and Other Plays" published by Oxford University Press 2008',
-      publicationYear: "",
+      publisher: 'Contained in: "Medea and Other Plays" published by Oxford University Press',
+      publicationYear: "2008",
     },
     {
       _archive: {
@@ -4726,8 +4726,8 @@ export default {
       publishingInfo: "Oxford University Press 1994",
       productionLocation: "",
       productionYear: "",
-      publisher: "Oxford University Press 1994",
-      publicationYear: "",
+      publisher: "Oxford University Press",
+      publicationYear: "1994",
     },
     {
       _archive: {
@@ -4774,8 +4774,8 @@ export default {
       partsTextOther: "chorus",
       productionLocation: "Le Metro Club, New Compton Street, London",
       productionYear: "Apr 1970",
-      publisher: "Newstage Publications 1964",
-      publicationYear: "",
+      publisher: "Newstage Publications",
+      publicationYear: "1964",
     },
     {
       _archive: {
@@ -4999,7 +4999,7 @@ export default {
       altTitle: "",
       displayTitle: "Hecuba",
       originalAuthor:
-        "Euripides. Marina Carr's reimagining of the legend of Hecuba in a visceral new play. A searing vision of war, womanhood and courage, inventively told.",
+        "Euripides. Marina Carr's reimagining of the legend of Hecuba in a visceral new play. A searing vision of war, womanhood and courage, inventively told",
       productionInfo: "Stratford-Upon-Avon: The Swan Theatre, England, EUR >>> 17 Sep 2015",
       publishingInfo:
         "I don't think it has been published. Try emailing Playwright or Agent where listed at top of page.",
@@ -5046,8 +5046,8 @@ export default {
       publishingInfo: 'Contained in: "Grief Lessons" published by New York Review of Books 2008',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Grief Lessons" published by New York Review of Books 2008',
-      publicationYear: "",
+      publisher: 'Contained in: "Grief Lessons" published by New York Review of Books',
+      publicationYear: "2008",
     },
     {
       _archive: {
@@ -5137,8 +5137,8 @@ export default {
       partsTextOther: "large cast",
       productionLocation: "Donmar Warehouse, London, EUR >>>",
       productionYear: "2004",
-      publisher: "Faber and Faber, London (April 7, 2005)",
-      publicationYear: "",
+      publisher: "Faber and Faber, London (April 7, )",
+      publicationYear: "2005",
     },
     {
       _archive: {
@@ -5178,8 +5178,8 @@ export default {
       publishingInfo: 'Contained in: "Children Of Heracles" published by Loeb 1996',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Children Of Heracles" published by Loeb 1996',
-      publicationYear: "",
+      publisher: 'Contained in: "Children Of Heracles" published by Loeb',
+      publicationYear: "1996",
     },
     {
       _archive: {
@@ -5228,8 +5228,8 @@ export default {
       partsTextOther: "-",
       productionLocation: "Pearl Theatre, NY",
       productionYear: "2006",
-      publisher: "Oxford University Press Inc, USA (1 April 1991)",
-      publicationYear: "",
+      publisher: "Oxford University Press Inc, USA (1 )",
+      publicationYear: "April 1991",
     },
     {
       _archive: {
@@ -5278,8 +5278,8 @@ export default {
       partsTextOther: "chorus",
       productionLocation: "6th@Penn Theatre, San Diego, USA >>>",
       productionYear: "2004",
-      publisher: "Nick Hern Books, London, 2005",
-      publicationYear: "",
+      publisher: "Nick Hern Books, London,",
+      publicationYear: "2005",
     },
     {
       _archive: {
@@ -5412,8 +5412,8 @@ export default {
       publishingInfo: "Smith and Kraus 2006",
       productionLocation: "",
       productionYear: "",
-      publisher: "Smith and Kraus 2006",
-      publicationYear: "",
+      publisher: "Smith and Kraus",
+      publicationYear: "2006",
     },
     {
       _archive: {
@@ -5453,8 +5453,8 @@ export default {
       publishingInfo: "Focus Publishing 2005",
       productionLocation: "",
       productionYear: "",
-      publisher: "Focus Publishing 2005",
-      publicationYear: "",
+      publisher: "Focus Publishing",
+      publicationYear: "2005",
     },
     {
       _archive: {
@@ -5503,8 +5503,8 @@ export default {
       partsTextOther: "-",
       productionLocation: "Pearl Theatre, NY",
       productionYear: "2006",
-      publisher: "Oxford University Press Inc, USA (1 April 1991)",
-      publicationYear: "",
+      publisher: "Oxford University Press Inc, USA (1 )",
+      publicationYear: "April 1991",
     },
     {
       _archive: {
@@ -5545,8 +5545,8 @@ export default {
         'Contained in: "Andromache, Hecuba and Trojan Women" published by Hackett Publishing Company 2012',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Andromache, Hecuba and Trojan Women" published by Hackett Publishing Company 2012',
-      publicationYear: "",
+      publisher: 'Contained in: "Andromache, Hecuba and Trojan Women" published by Hackett Publishing Company',
+      publicationYear: "2012",
     },
     {
       _archive: {
@@ -5670,8 +5670,8 @@ export default {
       publishingInfo: "aris and Phillips, 2007",
       productionLocation: "",
       productionYear: "",
-      publisher: "aris and Phillips, 2007",
-      publicationYear: "",
+      publisher: "aris and Phillips,",
+      publicationYear: "2007",
     },
     {
       _archive: {
@@ -5843,8 +5843,8 @@ export default {
       publishingInfo: 'Contained in: "Helen, Phoenician women, Orestes" published by Loeb Classical Library 2002',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Helen, Phoenician women, Orestes" published by Loeb Classical Library 2002',
-      publicationYear: "",
+      publisher: 'Contained in: "Helen, Phoenician women, Orestes" published by Loeb Classical Library',
+      publicationYear: "2002",
     },
     {
       _archive: {
@@ -5932,8 +5932,8 @@ export default {
       partsTextOther: "-",
       productionLocation: "Globe, London, EUR >>>",
       productionYear: "2009",
-      publisher: "Faber and Faber 2009",
-      publicationYear: "",
+      publisher: "Faber and Faber",
+      publicationYear: "2009",
     },
     {
       _archive: {
@@ -6023,8 +6023,8 @@ export default {
       publishingInfo: "University of Massachusetts Press 1986",
       productionLocation: "",
       productionYear: "",
-      publisher: "University of Massachusetts Press 1986",
-      publicationYear: "",
+      publisher: "University of Massachusetts Press",
+      publicationYear: "1986",
     },
     {
       _archive: {
@@ -6105,8 +6105,8 @@ export default {
       publishingInfo: 'Contained in: "Medea and Other Plays" published by Oxford University Press 2008',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Medea and Other Plays" published by Oxford University Press 2008',
-      publicationYear: "",
+      publisher: 'Contained in: "Medea and Other Plays" published by Oxford University Press',
+      publicationYear: "2008",
     },
     {
       _archive: {
@@ -6239,8 +6239,8 @@ export default {
       publishingInfo: 'Contained in: "Grief Lessons" published by New York Review of Books 2008',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Grief Lessons" published by New York Review of Books 2008',
-      publicationYear: "",
+      publisher: 'Contained in: "Grief Lessons" published by New York Review of Books',
+      publicationYear: "2008",
     },
     {
       _archive: {
@@ -6334,8 +6334,8 @@ export default {
       publishingInfo: "OUP USA (18 Jan 2001)",
       productionLocation: "",
       productionYear: "",
-      publisher: "OUP USA (18 Jan 2001)",
-      publicationYear: "",
+      publisher: "OUP USA (18 )",
+      publicationYear: "Jan 2001",
     },
     {
       _archive: {
@@ -6377,8 +6377,8 @@ export default {
       publishingInfo: "OUP USA (18 Jan 2001)",
       productionLocation: "",
       productionYear: "",
-      publisher: "OUP USA (18 Jan 2001)",
-      publicationYear: "",
+      publisher: "OUP USA (18 )",
+      publicationYear: "Jan 2001",
     },
     {
       _archive: {
@@ -6420,8 +6420,8 @@ export default {
       publishingInfo: "Houghton Mifflin, Boston, 1967",
       productionLocation: "Ann Arbor, Michigan",
       productionYear: "1965",
-      publisher: "Houghton Mifflin, Boston, 1967",
-      publicationYear: "",
+      publisher: "Houghton Mifflin, Boston,",
+      publicationYear: "1967",
     },
     {
       _archive: {
@@ -6545,8 +6545,8 @@ export default {
       publishingInfo: "Oxford University Press 1962",
       productionLocation: "",
       productionYear: "",
-      publisher: "Oxford University Press 1962",
-      publicationYear: "",
+      publisher: "Oxford University Press",
+      publicationYear: "1962",
     },
     {
       _archive: {
@@ -6586,8 +6586,8 @@ export default {
       publishingInfo: "almeida Theatre Scripts, London, 1991",
       productionLocation: "Almeida Theatre, London",
       productionYear: "1991",
-      publisher: "almeida Theatre Scripts, London, 1991",
-      publicationYear: "",
+      publisher: "almeida Theatre Scripts, London,",
+      publicationYear: "1991",
     },
     {
       _archive: {
@@ -6731,8 +6731,8 @@ export default {
       publishingInfo: "Heinemann, London, 1980",
       productionLocation: "Stratford-on-Avon",
       productionYear: "1978",
-      publisher: "Heinemann, London, 1980",
-      publicationYear: "",
+      publisher: "Heinemann, London,",
+      publicationYear: "1980",
     },
     {
       _archive: {
@@ -6784,8 +6784,8 @@ export default {
       partsTextOther: "Chorus of women",
       productionLocation: "Toronto: Firehouse Theatre",
       productionYear: "Nov 1974",
-      publisher: "Oxford University Press Inc, USA (4 April 1974)",
-      publicationYear: "",
+      publisher: "Oxford University Press Inc, USA (4 )",
+      publicationYear: "April 1974",
     },
     {
       _archive: {
@@ -6827,8 +6827,8 @@ export default {
       publishingInfo: 'Contained in: "Grief Lessons" published by New York Review of Books 2008',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Grief Lessons" published by New York Review of Books 2008',
-      publicationYear: "",
+      publisher: 'Contained in: "Grief Lessons" published by New York Review of Books',
+      publicationYear: "2008",
     },
     {
       _archive: {
@@ -6868,8 +6868,8 @@ export default {
       publishingInfo: "Players Press 1998",
       productionLocation: "",
       productionYear: "",
-      publisher: "Players Press 1998",
-      publicationYear: "",
+      publisher: "Players Press",
+      publicationYear: "1998",
     },
     {
       _archive: {
@@ -6953,8 +6953,8 @@ export default {
       publishingInfo: "Ais and Phillips 1995",
       productionLocation: "",
       productionYear: "",
-      publisher: "Ais and Phillips 1995",
-      publicationYear: "",
+      publisher: "Ais and Phillips",
+      publicationYear: "1995",
     },
     {
       _archive: {
@@ -6994,8 +6994,8 @@ export default {
       publishingInfo: 'Contained in: "Children Of Heracles" published by Loeb 1996',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Children Of Heracles" published by Loeb 1996',
-      publicationYear: "",
+      publisher: 'Contained in: "Children Of Heracles" published by Loeb',
+      publicationYear: "1996",
     },
     {
       _archive: {
@@ -7165,8 +7165,8 @@ export default {
       publishingInfo: "Cambridge University Press 2007",
       productionLocation: "",
       productionYear: "",
-      publisher: "Cambridge University Press 2007",
-      publicationYear: "",
+      publisher: "Cambridge University Press",
+      publicationYear: "2007",
     },
     {
       _archive: {
@@ -7250,8 +7250,8 @@ export default {
       publishingInfo: 'Contained in: "Euripides" published by Hackett Publishing 2007',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Euripides" published by Hackett Publishing 2007',
-      publicationYear: "",
+      publisher: 'Contained in: "Euripides" published by Hackett Publishing',
+      publicationYear: "2007",
     },
     {
       _archive: {
@@ -7382,8 +7382,8 @@ export default {
       publishingInfo: 'Contained in: "Medea and Other Plays" published by Penguin Books 2003',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Medea and Other Plays" published by Penguin Books 2003',
-      publicationYear: "",
+      publisher: 'Contained in: "Medea and Other Plays" published by Penguin Books',
+      publicationYear: "2003",
     },
     {
       _archive: {
@@ -7423,8 +7423,8 @@ export default {
       publishingInfo: 'Contained in: "Medea and Other Plays" published by Oxford University Press 2008',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Medea and Other Plays" published by Oxford University Press 2008',
-      publicationYear: "",
+      publisher: 'Contained in: "Medea and Other Plays" published by Oxford University Press',
+      publicationYear: "2008",
     },
     {
       _archive: {
@@ -7464,8 +7464,8 @@ export default {
       publishingInfo: 'Contained in: "Three Plays" published by Penguin Books 1986',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Three Plays" published by Penguin Books 1986',
-      publicationYear: "",
+      publisher: 'Contained in: "Three Plays" published by Penguin Books',
+      publicationYear: "1986",
     },
     {
       _archive: {
@@ -7507,8 +7507,8 @@ export default {
       publishingInfo: "Oxford University Press (31 Aug 1978)",
       productionLocation: "",
       productionYear: "",
-      publisher: "Oxford University Press (31 Aug 1978)",
-      publicationYear: "",
+      publisher: "Oxford University Press (31 )",
+      publicationYear: "Aug 1978",
     },
     {
       _archive: {
@@ -7548,8 +7548,8 @@ export default {
       publishingInfo: "Ivan R Dee 1990",
       productionLocation: "",
       productionYear: "",
-      publisher: "Ivan R Dee 1990",
-      publicationYear: "",
+      publisher: "Ivan R Dee",
+      publicationYear: "1990",
     },
     {
       _archive: {
@@ -7683,8 +7683,8 @@ export default {
       partsTextOther: "-",
       productionLocation: "Barbican Pit, Barbican Centre, Silk Street, London EC2Y 8DS >>>",
       productionYear: "1994",
-      publisher: "Methuen 1994",
-      publicationYear: "",
+      publisher: "Methuen",
+      publicationYear: "1994",
     },
     {
       _archive: {
@@ -7966,9 +7966,8 @@ export default {
         'Contained in: "Iphigenia Among The Taurians and Other Plays" published by Oxford University Press 2000',
       productionLocation: "",
       productionYear: "",
-      publisher:
-        'Contained in: "Iphigenia Among The Taurians and Other Plays" published by Oxford University Press 2000',
-      publicationYear: "",
+      publisher: 'Contained in: "Iphigenia Among The Taurians and Other Plays" published by Oxford University Press',
+      publicationYear: "2000",
     },
     {
       _archive: {
@@ -8144,8 +8143,8 @@ export default {
       publishingInfo: 'Contained in: "Bacchae, Iphigenia At Aulis and Rhesus" published by Loeb Classical Library 2003',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Bacchae, Iphigenia At Aulis and Rhesus" published by Loeb Classical Library 2003',
-      publicationYear: "",
+      publisher: 'Contained in: "Bacchae, Iphigenia At Aulis and Rhesus" published by Loeb Classical Library',
+      publicationYear: "2003",
     },
     {
       _archive: {
@@ -8231,8 +8230,8 @@ export default {
       publishingInfo: "Oxford University Press (31 Aug 1978)",
       productionLocation: "Red Room, NY, USA >>>",
       productionYear: "2005",
-      publisher: "Oxford University Press (31 Aug 1978)",
-      publicationYear: "",
+      publisher: "Oxford University Press (31 )",
+      publicationYear: "Aug 1978",
     },
     {
       _archive: {
@@ -8276,9 +8275,8 @@ export default {
         'Contained in: "Iphigenia Among The Taurians and Other Plays" published by Oxford University Press 2002',
       productionLocation: "",
       productionYear: "",
-      publisher:
-        'Contained in: "Iphigenia Among The Taurians and Other Plays" published by Oxford University Press 2002',
-      publicationYear: "",
+      publisher: 'Contained in: "Iphigenia Among The Taurians and Other Plays" published by Oxford University Press',
+      publicationYear: "2002",
     },
     {
       _archive: {
@@ -8419,8 +8417,8 @@ export default {
       partsTextOther: "-",
       productionLocation: "Lytlelton Theatre, National Theatre, London >>>",
       productionYear: "2004",
-      publisher: "Methuen Publishing Ltd (12 Jul 1990)",
-      publicationYear: "",
+      publisher: "Methuen Publishing Ltd (12 )",
+      publicationYear: "Jul 1990",
     },
     {
       _archive: {
@@ -8699,8 +8697,8 @@ export default {
       publishingInfo: 'Contained in: "Three Plays" published by Penguin Books 1986',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Three Plays" published by Penguin Books 1986',
-      publicationYear: "",
+      publisher: 'Contained in: "Three Plays" published by Penguin Books',
+      publicationYear: "1986",
     },
     {
       _archive: {
@@ -8953,8 +8951,8 @@ export default {
       partsTextOther: "-",
       productionLocation: "Belvoir Street Theatre, Sydney, ANZ >>>",
       productionYear: "21 Mar 2010",
-      publisher: "Currency Press, Australia (2010)",
-      publicationYear: "",
+      publisher: "Currency Press, Australia ()",
+      publicationYear: "2010",
     },
     {
       _archive: {
@@ -9129,13 +9127,13 @@ export default {
       altTitle: "Medea",
       displayTitle: "Medea",
       originalAuthor:
-        "Euripides. This startlingly modern version of Euripides\u0019 classic tragedy explores how in today\u0019s world a mother, fuelled by anger at her husband\u0019s infidelity, might be driven to commit the worst possible crime. A new version by Mike Bartlett. Featuring Rachael Stirling as Medea.",
+        "Euripides. This startlingly modern version of Euripides\u0019 classic tragedy explores how in today\u0019s world a mother, fuelled by anger at her husband\u0019s infidelity, might be driven to commit the worst possible crime. A new version by Mike Bartlett. Featuring Rachael Stirling as Medea",
       productionInfo: "Glasgow: Citizens Theatre, 119 Gorbals Street, Glasgow, G5 9DS >>> 27 Sep 2012",
       publishingInfo: "Methuen 2012",
       productionLocation: "Glasgow: Citizens Theatre, 119 Gorbals Street, Glasgow, G5 9DS >>>",
       productionYear: "27 Sep 2012",
-      publisher: "Methuen 2012",
-      publicationYear: "",
+      publisher: "Methuen",
+      publicationYear: "2012",
     },
     {
       _archive: {
@@ -9224,8 +9222,8 @@ export default {
       partsTextOther: "2 c",
       productionLocation: "",
       productionYear: "",
-      publisher: 'in "Euripides, Plays: One" Methuen, London, 1988',
-      publicationYear: "",
+      publisher: 'in "Euripides, Plays: One" Methuen, London,',
+      publicationYear: "1988",
     },
     {
       _archive: {
@@ -9323,8 +9321,8 @@ export default {
       partsTextOther: "large cast",
       productionLocation: "Riverside Theatre, 91 Claremont avenue, NY",
       productionYear: "2009",
-      publisher: "Oxford University Press 2006",
-      publicationYear: "",
+      publisher: "Oxford University Press",
+      publicationYear: "2006",
     },
     {
       _archive: {
@@ -9414,8 +9412,8 @@ export default {
       partsTextOther: "with doubling and extras",
       productionLocation: "Almeida Theatre, Almeida Street, Islington, London N1 1TA >>>",
       productionYear: "25 Sep 2015",
-      publisher: "Oberon Books (2015)",
-      publicationYear: "",
+      publisher: "Oberon Books ()",
+      publicationYear: "2015",
     },
     {
       _archive: {
@@ -9457,8 +9455,8 @@ export default {
       publishingInfo: 'Contained in: "Medea and Other Plays" published by Penguin Books 2003',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Medea and Other Plays" published by Penguin Books 2003',
-      publicationYear: "",
+      publisher: 'Contained in: "Medea and Other Plays" published by Penguin Books',
+      publicationYear: "2003",
     },
     {
       _archive: {
@@ -9507,8 +9505,8 @@ export default {
       partsTextOther: "-",
       productionLocation: "Regional at The C.a.S.T.L.E. Theatre",
       productionYear: "2000",
-      publisher: "Elixir Productions Theatre Company , 2000",
-      publicationYear: "",
+      publisher: "Elixir Productions Theatre Company ,",
+      publicationYear: "2000",
     },
     {
       _archive: {
@@ -9609,8 +9607,8 @@ export default {
       partsTextOther: "children",
       productionLocation: "London",
       productionYear: "1992",
-      publisher: "Oberon Books, London, 1993",
-      publicationYear: "",
+      publisher: "Oberon Books, London,",
+      publicationYear: "1993",
     },
     {
       _archive: {
@@ -9657,8 +9655,8 @@ export default {
       partsTextOther: "9-10 actors possible",
       productionLocation: "",
       productionYear: "",
-      publisher: "Playscripts, Inc, 2005",
-      publicationYear: "",
+      publisher: "Playscripts, Inc,",
+      publicationYear: "2005",
     },
     {
       _archive: {
@@ -9698,8 +9696,8 @@ export default {
       publishingInfo: "Splendid Productions 2012",
       productionLocation: "U K tour",
       productionYear: "2011",
-      publisher: "Splendid Productions 2012",
-      publicationYear: "",
+      publisher: "Splendid Productions",
+      publicationYear: "2012",
     },
     {
       _archive: {
@@ -9832,8 +9830,8 @@ export default {
       publishingInfo: "Richer Resources Publications 2007",
       productionLocation: "",
       productionYear: "",
-      publisher: "Richer Resources Publications 2007",
-      publicationYear: "",
+      publisher: "Richer Resources Publications",
+      publicationYear: "2007",
     },
     {
       _archive: {
@@ -9880,8 +9878,8 @@ export default {
       partsTextOther: "2c",
       productionLocation: "Royal Dublin Society (Concert Hall).",
       productionYear: "1988",
-      publisher: "Bloodaxe Books, Northumberland, England, 1991",
-      publicationYear: "",
+      publisher: "Bloodaxe Books, Northumberland, England,",
+      publicationYear: "1991",
     },
     {
       _archive: {
@@ -9930,8 +9928,8 @@ export default {
       partsTextOther: "chorus",
       productionLocation: "Tramway@Fruitmarket, Glasgow",
       productionYear: "2000",
-      publisher: "Nick Hern Books, London, 2000",
-      publicationYear: "",
+      publisher: "Nick Hern Books, London,",
+      publicationYear: "2000",
     },
     {
       _archive: {
@@ -10028,8 +10026,8 @@ export default {
       partsTextOther: "large cast",
       productionLocation: "Riverside Theatre, 91 Claremont avenue, NY",
       productionYear: "2009",
-      publisher: "Oxford University Press 2006",
-      publicationYear: "",
+      publisher: "Oxford University Press",
+      publicationYear: "2006",
     },
     {
       _archive: {
@@ -10264,8 +10262,8 @@ export default {
       partsTextOther: "4c",
       productionLocation: "Abbey Theatre, Abbey Stage, Dublin >>>",
       productionYear: "2000",
-      publisher: "Nick Hern Books, London , 1994",
-      publicationYear: "",
+      publisher: "Nick Hern Books, London ,",
+      publicationYear: "1994",
     },
     {
       _archive: {
@@ -10354,8 +10352,8 @@ export default {
       publishingInfo: 'Contained in: "Medea and Other Plays" published by Oxford University Press 2008',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Medea and Other Plays" published by Oxford University Press 2008',
-      publicationYear: "",
+      publisher: 'Contained in: "Medea and Other Plays" published by Oxford University Press',
+      publicationYear: "2008",
     },
     {
       _archive: {
@@ -10495,8 +10493,8 @@ export default {
       partsTextOther: "chorus",
       productionLocation: "Scarborough: Stephen Joseph Theatre, England, EUR >>>",
       productionYear: "2009",
-      publisher: "Nick Hern Books, London (2010)",
-      publicationYear: "",
+      publisher: "Nick Hern Books, London ()",
+      publicationYear: "2010",
     },
     {
       _archive: {
@@ -10636,8 +10634,8 @@ export default {
       partsTextOther: "4c",
       productionLocation: "Abbey Theatre, Abbey Stage, Dublin >>>",
       productionYear: "2000",
-      publisher: "Nick Hern Books, London , 1994",
-      publicationYear: "",
+      publisher: "Nick Hern Books, London ,",
+      publicationYear: "1994",
     },
     {
       _archive: {
@@ -10677,8 +10675,8 @@ export default {
       publishingInfo: "Vintage Classics 2008",
       productionLocation: "",
       productionYear: "",
-      publisher: "Vintage Classics 2008",
-      publicationYear: "",
+      publisher: "Vintage Classics",
+      publicationYear: "2008",
     },
     {
       _archive: {
@@ -10771,8 +10769,8 @@ export default {
       partsTextOther: "13 actors",
       productionLocation: "National Black Theatre, NY",
       productionYear: "2008",
-      publisher: "Ivan R Dee 2000",
-      publicationYear: "",
+      publisher: "Ivan R Dee",
+      publicationYear: "2000",
     },
     {
       _archive: {
@@ -10863,8 +10861,8 @@ export default {
       publishingInfo: "Splendid Productions 2012",
       productionLocation: "U K tour",
       productionYear: "2011",
-      publisher: "Splendid Productions 2012",
-      publicationYear: "",
+      publisher: "Splendid Productions",
+      publicationYear: "2012",
     },
     {
       _archive: {
@@ -10911,8 +10909,8 @@ export default {
       partsTextOther: "2c chorus",
       productionLocation: "",
       productionYear: "",
-      publisher: "Samuel French, London, 1975",
-      publicationYear: "",
+      publisher: "Samuel French, London,",
+      publicationYear: "1975",
     },
     {
       _archive: {
@@ -10994,8 +10992,8 @@ export default {
       publishingInfo: "HackettPublishing Company 2008",
       productionLocation: "",
       productionYear: "",
-      publisher: "HackettPublishing Company 2008",
-      publicationYear: "",
+      publisher: "HackettPublishing Company",
+      publicationYear: "2008",
     },
     {
       _archive: {
@@ -11179,8 +11177,8 @@ export default {
       publishingInfo: "in Euripides Plays: One, Methuen, 2000",
       productionLocation: "",
       productionYear: "",
-      publisher: "in Euripides Plays: One, Methuen, 2000",
-      publicationYear: "",
+      publisher: "in Euripides Plays: One, Methuen,",
+      publicationYear: "2000",
     },
     {
       _archive: {
@@ -11815,8 +11813,8 @@ export default {
       partsTextOther: "chorus",
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Euripides Plays volume Four" published by University Chicago Press 1958',
-      publicationYear: "",
+      publisher: 'Contained in: "Euripides Plays volume Four" published by University Chicago Press',
+      publicationYear: "1958",
     },
     {
       _archive: {
@@ -11949,8 +11947,8 @@ export default {
       publishingInfo: 'Contained in: "Helen, Phoenician women, Orestes" published by Loeb Classical Library 2002',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Helen, Phoenician women, Orestes" published by Loeb Classical Library 2002',
-      publicationYear: "",
+      publisher: 'Contained in: "Helen, Phoenician women, Orestes" published by Loeb Classical Library',
+      publicationYear: "2002",
     },
     {
       _archive: {
@@ -12034,8 +12032,8 @@ export default {
       publishingInfo: 'Contained in: "After The Trojan War" published by Oberon Books 1995',
       productionLocation: "Theatro Technis, 26 Crowndale Road, London NW1 1TT >>>",
       productionYear: "28 Mar 2001",
-      publisher: 'Contained in: "After The Trojan War" published by Oberon Books 1995',
-      publicationYear: "",
+      publisher: 'Contained in: "After The Trojan War" published by Oberon Books',
+      publicationYear: "1995",
     },
     {
       _archive: {
@@ -12117,8 +12115,8 @@ export default {
       publishingInfo: 'Contained in: "Helen, Phoenician women, Orestes" published by Loeb Classical Library 2002',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Helen, Phoenician women, Orestes" published by Loeb Classical Library 2002',
-      publicationYear: "",
+      publisher: 'Contained in: "Helen, Phoenician women, Orestes" published by Loeb Classical Library',
+      publicationYear: "2002",
     },
     {
       _archive: {
@@ -12209,8 +12207,8 @@ export default {
       partsTextOther: "extras",
       productionLocation: "The Other Place, Stratford Upon Avon",
       productionYear: "10 Oct 1995",
-      publisher: 'in "Euripides, Plays: One" Methuen, London, 1988',
-      publicationYear: "",
+      publisher: 'in "Euripides, Plays: One" Methuen, London,',
+      publicationYear: "1988",
     },
     {
       _archive: {
@@ -12342,8 +12340,8 @@ export default {
       publishingInfo: "in Euripides Plays: Six, Methuen, 1997",
       productionLocation: "",
       productionYear: "",
-      publisher: "in Euripides Plays: Six, Methuen, 1997",
-      publicationYear: "",
+      publisher: "in Euripides Plays: Six, Methuen,",
+      publicationYear: "1997",
     },
     {
       _archive: {
@@ -12383,8 +12381,8 @@ export default {
       publishingInfo: 'Contained in: ""The Bacchae and Other Plays" published by Penguin Books 2006',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: ""The Bacchae and Other Plays" published by Penguin Books 2006',
-      publicationYear: "",
+      publisher: 'Contained in: ""The Bacchae and Other Plays" published by Penguin Books',
+      publicationYear: "2006",
     },
     {
       _archive: {
@@ -12424,8 +12422,8 @@ export default {
       publishingInfo: 'Contained in: "Bacchae, Iphigenia At Aulis and Rhesus" published by Loeb Classical Library 2003',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Bacchae, Iphigenia At Aulis and Rhesus" published by Loeb Classical Library 2003',
-      publicationYear: "",
+      publisher: 'Contained in: "Bacchae, Iphigenia At Aulis and Rhesus" published by Loeb Classical Library',
+      publicationYear: "2003",
     },
     {
       _archive: {
@@ -12474,8 +12472,8 @@ export default {
       partsTextOther: "chorus",
       productionLocation: "East River Park Amphitheatre, adjacent to Corlears Hook Park, NY",
       productionYear: "2009",
-      publisher: 'Contained in: "Euripides Plays volume Four" published by University Chicago Press 1958',
-      publicationYear: "",
+      publisher: 'Contained in: "Euripides Plays volume Four" published by University Chicago Press',
+      publicationYear: "1958",
     },
     {
       _archive: {
@@ -12519,9 +12517,8 @@ export default {
         'Contained in: "Iphigenia Among The Taurians and Other Plays" published by Oxford University Press 1999',
       productionLocation: "Basement Theatre at the Arts and Culture Centre, St John's, Newfoundland",
       productionYear: "2001",
-      publisher:
-        'Contained in: "Iphigenia Among The Taurians and Other Plays" published by Oxford University Press 1999',
-      publicationYear: "",
+      publisher: 'Contained in: "Iphigenia Among The Taurians and Other Plays" published by Oxford University Press',
+      publicationYear: "1999",
     },
     {
       _archive: {
@@ -12647,8 +12644,8 @@ export default {
       publishingInfo: "Aris and Phillips 2006",
       productionLocation: "",
       productionYear: "",
-      publisher: "Aris and Phillips 2006",
-      publicationYear: "",
+      publisher: "Aris and Phillips",
+      publicationYear: "2006",
     },
     {
       _archive: {
@@ -12814,8 +12811,8 @@ export default {
       publishingInfo: "Duckworth Publishing 1997",
       productionLocation: "",
       productionYear: "",
-      publisher: "Duckworth Publishing 1997",
-      publicationYear: "",
+      publisher: "Duckworth Publishing",
+      publicationYear: "1997",
     },
     {
       _archive: {
@@ -12906,8 +12903,8 @@ export default {
       publishingInfo: "Playwrights Co-op, Toronto, Exile Editions 2009",
       productionLocation: "",
       productionYear: "",
-      publisher: "Playwrights Co-op, Toronto, Exile Editions 2009",
-      publicationYear: "",
+      publisher: "Playwrights Co-op, Toronto, Exile Editions",
+      publicationYear: "2009",
     },
     {
       _archive: {
@@ -12952,8 +12949,8 @@ export default {
       productionLocation: "San Diego Old Globe Theater",
       productionYear: "09 Sep 2000",
       publisher:
-        "In Six Greek Tragedies: Aeschylus: Persians, Prometheus Bound; Sophocles Women of Trachis, Philoctetes; Euripides Trojan Women, Bacchae, Intro. Marianne McDonald and Michael Walton, Methuen, London, 2002",
-      publicationYear: "",
+        "In Six Greek Tragedies: Aeschylus: Persians, Prometheus Bound; Sophocles Women of Trachis, Philoctetes; Euripides Trojan Women, Bacchae, Intro. Marianne McDonald and Michael Walton, Methuen, London,",
+      publicationYear: "2002",
     },
     {
       _archive: {
@@ -13038,8 +13035,8 @@ export default {
         'Contained in: "Andromache, Hecuba and Trojan Women" published by Hackett Publishing Company 2012',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Andromache, Hecuba and Trojan Women" published by Hackett Publishing Company 2012',
-      publicationYear: "",
+      publisher: 'Contained in: "Andromache, Hecuba and Trojan Women" published by Hackett Publishing Company',
+      publicationYear: "2012",
     },
     {
       _archive: {
@@ -13174,8 +13171,8 @@ export default {
       publishingInfo: "Aris and Phillips 1997",
       productionLocation: "",
       productionYear: "",
-      publisher: "Aris and Phillips 1997",
-      publicationYear: "",
+      publisher: "Aris and Phillips",
+      publicationYear: "1997",
     },
     {
       _archive: {
@@ -13271,8 +13268,8 @@ export default {
       productionLocation:
         "Gate Theatre, 11 Pembridge Road, Above the Prince Albert Pub, Notting Hill, London, W11 3HQ >>>",
       productionYear: "08 Nov 2012",
-      publisher: "Oberon Books (2012)",
-      publicationYear: "",
+      publisher: "Oberon Books ()",
+      publicationYear: "2012",
     },
     {
       _archive: {
@@ -13354,8 +13351,8 @@ export default {
       publishingInfo: "Oregon Shakespeare Festival 2000",
       productionLocation: "",
       productionYear: "",
-      publisher: "Oregon Shakespeare Festival 2000",
-      publicationYear: "",
+      publisher: "Oregon Shakespeare Festival",
+      publicationYear: "2000",
     },
     {
       _archive: {
@@ -13395,8 +13392,8 @@ export default {
       publishingInfo: "Focus Classical Library 2005",
       productionLocation: "",
       productionYear: "",
-      publisher: "Focus Classical Library 2005",
-      publicationYear: "",
+      publisher: "Focus Classical Library",
+      publicationYear: "2005",
     },
     {
       _archive: {
@@ -13486,8 +13483,8 @@ export default {
       publishingInfo: 'Contained in: "Electra and Other Plays" published by Penguin Books 1998',
       productionLocation: "",
       productionYear: "",
-      publisher: 'Contained in: "Electra and Other Plays" published by Penguin Books 1998',
-      publicationYear: "",
+      publisher: 'Contained in: "Electra and Other Plays" published by Penguin Books',
+      publicationYear: "1998",
     },
     {
       _archive: {
@@ -13529,8 +13526,8 @@ export default {
       publishingInfo: 'Contained in: "Three Greek Plays" published by W W Norton 1958',
       productionLocation: "Circle In The Square, New York",
       productionYear: "23 Dec 1963",
-      publisher: 'Contained in: "Three Greek Plays" published by W W Norton 1958',
-      publicationYear: "",
+      publisher: 'Contained in: "Three Greek Plays" published by W W Norton',
+      publicationYear: "1958",
     },
     {
       _archive: {
@@ -13808,8 +13805,8 @@ export default {
       publishingInfo: "Granite Hills Press 2002",
       productionLocation: "",
       productionYear: "",
-      publisher: "Granite Hills Press 2002",
-      publicationYear: "",
+      publisher: "Granite Hills Press",
+      publicationYear: "2002",
     },
     {
       _archive: {
@@ -13849,8 +13846,8 @@ export default {
       publishingInfo: "Ivan R Dee 1999",
       productionLocation: "",
       productionYear: "",
-      publisher: "Ivan R Dee 1999",
-      publicationYear: "",
+      publisher: "Ivan R Dee",
+      publicationYear: "1999",
     },
     {
       _archive: {
@@ -13974,8 +13971,8 @@ export default {
       publishingInfo: "Oxford University Press U.S.A 2009",
       productionLocation: "",
       productionYear: "",
-      publisher: "Oxford University Press U.S.A 2009",
-      publicationYear: "",
+      publisher: "Oxford University Press U.S.A",
+      publicationYear: "2009",
     },
     {
       _archive: {
@@ -14015,7 +14012,7 @@ export default {
       altTitle: "",
       displayTitle: "The Trojan Women",
       originalAuthor:
-        "Euripides. This version of the play in verse is based on the prose translation of S.A. Barlow. The play has superb roles for women.",
+        "Euripides. This version of the play in verse is based on the prose translation of S.A. Barlow. The play has superb roles for women",
       productionInfo: "Playhouse Theatre, Louisville 2004",
       publishingInfo:
         "I don't think it has been published. Try emailing Playwright or Agent where listed at top of page.",
@@ -14399,8 +14396,8 @@ export default {
       partsTextOther: "-",
       productionLocation: "Orange Tree, Richmond, UK >>>",
       productionYear: "2001",
-      publisher: "Methuen Drama 2007",
-      publicationYear: "",
+      publisher: "Methuen Drama",
+      publicationYear: "2007",
     },
     {
       _archive: {
@@ -14453,5 +14450,8 @@ export default {
       publisher: "",
       publicationYear: "",
     },
-  ] as ScrapedPlayData[],
+  ],
+} satisfies {
+  biography: ScrapedAuthorData;
+  works: ScrapedPlayData[];
 };
