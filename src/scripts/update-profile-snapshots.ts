@@ -13,35 +13,50 @@ const FIXTURES = [
   { name: "euripides", template: "adaptations" as const, htmlFile: "euripides.html" },
 ];
 
-async function generateSnapshot(
-  fixture: (typeof FIXTURES)[number],
-  browser: Awaited<ReturnType<typeof firefox.launch>>,
-): Promise<void> {
+type Fixture = (typeof FIXTURES)[number];
+type BrowserInstance = Awaited<ReturnType<typeof firefox.launch>>;
+
+async function generateSnapshot(fixture: Fixture, browser: BrowserInstance): Promise<void> {
   const page = await browser.newPage();
   try {
-    const html = readFileSync(path.join(FIXTURES_DIR, fixture.htmlFile), "utf-8");
-    await page.setContent(html, { waitUntil: "domcontentloaded" });
-
-    const profilePage = new ProfilePage(page, { url: `fixture://${fixture.name}` });
-    profilePage.template = fixture.template;
-    await profilePage.extractPage();
-
-    const raw = [
-      `// AUTO-GENERATED — do not manually edit. Run \`yarn snapshots:update-profiles\` to regenerate.`,
-      `import type { ScrapedAuthorData } from "#/db-types/author/author.types";`,
-      `import type { ScrapedPlayData } from "#/db-types/play/play.types";`,
-      ``,
-      `export default ${JSON.stringify(profilePage.data, null, 2)} satisfies {`,
-      `  biography: ScrapedAuthorData;`,
-      `  works: ScrapedPlayData[];`,
-      `};`,
-      ``,
-    ].join("\n");
+    let profilePage: ProfilePage;
+    try {
+      const html = readFileSync(path.join(FIXTURES_DIR, fixture.htmlFile), "utf-8");
+      await page.setContent(html, { waitUntil: "domcontentloaded" });
+      profilePage = new ProfilePage(page, { url: `fixture://${fixture.name}` });
+      profilePage.template = fixture.template;
+      await profilePage.extractPage();
+    } catch (err) {
+      throw new Error(`Extraction failed: ${err instanceof Error ? err.message : String(err)}`);
+    }
 
     const outputPath = path.join(FIXTURES_DIR, `${fixture.name}-snapshot.ts`);
-    const prettierConfig = await prettier.resolveConfig(outputPath);
-    const content = await prettier.format(raw, { ...(prettierConfig ?? {}), parser: "typescript" });
-    writeFileSync(outputPath, content, "utf-8");
+
+    let content: string;
+    try {
+      const raw = [
+        `// AUTO-GENERATED — do not manually edit. Run \`yarn snapshots:update-profiles\` to regenerate.`,
+        `import type { ScrapedAuthorData } from "#/db-types/author/author.types";`,
+        `import type { ScrapedPlayData } from "#/db-types/play/play.types";`,
+        ``,
+        `export default ${JSON.stringify(profilePage.data, null, 2)} satisfies {`,
+        `  biography: ScrapedAuthorData;`,
+        `  works: ScrapedPlayData[];`,
+        `};`,
+        ``,
+      ].join("\n");
+      const prettierConfig = await prettier.resolveConfig(outputPath);
+      content = await prettier.format(raw, { ...(prettierConfig ?? {}), parser: "typescript" });
+    } catch (err) {
+      throw new Error(`Prettier formatting failed: ${err instanceof Error ? err.message : String(err)}`);
+    }
+
+    try {
+      writeFileSync(outputPath, content, "utf-8");
+    } catch (err) {
+      throw new Error(`File write failed: ${err instanceof Error ? err.message : String(err)}`);
+    }
+
     console.log(`✅ Snapshot written: ${fixture.name}-snapshot.ts (${profilePage.data.works.length} works)`);
   } finally {
     await page.close();
@@ -51,9 +66,20 @@ async function generateSnapshot(
 async function main(): Promise<void> {
   const browser = await firefox.launch();
   try {
+    const failures: string[] = [];
     for (const fixture of FIXTURES) {
       console.log(`🔄 Generating snapshot for: ${fixture.name}`);
-      await generateSnapshot(fixture, browser);
+      try {
+        await generateSnapshot(fixture, browser);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        console.error(`❌ [${fixture.name}] ${message}`);
+        failures.push(fixture.name);
+      }
+    }
+    if (failures.length > 0) {
+      console.error(`\n❌ Snapshots failed for: ${failures.join(", ")}`);
+      process.exit(1);
     }
     console.log("✅ All snapshots updated.");
   } finally {
