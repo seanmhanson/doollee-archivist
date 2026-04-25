@@ -11,7 +11,8 @@ const COLLECTIONS = [
   { name: "authors", $jsonSchema: authorSchema },
 ] as const;
 
-type CollectionName = (typeof COLLECTIONS)[number]["name"];
+export type CollectionName = (typeof COLLECTIONS)[number]["name"];
+export const VALID_COLLECTION_NAMES: readonly CollectionName[] = Object.freeze(COLLECTIONS.map((c) => c.name));
 
 type IndexSpec = Record<string, 1 | -1>;
 
