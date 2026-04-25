@@ -44,7 +44,7 @@ async function main() {
     .option("limit", {
       type: "number",
       default: 20,
-      description: "Maximum number of documents to return (must be >= 1; MongoDB treats 0 as no limit)",
+      description: "Maximum number of documents to return (must be a positive integer, >= 1)",
     })
     .option("out", {
       type: "string",
