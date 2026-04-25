@@ -12,7 +12,9 @@ const COLLECTIONS = [
 ] as const;
 
 export type CollectionName = (typeof COLLECTIONS)[number]["name"];
-export const VALID_COLLECTION_NAMES: CollectionName[] = COLLECTIONS.map((c) => c.name);
+export const VALID_COLLECTION_NAMES: readonly CollectionName[] = Object.freeze(
+  COLLECTIONS.map((c) => c.name),
+);
 
 type IndexSpec = Record<string, 1 | -1>;
 
