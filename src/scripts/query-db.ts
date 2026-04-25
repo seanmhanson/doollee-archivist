@@ -3,18 +3,24 @@ import path from "path";
 
 import yargs from "yargs";
 
-import DatabaseService from "#/core/DatabaseService";
-
-const VALID_COLLECTIONS = ["plays", "authors"] as const;
-type CollectionName = (typeof VALID_COLLECTIONS)[number];
+import DatabaseService, { VALID_COLLECTION_NAMES } from "#/core/DatabaseService";
 
 function parseJsonArg(value: string, argName: string): Record<string, unknown> {
+  let parsed: unknown;
   try {
-    return JSON.parse(value) as Record<string, unknown>;
+    parsed = JSON.parse(value);
   } catch {
-    console.error(`Invalid JSON for --${argName}: ${value}`);
-    process.exit(1);
+    throw new Error(`Invalid JSON for --${argName}: ${value}`);
   }
+  const isPlainObject =
+    typeof parsed === "object" &&
+    parsed !== null &&
+    !Array.isArray(parsed) &&
+    Object.getPrototypeOf(parsed) === Object.prototype;
+  if (!isPlainObject) {
+    throw new Error(`Invalid JSON for --${argName}: expected a JSON object, received ${value}`);
+  }
+  return parsed as Record<string, unknown>;
 }
 
 async function main() {
@@ -22,7 +28,8 @@ async function main() {
     .option("collection", {
       type: "string",
       demandOption: true,
-      description: `Collection to query. Must be one of: ${VALID_COLLECTIONS.join(", ")}`,
+      choices: VALID_COLLECTION_NAMES,
+      description: "Collection to query",
     })
     .option("filter", {
       type: "string",
@@ -47,18 +54,17 @@ async function main() {
     .strict()
     .parse();
 
-  // Validate --collection before connecting
-  if (!VALID_COLLECTIONS.includes(argv.collection as CollectionName)) {
-    console.error(`Invalid --collection value: "${argv.collection}". Must be one of: ${VALID_COLLECTIONS.join(", ")}`);
-    process.exit(1);
-  }
-
   // Validate JSON args before connecting
   const parsedFilter = parseJsonArg(argv.filter, "filter");
   const parsedProjection = parseJsonArg(argv.projection, "projection");
 
-  const collection = argv.collection as CollectionName;
-  const { limit, out } = argv;
+  const collection = argv.collection;
+  const { limit: rawLimit, out } = argv;
+
+  if (!Number.isInteger(rawLimit) || rawLimit < 0) {
+    throw new Error(`Invalid --limit value: ${rawLimit}. Must be a non-negative integer.`);
+  }
+  const limit = rawLimit;
 
   const dbService = new DatabaseService();
   try {
