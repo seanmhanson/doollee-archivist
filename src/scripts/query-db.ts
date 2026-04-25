@@ -52,6 +52,13 @@ async function main() {
       description: "Output file path",
     })
     .strict()
+    .exitProcess(false)
+    .fail((message, error) => {
+      if (error) {
+        throw error;
+      }
+      throw new Error(message ?? "Argument parsing failed.");
+    })
     .parse();
 
   // Validate JSON args before connecting
