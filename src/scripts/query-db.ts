@@ -44,7 +44,7 @@ async function main() {
     .option("limit", {
       type: "number",
       default: 20,
-      description: "Maximum number of documents to return",
+      description: "Maximum number of documents to return (must be >= 1; MongoDB treats 0 as no limit)",
     })
     .option("out", {
       type: "string",
@@ -61,8 +61,8 @@ async function main() {
   const collection = argv.collection;
   const { limit: rawLimit, out } = argv;
 
-  if (!Number.isInteger(rawLimit) || rawLimit < 0) {
-    throw new Error(`Invalid --limit value: ${rawLimit}. Must be a non-negative integer.`);
+  if (!Number.isInteger(rawLimit) || rawLimit < 1) {
+    throw new Error(`Invalid --limit value: ${rawLimit}. Must be a positive integer (>= 1).`);
   }
   const limit = rawLimit;
 
