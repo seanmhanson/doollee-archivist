@@ -42,6 +42,13 @@ This workflow covers the full lifecycle from plan approval through an open pull 
 
 Execute every step of the approved plan on this branch. Do not commit during execution — changes accumulate until the initial commit in Step 3.
 
+If execution fails or is blocked at any point, stop immediately. Do not proceed to Step 3 or beyond. Report the failure to the user, including:
+- which step failed and why
+- the current state of the working tree (`git status`)
+- the branch name
+
+Do not delete or abandon the branch — leave it in place so the user can inspect it, continue work from it, or reuse it as a base.
+
 ## Step 3 — Initial Commit
 
 1. Review what will be staged:
