@@ -99,7 +99,7 @@ The self-review is an analytical code review performed independently of the cons
 
    For each criterion, record concrete observations — what was examined, what was found, and any concern or confirmation. Do not summarize with "looks fine"; name what was checked.
 
-3. Run the Verification Standards suite defined in `copilot-instructions.md` as a mechanical complement to the review. That file is the source of truth for required steps; follow it exactly. Report whether each step passed or describe what was found.
+3. Run the Verification Standards suite defined in `.github/copilot-instructions.md` as a mechanical complement to the review. That file is the source of truth for required steps; follow it exactly. Report whether each step passed or describe what was found.
 
 4. If any changes result from the review:
 
