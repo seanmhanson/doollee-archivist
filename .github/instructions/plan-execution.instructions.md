@@ -78,15 +78,30 @@ Do not delete or abandon the branch — leave it in place so the user can inspec
 
 ## Step 4 — Agent Self-Review
 
-1. Re-read every file changed during plan execution. To get the exact list:
+The self-review is an analytical code review performed independently of the constraints that shaped execution. The goal is to read the changed code as a reviewer who was not involved in writing it — without the forward teleology of "does it fulfill the plan" dominating the lens. Concerns that execution is unlikely to surface are precisely what the review is for.
+
+1. Read every file changed during plan execution. To get the exact list and full diff:
 
    ```sh
-   git diff --name-only main
+   git diff --name-only origin/main
+   git diff origin/main
    ```
 
-2. Run the Verification Standards suite defined in `copilot-instructions.md`. That file is the source of truth for required steps; follow it exactly. Report findings — at minimum confirm each step passed or describe what was found.
+2. Review each changed file against the following criteria. Each is a distinct lens — apply all of them:
 
-3. If any changes result from the review:
+   - **Alignment** — Does the implementation match the intent of the plan and the broader feature? Has anything drifted, been over-engineered, or added scope not in the plan?
+   - **Impact on existing code** — Do changes to shared modules, types, utilities, or interfaces affect callsites beyond what was planned? Are existing behaviors preserved?
+   - **Stability** — Are there unhandled edge cases, fragile error paths, implicit assumptions about ordering or state, or race conditions?
+   - **Security** — Are there injection vulnerabilities, unvalidated inputs, exposed secrets, or other OWASP concerns introduced?
+   - **Accuracy** — Is the logic correct? Are there off-by-one errors, wrong data transformations, incorrect assumptions about data shape, or silent failures?
+   - **Efficiency** — Are there obvious performance concerns (unnecessary iterations, unbounded queries, redundant work) that could be avoided without significant added complexity?
+   - **Clarity** — Is the code readable and consistent with codebase conventions? Would a future reader understand it without asking questions?
+
+   For each criterion, record concrete observations — what was examined, what was found, and any concern or confirmation. Do not summarize with "looks fine"; name what was checked.
+
+3. Run the Verification Standards suite defined in `copilot-instructions.md` as a mechanical complement to the review. That file is the source of truth for required steps; follow it exactly. Report whether each step passed or describe what was found.
+
+4. If any changes result from the review:
 
    ```sh
    git status
@@ -248,15 +263,53 @@ Written by the executing agent after the self-review step.
 One or two sentences on the overall finding (e.g. "Implementation matches the plan. No corrections needed." or describe what was corrected).
 
 <details>
-<summary><strong>Category label ✅</strong></summary><br/>
+<summary><strong>Alignment ✅</strong></summary><br/>
 
 - bullet observation
 - bullet observation
 </details>
 
 <details>
-<summary><strong>Category label ✅</strong></summary><br/>
+<summary><strong>Impact on existing code ✅</strong></summary><br/>
 
 - bullet observation
+</details>
+
+<details>
+<summary><strong>Stability ✅</strong></summary><br/>
+
+- bullet observation
+</details>
+
+<details>
+<summary><strong>Security ✅</strong></summary><br/>
+
+- bullet observation
+</details>
+
+<details>
+<summary><strong>Accuracy ✅</strong></summary><br/>
+
+- bullet observation
+</details>
+
+<details>
+<summary><strong>Efficiency ✅</strong></summary><br/>
+
+- bullet observation
+</details>
+
+<details>
+<summary><strong>Clarity ✅</strong></summary><br/>
+
+- bullet observation
+</details>
+
+<details>
+<summary><strong>Verification</strong></summary><br/>
+
+- `yarn test` — N suites, N tests, all passed
+- `yarn build:noEmit` — clean
+- `yarn lint` — clean
 </details>
 ```
