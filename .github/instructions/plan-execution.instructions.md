@@ -168,7 +168,7 @@ The body has exactly three H1 sections in this order:
 ### Formatting Rules
 
 - **H1** (`#`) for the three top-level section headers only.
-- **H2** (`##`) for `Summary`, `Steps`, and `Specifications` inside the Plan section only.
+- **H2** (`##`) for `Summary` in the Plan, Execution, and Agent Self-Review sections; `Steps` and `Specifications` are allowed in the Plan section only.
 - **No H3–H6 anywhere** — use `<strong>` inside `<summary>` instead.
 - Inside `<summary>`: always `<strong>Label text</strong>`, never a heading.
 - After `</summary>`: add `<br/>` on the same line (for visual spacing), then a blank line, then the first content line. The blank line is what causes subsequent Markdown to be parsed as Markdown — without it, content immediately after a block-level HTML closing tag is treated as literal text.
