@@ -3,6 +3,7 @@ import path from "path";
 
 import { Parser } from "@json2csv/plainjs";
 import { flatten } from "@json2csv/transforms";
+import { BSONValue } from "bson";
 
 import {
   getSingleFrequencyPipeline,
@@ -518,21 +519,40 @@ class AnalyzeOrchestrator {
     const recurse = (obj: Record<string, unknown>, prefix: string) => {
       for (const [key, value] of Object.entries(obj)) {
         const fullKey = prefix ? `${prefix}.${key}` : key;
-        if (value === null || value === undefined || typeof value !== "object") {
+
+        const isNullOrUndefined = value === null || value === undefined;
+        const isPrimitive = typeof value !== "object";
+        const isDate = value instanceof Date;
+        if (isNullOrUndefined || isPrimitive || isDate) {
           result[fullKey] = value;
-        } else if (value instanceof Date) {
-          result[fullKey] = value;
-        } else if (Array.isArray(value)) {
-          result[fullKey] = JSON.stringify(value);
-        } else {
-          const entries = Object.entries(value as Record<string, unknown>);
-          if (entries.length === 0) {
-            // BSON scalar-like types (e.g. ObjectId) have no enumerable properties — use their string form for clean cell output
-            result[fullKey] = String(value);
-          } else {
-            recurse(value as Record<string, unknown>, fullKey);
-          }
+          continue;
         }
+
+        const isArray = Array.isArray(value);
+        if (isArray) {
+          result[fullKey] = JSON.stringify(value);
+          continue;
+        }
+
+        if (value instanceof BSONValue) {
+          // BSONValue defines toString() as abstract and all BSON types implement it, so it will not use the default
+          // Object.prototype.toString() method. However, typescript-eslint only recognizes the method as implemented
+          // when asserting against specific BSON types, so we bypass the check here safely instead of implementing
+          // numerous unnecessary type assertions.
+
+          // eslint-disable-next-line @typescript-eslint/no-base-to-string
+          result[fullKey] = String(value);
+          continue;
+        }
+
+        const entries = Object.entries(value as Record<string, unknown>);
+        const isEmptyObject = entries.length === 0;
+        if (isEmptyObject) {
+          result[fullKey] = JSON.stringify(value);
+          continue;
+        }
+
+        recurse(value as Record<string, unknown>, fullKey);
       }
     };
 
