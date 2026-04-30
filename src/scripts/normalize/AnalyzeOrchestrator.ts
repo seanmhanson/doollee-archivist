@@ -563,10 +563,20 @@ class AnalyzeOrchestrator {
     const recurse = (obj: Record<string, unknown>, prefix: string) => {
       for (const [key, value] of Object.entries(obj)) {
         const fullKey = prefix ? `${prefix}.${key}` : key;
-        if (value !== null && typeof value === "object" && !Array.isArray(value) && !(value instanceof Date)) {
-          recurse(value as Record<string, unknown>, fullKey);
+        if (value === null || value === undefined || typeof value !== "object") {
+          result[fullKey] = value;
+        } else if (value instanceof Date) {
+          result[fullKey] = value;
+        } else if (Array.isArray(value)) {
+          result[fullKey] = JSON.stringify(value);
         } else {
-          result[fullKey] = Array.isArray(value) ? JSON.stringify(value) : value;
+          const entries = Object.entries(value as Record<string, unknown>);
+          if (entries.length === 0) {
+            // BSON types (e.g. ObjectId) have no enumerable properties — fall back to JSON serialization
+            result[fullKey] = JSON.stringify(value);
+          } else {
+            recurse(value as Record<string, unknown>, fullKey);
+          }
         }
       }
     };
