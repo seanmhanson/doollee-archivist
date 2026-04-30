@@ -190,11 +190,11 @@ export function getFieldPresencePipeline(fields: string[]) {
   // Sanitize field names for output (replace dots with underscores)
   const sanitizeFieldName = (field: string) => field.replace(/\./g, "_");
 
-  // Create projection object that converts each field to 1 if present, 0 if absent
+  // Create projection object that converts each field to 1 if present (and non-null), 0 if absent/null
   const projectionFields = fields.reduce(
     (acc, field) => {
       const sanitized = sanitizeFieldName(field);
-      acc[sanitized] = { $cond: [{ $ifNull: [`$${field}`, false] }, 1, 0] };
+      acc[sanitized] = { $cond: [{ $ne: [`$${field}`, null] }, 1, 0] };
       return acc;
     },
     {} as Record<string, unknown>,
@@ -393,10 +393,10 @@ export function getBoilerplateFrequencyPipeline(fieldName: string) {
 }
 
 /**
- * Generate a MongoDB aggregation pipeline that counts plays with no authorId reference.
+ * Generate a MongoDB aggregation pipeline that counts plays where authorId is missing or null.
  */
 export function getPlaysWithoutAuthorPipeline() {
-  return [{ $match: { authorId: { $exists: false } } }, { $count: "count" }];
+  return [{ $match: { authorId: null } }, { $count: "count" }];
 }
 
 /**

@@ -182,7 +182,11 @@ class AnalyzeOrchestrator {
       variants: variants.join("|"),
       count,
     }));
-    this.workbook.addSheet("Frequencies \u2014 Genres", termsXlsxRows, termsXlsxRows.length, "plays");
+    this.workbook.addSheet("Frequencies \u2014 Genres", termsXlsxRows, termsXlsxRows.length, "plays", [
+      "term",
+      "variants",
+      "count",
+    ]);
 
     const stats = compoundStats[0] ?? { compound: 0, single: 0 };
     const statsCsv = `type,count\n"compound",${stats.compound}\n"single",${stats.single}`;
@@ -192,7 +196,7 @@ class AnalyzeOrchestrator {
       { type: "compound", count: stats.compound },
       { type: "single", count: stats.single },
     ];
-    this.workbook.addSheet("Genre \u2014 Compound Stats", statsXlsxRows, 2, "plays");
+    this.workbook.addSheet("Genre \u2014 Compound Stats", statsXlsxRows, 2, "plays", ["type", "count"]);
   }
 
   private async analyzePublishers() {
@@ -226,7 +230,13 @@ class AnalyzeOrchestrator {
       femaleParts,
       otherParts,
     }));
-    this.workbook.addSheet("Frequencies \u2014 Parts", xlsxRows, xlsxRows.length, "plays");
+    this.workbook.addSheet("Frequencies \u2014 Parts", xlsxRows, xlsxRows.length, "plays", [
+      "all",
+      "frequency",
+      "maleParts",
+      "femaleParts",
+      "otherParts",
+    ]);
   }
 
   private async analyzePublicationDates() {
@@ -310,7 +320,11 @@ class AnalyzeOrchestrator {
       present: result[`${sanitize(field)}_present`] || 0,
       absent: result.total - (result[`${sanitize(field)}_present`] || 0),
     }));
-    this.workbook.addSheet("Field Presence \u2014 Plays", xlsxRows, xlsxRows.length, "plays");
+    this.workbook.addSheet("Field Presence \u2014 Plays", xlsxRows, xlsxRows.length, "plays", [
+      "field",
+      "present",
+      "absent",
+    ]);
   }
 
   private async analyzeAuthorsFieldPresence() {
@@ -352,7 +366,11 @@ class AnalyzeOrchestrator {
       present: result[`${sanitize(field)}_present`] || 0,
       absent: result.total - (result[`${sanitize(field)}_present`] || 0),
     }));
-    this.workbook.addSheet("Field Presence \u2014 Authors", xlsxRows, xlsxRows.length, "authors");
+    this.workbook.addSheet("Field Presence \u2014 Authors", xlsxRows, xlsxRows.length, "authors", [
+      "field",
+      "present",
+      "absent",
+    ]);
   }
 
   private async getPublicationProductionInfoCSV() {
@@ -456,7 +474,7 @@ class AnalyzeOrchestrator {
     await this.writeToCSV(csv, fileName);
 
     if (sheetName) {
-      this.workbook.addSheet(sheetName, results, results.length, collectionName);
+      this.workbook.addSheet(sheetName, results, results.length, collectionName, [fieldName, "count"]);
     }
   }
 
@@ -543,14 +561,20 @@ class AnalyzeOrchestrator {
       ...formatCategories.map(({ format, count }) => `${this.escapeCsvField(format)},${count}`),
     ].join("\n");
     await this.writeToCSV(formatsCsv, "publishing-info-formats");
-    this.workbook.addSheet("Publishing \u2014 Info Formats", formatCategories, formatCategories.length, "plays");
+    this.workbook.addSheet("Publishing \u2014 Info Formats", formatCategories, formatCategories.length, "plays", [
+      "format",
+      "count",
+    ]);
 
     const publishersCsv = [
       "publisher,count",
       ...publisherNames.map(({ publisher, count }) => `${this.escapeCsvField(publisher)},${count}`),
     ].join("\n");
     await this.writeToCSV(publishersCsv, "publishing-info-publishers");
-    this.workbook.addSheet("Publishing \u2014 Publisher Names", publisherNames, publisherNames.length, "plays");
+    this.workbook.addSheet("Publishing \u2014 Publisher Names", publisherNames, publisherNames.length, "plays", [
+      "publisher",
+      "count",
+    ]);
   }
 
   private async analyzeBoilerplate() {
@@ -619,7 +643,10 @@ class AnalyzeOrchestrator {
     );
     await this.writeToCSV(csv, fileName);
 
-    this.workbook.addSheet(sheetName, results as unknown as Record<string, unknown>[], results.length, collectionName);
+    this.workbook.addSheet(sheetName, results as unknown as Record<string, unknown>[], results.length, collectionName, [
+      "value",
+      "count",
+    ]);
   }
 
   private async analyzeReferentialIntegrity() {
@@ -643,7 +670,7 @@ class AnalyzeOrchestrator {
 
     const rows: IntegrityRow[] = [
       {
-        check: "plays_without_author",
+        check: "plays_missing_author_id",
         displayName: null,
         doolleeCount: null,
         playCount: null,
@@ -684,6 +711,7 @@ class AnalyzeOrchestrator {
       rows as unknown as Record<string, unknown>[],
       rows.length,
       "authors + plays",
+      ["check", "displayName", "doolleeCount", "playCount", "count"],
     );
   }
 }
