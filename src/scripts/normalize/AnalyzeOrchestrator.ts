@@ -3,6 +3,7 @@ import path from "path";
 
 import { Parser } from "@json2csv/plainjs";
 import { flatten } from "@json2csv/transforms";
+import ExcelJS from "exceljs";
 
 import {
   getSingleFrequencyPipeline,
@@ -11,6 +12,11 @@ import {
   getDateFormatPipeline,
   getFieldPresencePipeline,
   getProdPubDataPipeline,
+  getGenreTermsPipeline,
+  getPublishingInfoFormatsPipeline,
+  getBoilerplateFrequencyPipeline,
+  getPlaysWithoutAuthorPipeline,
+  getAuthorsWithPlayCountMismatchPipeline,
 } from "./aggregation-utils";
 
 import type { Collection, Document } from "mongodb";
@@ -32,6 +38,8 @@ type SingleFrequencyProps = {
   fieldName: string;
   sortByField?: boolean;
   sortDescending?: boolean;
+  sheetName?: string;
+  collectionName?: string;
 };
 
 type ResultDocument = Record<string, string> & { count: number };
@@ -45,11 +53,95 @@ type DateFormatResults = {
   other: DateFormatResultItem[];
 };
 
+type GenreTermsResult = {
+  terms: { term: string; variants: string[]; count: number }[];
+  compoundStats: { compound: number; single: number }[];
+};
+
+type PublishingInfoResult = {
+  formatCategories: { format: string; count: number }[];
+  publisherNames: { publisher: string; count: number }[];
+};
+
+type BoilerplateRow = { value: string; count: number };
+
+type IntegrityRow = {
+  check: string;
+  displayName: string | null;
+  doolleeCount: number | null;
+  playCount: number | null;
+  count: number | null;
+};
+
+type SheetMeta = {
+  sheet: string;
+  collection: string;
+  recordCount: number;
+  generatedAt: string;
+};
+
+class XlsxWorkbook {
+  private workbook: ExcelJS.Workbook;
+  private summarySheet: ExcelJS.Worksheet;
+  private sheetMeta: SheetMeta[] = [];
+  private readonly generatedAt: string;
+
+  constructor() {
+    this.workbook = new ExcelJS.Workbook();
+    this.generatedAt = new Date().toISOString();
+    this.summarySheet = this.workbook.addWorksheet("Summary");
+  }
+
+  addSheet(name: string, rows: Record<string, unknown>[], recordCount: number, collection = "") {
+    const sheet = this.workbook.addWorksheet(name);
+
+    if (rows.length > 0) {
+      const headers = Object.keys(rows[0]);
+      const headerRow = sheet.addRow(headers);
+      headerRow.eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+      sheet.views = [{ state: "frozen", xSplit: 0, ySplit: 1 }];
+      sheet.autoFilter = {
+        from: { row: 1, column: 1 },
+        to: { row: 1, column: headers.length },
+      };
+      for (const row of rows) {
+        sheet.addRow(headers.map((h) => row[h] ?? ""));
+      }
+    }
+
+    this.sheetMeta.push({ sheet: name, collection, recordCount, generatedAt: this.generatedAt });
+  }
+
+  private populateSummarySheet() {
+    const headers = ["Sheet", "Collection", "RecordCount", "GeneratedAt"];
+    const headerRow = this.summarySheet.addRow(headers);
+    headerRow.eachCell((cell) => {
+      cell.font = { bold: true };
+    });
+    this.summarySheet.views = [{ state: "frozen", xSplit: 0, ySplit: 1 }];
+    this.summarySheet.autoFilter = {
+      from: { row: 1, column: 1 },
+      to: { row: 1, column: headers.length },
+    };
+    for (const meta of this.sheetMeta) {
+      this.summarySheet.addRow([meta.sheet, meta.collection, meta.recordCount, meta.generatedAt]);
+    }
+  }
+
+  async write(outputPath: string) {
+    this.populateSummarySheet();
+    await this.workbook.xlsx.writeFile(outputPath);
+  }
+}
+
 class AnalyzeOrchestrator {
   private services: Services;
   private playsCollection?: Collection<Document>;
   private authorsCollection?: Collection<Document>;
   private writtenFiles: string[] = [];
+  private workbook = new XlsxWorkbook();
 
   constructor(services: Services) {
     this.services = services;
@@ -90,17 +182,38 @@ class AnalyzeOrchestrator {
   public async run() {
     await this.connect();
 
-    await this.analyzeGenres();
-    await this.analyzePublishers();
-    await this.analyzeParts();
-    await this.analyzePublicationDates();
-    await this.analyzeProductionDates();
-    await this.analyzePlaysFieldPresence();
+    // Field presence
     await this.analyzeAuthorsFieldPresence();
-    await this.getSamplePlays();
-    await this.getSampleAuthors();
+    await this.analyzePlaysFieldPresence();
 
+    // Samples
+    await this.getSampleAuthors();
+    await this.getSamplePlays();
     await this.getPublicationProductionInfoCSV();
+
+    // Frequencies
+    await this.analyzeGenreTerms();
+    await this.analyzeParts();
+    await this.analyzeNationality();
+    await this.analyzeProductionDates();
+    await this.analyzePublicationDates();
+
+    // Publishers (CSV only, no xlsx sheet)
+    await this.analyzePublishers();
+
+    // Publishing info
+    await this.analyzePublishingInfoFormats();
+
+    // Boilerplate
+    await this.analyzeBoilerplate();
+
+    // Referential integrity
+    await this.analyzeReferentialIntegrity();
+
+    // Write xlsx workbook
+    const xlsxPath = path.resolve("analysis", "doollee-analysis.xlsx");
+    await this.workbook.write(xlsxPath);
+    this.writtenFiles.push(xlsxPath);
 
     await this.close();
   }
@@ -111,11 +224,38 @@ class AnalyzeOrchestrator {
     await this.services.dbService.close();
   }
 
-  private async analyzeGenres() {
-    await this.getSingleFrequencyTable({
-      collection: this.getPlaysCollection(),
-      fieldName: "genres",
-    });
+  private async analyzeGenreTerms() {
+    const pipeline = getGenreTermsPipeline();
+    const collection = this.getPlaysCollection();
+    const result = (await collection.aggregate(pipeline).toArray())[0] as GenreTermsResult;
+
+    const { terms, compoundStats } = result;
+
+    const termsCsv = [
+      "term,variants,count",
+      ...terms.map(
+        ({ term, variants, count }) =>
+          `${this.escapeCsvField(term)},${this.escapeCsvField(variants.join("|"))},${count}`,
+      ),
+    ].join("\n");
+    await this.writeToCSV(termsCsv, "frequencies-genres");
+
+    const termsXlsxRows = terms.map(({ term, variants, count }) => ({
+      term,
+      variants: variants.join("|"),
+      count,
+    }));
+    this.workbook.addSheet("Frequencies \u2014 Genres", termsXlsxRows, termsXlsxRows.length, "plays");
+
+    const stats = compoundStats[0] ?? { compound: 0, single: 0 };
+    const statsCsv = `type,count\n"compound",${stats.compound}\n"single",${stats.single}`;
+    await this.writeToCSV(statsCsv, "frequencies-genres-compound-stats");
+
+    const statsXlsxRows = [
+      { type: "compound", count: stats.compound },
+      { type: "single", count: stats.single },
+    ];
+    this.workbook.addSheet("Genre \u2014 Compound Stats", statsXlsxRows, 2, "plays");
   }
 
   private async analyzePublishers() {
@@ -141,6 +281,15 @@ class AnalyzeOrchestrator {
     ].join("\n");
     const fileName = "frequencies-parts";
     await this.writeToCSV(csv, fileName);
+
+    const xlsxRows = results.map(({ text, frequency, maleParts, femaleParts, otherParts }) => ({
+      all: text,
+      frequency,
+      maleParts,
+      femaleParts,
+      otherParts,
+    }));
+    this.workbook.addSheet("Frequencies \u2014 Parts", xlsxRows, xlsxRows.length, "plays");
   }
 
   private async analyzePublicationDates() {
@@ -159,27 +308,32 @@ class AnalyzeOrchestrator {
     const csv = this.getDateFormatCSV(results);
     const fileName = `frequencies-${fieldName}`;
     await this.writeToCSV(csv, fileName);
+
+    const sheetName =
+      fieldName === "productionYear" ? "Frequencies \u2014 Production Year" : "Frequencies \u2014 Publication Year";
+    const xlsxRows = this.getDateFormatRows(results);
+    this.workbook.addSheet(sheetName, xlsxRows, xlsxRows.length, "plays");
   }
 
   private getDateFormatCSV(data: DateFormatResults): string {
-    const categories = Object.keys(data) as (keyof DateFormatResults)[];
-    const headers = categories.flatMap((key) => [`${key}_value`, `${key}_frequency`]);
-
-    // iterate through the different categories at the same time and separate their
-    // values and frequencies, leaving those without values blank.
-    // We iterate up to the maximum size category to ensure we include all data, although
-    // not all rows will have the same number of items for each format.
-    const rows = [];
-    const maxRowCount = Math.max(...categories.map((key) => data[key].length));
-    for (let i = 0; i < maxRowCount; i++) {
-      const row = categories.flatMap((key) => {
-        const item = data[key][i];
-        return item ? [this.escapeCsvField(item.value), String(item.frequency)] : ["", ""];
-      });
-      rows.push(row);
+    const header = "format,value,count";
+    const rows: string[] = [];
+    for (const category of Object.keys(data) as (keyof DateFormatResults)[]) {
+      for (const { value, frequency } of data[category]) {
+        rows.push(`${this.escapeCsvField(category)},${this.escapeCsvField(value)},${frequency}`);
+      }
     }
+    return [header, ...rows].join("\n");
+  }
 
-    return [headers.join(","), ...rows.map((row) => row.join(","))].join("\n");
+  private getDateFormatRows(data: DateFormatResults): { format: string; value: string; count: number }[] {
+    const rows: { format: string; value: string; count: number }[] = [];
+    for (const category of Object.keys(data) as (keyof DateFormatResults)[]) {
+      for (const { value, frequency } of data[category]) {
+        rows.push({ format: category, value, count: frequency });
+      }
+    }
+    return rows;
   }
 
   private async analyzePlaysFieldPresence() {
@@ -211,8 +365,15 @@ class AnalyzeOrchestrator {
     const result = (await collection.aggregate(pipeline).toArray())[0] as Record<string, number>;
 
     const csv = this.getFieldPresenceCSV(fields, result);
-    const fileName = "field-presence-plays";
-    await this.writeToCSV(csv, fileName);
+    await this.writeToCSV(csv, "field-presence-plays");
+
+    const sanitize = (f: string) => f.replace(/\./g, "_");
+    const xlsxRows = fields.map((field) => ({
+      field,
+      present: result[`${sanitize(field)}_present`] || 0,
+      absent: result.total - (result[`${sanitize(field)}_present`] || 0),
+    }));
+    this.workbook.addSheet("Field Presence \u2014 Plays", xlsxRows, xlsxRows.length, "plays");
   }
 
   private async analyzeAuthorsFieldPresence() {
@@ -246,16 +407,25 @@ class AnalyzeOrchestrator {
     const result = (await collection.aggregate(pipeline).toArray())[0] as Record<string, number>;
 
     const csv = this.getFieldPresenceCSV(fields, result);
-    const fileName = "field-presence-authors";
-    await this.writeToCSV(csv, fileName);
+    await this.writeToCSV(csv, "field-presence-authors");
+
+    const sanitize = (f: string) => f.replace(/\./g, "_");
+    const xlsxRows = fields.map((field) => ({
+      field,
+      present: result[`${sanitize(field)}_present`] || 0,
+      absent: result.total - (result[`${sanitize(field)}_present`] || 0),
+    }));
+    this.workbook.addSheet("Field Presence \u2014 Authors", xlsxRows, xlsxRows.length, "authors");
   }
 
   private async getPublicationProductionInfoCSV() {
     const collection = this.getPlaysCollection();
     const pipeline = getProdPubDataPipeline();
     const result = await collection.aggregate(pipeline).toArray();
-    const fileName = "publication-production-info";
-    await this.writeDocumentsToCSV(result, fileName);
+    await this.writeDocumentsToCSV(result, "publication-production-info");
+
+    const xlsxRows = result.map((doc) => this.flattenForXlsx(doc));
+    this.workbook.addSheet("Samples \u2014 Production Info", xlsxRows, xlsxRows.length, "plays");
   }
 
   private getFieldPresenceCSV(fields: string[], result: Record<string, number>): string {
@@ -288,6 +458,13 @@ class AnalyzeOrchestrator {
     const meetsThreshold = (sampleSize / count) * 100 < 5;
     const meetsSampleSize = sampleSize <= count;
     const fileName = `sampling-${collection.collectionName}`;
+    const sheetName = `Samples \u2014 ${name.charAt(0).toUpperCase() + name.slice(1)}`;
+
+    const writeAndSheet = async (results: Document[]) => {
+      await this.writeDocumentsToCSV(results, fileName);
+      const xlsxRows = results.map((doc) => this.flattenForXlsx(doc));
+      this.workbook.addSheet(sheetName, xlsxRows, xlsxRows.length, name);
+    };
 
     if (!meetsSampleSize) {
       console.warn(
@@ -296,7 +473,7 @@ class AnalyzeOrchestrator {
           `Falling back to retrieving all documents from the collection instead.`,
       );
       const results = await collection.find().toArray();
-      await this.writeDocumentsToCSV(results, fileName);
+      await writeAndSheet(results);
       return;
     }
 
@@ -307,7 +484,7 @@ class AnalyzeOrchestrator {
           `Falling back to retrieving the top ${sampleSize} documents from the '${name}' collection instead.`,
       );
       const results = await collection.aggregate(getSamplePipeline({ sampleSize, randomSample: false })).toArray();
-      await this.writeDocumentsToCSV(results, fileName);
+      await writeAndSheet(results);
       return;
     }
 
@@ -317,14 +494,13 @@ class AnalyzeOrchestrator {
           `Falling back to retrieving the top ${sampleSize} documents from the '${name}' collection instead.\n` +
           "To retrieve a random sample, please choose a smaller sample size.",
       );
-
       const results = await collection.aggregate(getSamplePipeline({ sampleSize, randomSample: false })).toArray();
-      await this.writeDocumentsToCSV(results, fileName);
+      await writeAndSheet(results);
       return;
     }
 
     const results = await collection.aggregate(getSamplePipeline({ sampleSize, randomSample: true })).toArray();
-    await this.writeDocumentsToCSV(results, fileName);
+    await writeAndSheet(results);
     return;
   }
 
@@ -333,12 +509,18 @@ class AnalyzeOrchestrator {
     fieldName,
     sortByField = false,
     sortDescending = true,
+    sheetName,
+    collectionName = "",
   }: SingleFrequencyProps) {
     const pipeline = getSingleFrequencyPipeline({ fieldName, sortByField, sortDescending });
     const results = (await collection.aggregate(pipeline).toArray()) as ResultDocument[];
     const csv = this.getSingleFrequencyCSV(results, fieldName);
     const fileName = `frequencies-${fieldName}`;
     await this.writeToCSV(csv, fileName);
+
+    if (sheetName) {
+      this.workbook.addSheet(sheetName, results, results.length, collectionName);
+    }
   }
 
   private getSingleFrequencyCSV(results: ResultDocument[], fieldName: string): string {
@@ -373,6 +555,189 @@ class AnalyzeOrchestrator {
   private escapeCsvField(value: string | null | undefined): string {
     const safeValue = value ?? "";
     return `"${safeValue.replace(/"/g, '""')}"`;
+  }
+
+  private flattenForXlsx(doc: Document): Record<string, unknown> {
+    const result: Record<string, unknown> = {};
+
+    const recurse = (obj: Record<string, unknown>, prefix: string) => {
+      for (const [key, value] of Object.entries(obj)) {
+        const fullKey = prefix ? `${prefix}.${key}` : key;
+        if (value !== null && typeof value === "object" && !Array.isArray(value) && !(value instanceof Date)) {
+          recurse(value as Record<string, unknown>, fullKey);
+        } else {
+          result[fullKey] = Array.isArray(value) ? JSON.stringify(value) : value;
+        }
+      }
+    };
+
+    recurse(doc as Record<string, unknown>, "");
+    return result;
+  }
+
+  private async analyzeNationality() {
+    await this.getSingleFrequencyTable({
+      collection: this.getAuthorsCollection(),
+      fieldName: "nationality",
+      sheetName: "Frequencies \u2014 Nationality",
+      collectionName: "authors",
+    });
+  }
+
+  private async analyzePublishingInfoFormats() {
+    const pipeline = getPublishingInfoFormatsPipeline();
+    const collection = this.getPlaysCollection();
+    const result = (await collection.aggregate(pipeline).toArray())[0] as PublishingInfoResult;
+
+    const { formatCategories, publisherNames } = result;
+
+    const formatsCsv = [
+      "format,count",
+      ...formatCategories.map(({ format, count }) => `${this.escapeCsvField(format)},${count}`),
+    ].join("\n");
+    await this.writeToCSV(formatsCsv, "publishing-info-formats");
+    this.workbook.addSheet("Publishing \u2014 Info Formats", formatCategories, formatCategories.length, "plays");
+
+    const publishersCsv = [
+      "publisher,count",
+      ...publisherNames.map(({ publisher, count }) => `${this.escapeCsvField(publisher)},${count}`),
+    ].join("\n");
+    await this.writeToCSV(publishersCsv, "publishing-info-publishers");
+    this.workbook.addSheet("Publishing \u2014 Publisher Names", publisherNames, publisherNames.length, "plays");
+  }
+
+  private async analyzeBoilerplate() {
+    const authorFields = [
+      {
+        fieldName: "biography",
+        sheetName: "Boilerplate \u2014 Author Biography",
+        fileName: "boilerplate-author-biography",
+      },
+      {
+        fieldName: "research",
+        sheetName: "Boilerplate \u2014 Author Research",
+        fileName: "boilerplate-author-research",
+      },
+    ];
+
+    const playFields = [
+      { fieldName: "notes", sheetName: "Boilerplate \u2014 Play Notes", fileName: "boilerplate-play-notes" },
+      { fieldName: "synopsis", sheetName: "Boilerplate \u2014 Play Synopsis", fileName: "boilerplate-play-synopsis" },
+      {
+        fieldName: "organizations",
+        sheetName: "Boilerplate \u2014 Play Orgs",
+        fileName: "boilerplate-play-organizations",
+      },
+    ];
+
+    for (const { fieldName, sheetName, fileName } of authorFields) {
+      await this.runBoilerplateAnalysis({
+        collection: this.getAuthorsCollection(),
+        fieldName,
+        sheetName,
+        fileName,
+        collectionName: "authors",
+      });
+    }
+
+    for (const { fieldName, sheetName, fileName } of playFields) {
+      await this.runBoilerplateAnalysis({
+        collection: this.getPlaysCollection(),
+        fieldName,
+        sheetName,
+        fileName,
+        collectionName: "plays",
+      });
+    }
+  }
+
+  private async runBoilerplateAnalysis({
+    collection,
+    fieldName,
+    sheetName,
+    fileName,
+    collectionName,
+  }: {
+    collection: Collection<Document>;
+    fieldName: string;
+    sheetName: string;
+    fileName: string;
+    collectionName: string;
+  }) {
+    const pipeline = getBoilerplateFrequencyPipeline(fieldName);
+    const results = (await collection.aggregate(pipeline).toArray()) as BoilerplateRow[];
+
+    const csv = ["value,count", ...results.map(({ value, count }) => `${this.escapeCsvField(value)},${count}`)].join(
+      "\n",
+    );
+    await this.writeToCSV(csv, fileName);
+
+    this.workbook.addSheet(sheetName, results as unknown as Record<string, unknown>[], results.length, collectionName);
+  }
+
+  private async analyzeReferentialIntegrity() {
+    const playsCollection = this.getPlaysCollection();
+    const authorsCollection = this.getAuthorsCollection();
+
+    const playsWithoutAuthorResult = await playsCollection.aggregate(getPlaysWithoutAuthorPipeline()).toArray();
+    const playsWithoutAuthorCount = (playsWithoutAuthorResult[0] as { count: number } | undefined)?.count ?? 0;
+
+    const mismatchFilter = {
+      $expr: {
+        $ne: [{ $size: { $ifNull: ["$doolleePlayIds", []] } }, { $size: { $ifNull: ["$playIds", []] } }],
+      },
+    };
+    const mismatchTotal = await authorsCollection.countDocuments(mismatchFilter);
+    const mismatchSample = (await authorsCollection.aggregate(getAuthorsWithPlayCountMismatchPipeline()).toArray()) as {
+      displayName: string;
+      doolleeCount: number;
+      playCount: number;
+    }[];
+
+    const rows: IntegrityRow[] = [
+      {
+        check: "plays_without_author",
+        displayName: null,
+        doolleeCount: null,
+        playCount: null,
+        count: playsWithoutAuthorCount,
+      },
+      {
+        check: "author_play_count_mismatch_total",
+        displayName: null,
+        doolleeCount: null,
+        playCount: null,
+        count: mismatchTotal,
+      },
+      ...mismatchSample.map(({ displayName, doolleeCount, playCount }) => ({
+        check: "author_play_count_mismatch_sample",
+        displayName,
+        doolleeCount,
+        playCount,
+        count: null,
+      })),
+    ];
+
+    const csv = [
+      "check,displayName,doolleeCount,playCount,count",
+      ...rows.map(({ check, displayName, doolleeCount, playCount, count }) =>
+        [
+          this.escapeCsvField(check),
+          this.escapeCsvField(displayName),
+          doolleeCount ?? "",
+          playCount ?? "",
+          count ?? "",
+        ].join(","),
+      ),
+    ].join("\n");
+
+    await this.writeToCSV(csv, "integrity-referential");
+    this.workbook.addSheet(
+      "Integrity \u2014 Referential",
+      rows as unknown as Record<string, unknown>[],
+      rows.length,
+      "authors + plays",
+    );
   }
 }
 

@@ -248,6 +248,172 @@ function getProdPubDataPipeline() {
   return [matchStage, projectStage];
 }
 
+/**
+ * Generate a MongoDB aggregation pipeline that splits compound genre strings on the ". - - "
+ * delimiter, clusters terms by case-normalised value, and returns per-term variant lists and counts.
+ * Also produces a facet counting documents with compound (multi-term) vs single-term genres.
+ */
+function getGenreTermsPipeline() {
+  const GENRE_DELIMITER = ". - - ";
+
+  return [
+    { $match: { genres: { $exists: true, $nin: ["", null] } } },
+    {
+      $addFields: {
+        _genreTerms: {
+          $map: {
+            input: { $split: ["$genres", GENRE_DELIMITER] },
+            as: "t",
+            in: { $trim: { input: "$$t" } },
+          },
+        },
+      },
+    },
+    {
+      $facet: {
+        terms: [
+          { $unwind: "$_genreTerms" },
+          {
+            $group: {
+              _id: { $toLower: "$_genreTerms" },
+              variants: { $addToSet: "$_genreTerms" },
+              count: { $sum: 1 },
+            },
+          },
+          { $sort: { count: -1 } },
+          { $project: { _id: 0, term: "$_id", variants: 1, count: 1 } },
+        ],
+        compoundStats: [
+          {
+            $group: {
+              _id: null,
+              compound: { $sum: { $cond: [{ $gt: [{ $size: "$_genreTerms" }, 1] }, 1, 0] } },
+              single: { $sum: { $cond: [{ $eq: [{ $size: "$_genreTerms" }, 1] }, 1, 0] } },
+            },
+          },
+          { $project: { _id: 0, compound: 1, single: 1 } },
+        ],
+      },
+    },
+  ];
+}
+
+/**
+ * Generate a MongoDB aggregation pipeline that analyses the rawFields.publishingInfo field,
+ * producing two facets: format-category frequency and inferred publisher name frequency.
+ */
+function getPublishingInfoFormatsPipeline() {
+  const CONTAINED_IN_REGEX = "Contained in:";
+  const URL_REGEX = "https?://";
+  const YEAR_REGEX = "[0-9]{4}";
+  const ISBN_REGEX = "97[89][0-9]{10}";
+
+  return [
+    { $match: { "rawFields.publishingInfo": { $exists: true, $nin: ["", null] } } },
+    {
+      $facet: {
+        formatCategories: [
+          {
+            $addFields: {
+              _formatCategory: {
+                $switch: {
+                  branches: [
+                    {
+                      case: { $regexMatch: { input: "$rawFields.publishingInfo", regex: CONTAINED_IN_REGEX } },
+                      then: "Contained in:",
+                    },
+                    {
+                      case: { $regexMatch: { input: "$rawFields.publishingInfo", regex: URL_REGEX } },
+                      then: "URL present",
+                    },
+                    {
+                      case: { $regexMatch: { input: "$rawFields.publishingInfo", regex: ISBN_REGEX } },
+                      then: "ISBN-like string",
+                    },
+                    {
+                      case: { $regexMatch: { input: "$rawFields.publishingInfo", regex: YEAR_REGEX } },
+                      then: "four-digit year embedded",
+                    },
+                  ],
+                  default: "other",
+                },
+              },
+            },
+          },
+          { $group: { _id: "$_formatCategory", count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+          { $project: { _id: 0, format: "$_id", count: 1 } },
+        ],
+        publisherNames: [
+          {
+            $addFields: {
+              _publisherMatch: {
+                $regexFind: { input: "$rawFields.publishingInfo", regex: "^[^,\\-(]+" },
+              },
+            },
+          },
+          {
+            $addFields: {
+              _publisherName: {
+                $trim: { input: { $ifNull: ["$_publisherMatch.match", "$rawFields.publishingInfo"] } },
+              },
+            },
+          },
+          { $group: { _id: "$_publisherName", count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+          { $project: { _id: 0, publisher: "$_id", count: 1 } },
+        ],
+      },
+    },
+  ];
+}
+
+/**
+ * Generate a MongoDB aggregation pipeline that finds repeated values for a given text field,
+ * returning values with count > 1 sorted by frequency, with each value truncated to 200 characters.
+ */
+function getBoilerplateFrequencyPipeline(fieldName: string) {
+  return [
+    { $match: { [fieldName]: { $exists: true, $nin: ["", null] } } },
+    { $group: { _id: `$${fieldName}`, count: { $sum: 1 } } },
+    { $match: { count: { $gt: 1 } } },
+    { $sort: { count: -1 } },
+    { $project: { _id: 0, value: { $substrCP: ["$_id", 0, 200] }, count: 1 } },
+  ];
+}
+
+/**
+ * Generate a MongoDB aggregation pipeline that counts plays with no authorId reference.
+ */
+function getPlaysWithoutAuthorPipeline() {
+  return [{ $match: { authorId: { $exists: false } } }, { $count: "count" }];
+}
+
+/**
+ * Generate a MongoDB aggregation pipeline that finds authors whose doolleePlayIds count
+ * differs from their playIds count, returning up to 20 samples with mismatch details.
+ */
+function getAuthorsWithPlayCountMismatchPipeline() {
+  return [
+    {
+      $match: {
+        $expr: {
+          $ne: [{ $size: { $ifNull: ["$doolleePlayIds", []] } }, { $size: { $ifNull: ["$playIds", []] } }],
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        displayName: 1,
+        doolleeCount: { $size: { $ifNull: ["$doolleePlayIds", []] } },
+        playCount: { $size: { $ifNull: ["$playIds", []] } },
+      },
+    },
+    { $limit: 20 },
+  ];
+}
+
 export {
   getSingleFrequencyPipeline,
   getSamplePipeline,
@@ -255,4 +421,9 @@ export {
   getDateFormatPipeline,
   getFieldPresencePipeline,
   getProdPubDataPipeline,
+  getGenreTermsPipeline,
+  getPublishingInfoFormatsPipeline,
+  getBoilerplateFrequencyPipeline,
+  getPlaysWithoutAuthorPipeline,
+  getAuthorsWithPlayCountMismatchPipeline,
 };
