@@ -527,8 +527,8 @@ class AnalyzeOrchestrator {
         } else {
           const entries = Object.entries(value as Record<string, unknown>);
           if (entries.length === 0) {
-            // BSON types (e.g. ObjectId) have no enumerable properties — fall back to JSON serialization
-            result[fullKey] = JSON.stringify(value);
+            // BSON scalar-like types (e.g. ObjectId) have no enumerable properties — use their string form for clean cell output
+            result[fullKey] = String(value);
           } else {
             recurse(value as Record<string, unknown>, fullKey);
           }
