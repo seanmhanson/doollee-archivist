@@ -137,22 +137,18 @@ The self-review is an analytical code review performed independently of the cons
    gh pr create \
      --title "<plan title>" \
      --body-file /tmp/pr-body.md \
-     --assignee seanmhanson \
-     --reviewer copilot
-   ```
-
-   If the command fails due to the `--reviewer` flag, retry without it:
-
-   ```sh
-   gh pr create \
-     --title "<plan title>" \
-     --body-file /tmp/pr-body.md \
      --assignee seanmhanson
    ```
 
-   Note the failed reviewer assignment in the post-PR summary so the review can be requested manually.
+3. Request a Copilot review as a separate step:
 
-3. After the PR opens, send a brief summary to the user that includes:
+   ```sh
+   gh pr edit --add-reviewer copilot
+   ```
+
+   If this fails, note it in the post-PR summary so review can be requested manually. Do not retry or block on this step.
+
+4. After the PR opens, send a brief summary to the user that includes:
    - The PR URL
    - The branch name (especially if a suffix was appended)
    - Any notable findings from the self-review
