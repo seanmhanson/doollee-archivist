@@ -92,22 +92,22 @@ class XlsxWorkbook {
     this.summarySheet = this.workbook.addWorksheet("Summary");
   }
 
-  addSheet(name: string, rows: Record<string, unknown>[], recordCount: number, collection = "") {
+  addSheet(name: string, rows: Record<string, unknown>[], recordCount: number, collection = "", headers?: string[]) {
     const sheet = this.workbook.addWorksheet(name);
 
-    if (rows.length > 0) {
-      const headers = Object.keys(rows[0]);
-      const headerRow = sheet.addRow(headers);
+    const resolvedHeaders = headers ?? (rows.length > 0 ? Object.keys(rows[0]) : null);
+    if (resolvedHeaders) {
+      const headerRow = sheet.addRow(resolvedHeaders);
       headerRow.eachCell((cell) => {
         cell.font = { bold: true };
       });
       sheet.views = [{ state: "frozen", xSplit: 0, ySplit: 1 }];
       sheet.autoFilter = {
         from: { row: 1, column: 1 },
-        to: { row: 1, column: headers.length },
+        to: { row: 1, column: resolvedHeaders.length },
       };
       for (const row of rows) {
-        sheet.addRow(headers.map((h) => row[h] ?? ""));
+        sheet.addRow(resolvedHeaders.map((h) => row[h] ?? ""));
       }
     }
 
@@ -312,7 +312,7 @@ class AnalyzeOrchestrator {
     const sheetName =
       fieldName === "productionYear" ? "Frequencies \u2014 Production Year" : "Frequencies \u2014 Publication Year";
     const xlsxRows = this.getDateFormatRows(results);
-    this.workbook.addSheet(sheetName, xlsxRows, xlsxRows.length, "plays");
+    this.workbook.addSheet(sheetName, xlsxRows, xlsxRows.length, "plays", ["format", "value", "count"]);
   }
 
   private getDateFormatCSV(data: DateFormatResults): string {

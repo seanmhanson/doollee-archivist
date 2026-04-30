@@ -305,6 +305,7 @@ function getGenreTermsPipeline() {
 function getPublishingInfoFormatsPipeline() {
   const CONTAINED_IN_REGEX = "Contained in:";
   const URL_REGEX = "https?://";
+  const TRAILING_DASH_REGEX = " -$";
   const YEAR_REGEX = "[0-9]{4}";
   const ISBN_REGEX = "97[89][0-9]{10}";
 
@@ -325,6 +326,10 @@ function getPublishingInfoFormatsPipeline() {
                     {
                       case: { $regexMatch: { input: "$rawFields.publishingInfo", regex: URL_REGEX } },
                       then: "URL present",
+                    },
+                    {
+                      case: { $regexMatch: { input: "$rawFields.publishingInfo", regex: TRAILING_DASH_REGEX } },
+                      then: "ends with -",
                     },
                     {
                       case: { $regexMatch: { input: "$rawFields.publishingInfo", regex: ISBN_REGEX } },
