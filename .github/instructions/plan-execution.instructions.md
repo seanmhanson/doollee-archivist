@@ -8,27 +8,35 @@ This workflow covers the full lifecycle from plan approval through an open pull 
 
 ## Step 1 — Branch Setup (before execution)
 
-1. Sync remote tracking refs without touching the working tree:
+1. Check that the working tree is clean before doing anything:
+
+   ```sh
+   git status
+   ```
+
+   If any modified or untracked files appear, stop and report them to the user. Do not proceed until the working tree is clean — uncommitted changes would travel onto the new branch and risk being staged in Step 3.
+
+2. Sync remote tracking refs without touching the working tree:
 
    ```sh
    git fetch origin
    ```
 
-2. List all local and remote branch names to check for collisions:
+3. List all local and remote branch names to check for collisions:
 
    ```sh
    git branch -a
    ```
 
-3. Derive a semantic, lowercase kebab-case branch name from the plan title (e.g. `add-db-query-script`). If that name already exists as either a local or remote branch, append `-2` (or the next available suffix that is unique against both). Note the actual branch name in the post-PR summary if a suffix was appended.
+4. Derive a semantic, lowercase kebab-case branch name from the plan title (e.g. `add-db-query-script`). If that name already exists as either a local or remote branch, append `-2` (or the next available suffix that is unique against both). Note the actual branch name in the post-PR summary if a suffix was appended.
 
-4. Create and switch to the new branch, rooted on the latest remote `main`:
+5. Create and switch to the new branch, rooted on the latest remote `main`:
 
    ```sh
    git checkout -b <branch-name> origin/main
    ```
 
-   The working tree is now clean and fully up to date. Verify no commits exist on this branch yet before proceeding:
+   The branch history now starts from the latest `origin/main`. Verify no commits exist on this branch yet before proceeding:
 
    ```sh
    git log --oneline origin/main..HEAD
@@ -173,33 +181,38 @@ The body has exactly three H1 sections in this order:
 - Inside `<summary>`: always `<strong>Label text</strong>`, never a heading.
 - After `</summary>`: add `<br/>` on the same line (for visual spacing), then a blank line, then the first content line. The blank line is what causes subsequent Markdown to be parsed as Markdown — without it, content immediately after a block-level HTML closing tag is treated as literal text.
 - Inside `<details>`: bullet lists, code blocks, inline code, `**bold**` — no headings.
-- `</details>` on its own line, preceded and followed by a blank line.
+- `</details>` on its own line, followed by a blank line.
 - Self-review `<details>` summary labels: append `✅` for passing categories; describe the finding plainly for anything else.
 
 ### Section 1 — Plan
 
-Source: `/memories/session/plan.md` (the final approved plan before execution began). Feedback and iteration history are excluded.
+Source: `/memories/session/plan.md`. Apply the following minimal transformations — preserve all content verbatim; only structure changes:
+
+- `## Plan: <Title>` → `# Plan: <Title>` (heading level only)
+- TL;DR paragraph (no heading in plan.md) → place under `## Summary`
+- `**Steps**` → `## Steps`; wrap content in `<details>` blocks. One block per named phase if phases exist; one block for the full list otherwise. Use the phase label (e.g. `Phase 1 — Setup`) or `Steps` as the summary label.
+- All remaining bold sections (`**Relevant files**`, `**Verification**`, `**Decisions**`, `**Further Considerations**`) → `## Specifications`; each becomes one `<details>` block using the section name as the label. Only include sections present in the plan.
 
 ```markdown
 # Plan: <Title>
 
 ## Summary
 
-<one or two sentence overview>
+<TL;DR paragraph, verbatim>
 
 ## Steps
 
 <details>
 <summary><strong>Phase 1 — Description</strong></summary><br/>
 
-- bullet
-- bullet
+1. step (verbatim)
+2. step
 </details>
 
 <details>
 <summary><strong>Phase N — Description</strong></summary><br/>
 
-- bullet
+1. step
 </details>
 
 ## Specifications
@@ -207,25 +220,19 @@ Source: `/memories/session/plan.md` (the final approved plan before execution be
 <details>
 <summary><strong>Relevant files</strong></summary><br/>
 
-- `path/to/file` — description
+- `path/to/file` — description (verbatim)
 </details>
 
 <details>
 <summary><strong>Verification</strong></summary><br/>
 
-- `yarn build:noEmit` — no TypeScript errors
-</details>
-
-<details>
-<summary><strong>Decisions</strong></summary><br/>
-
-- Decision rationale
+1. item (verbatim)
 </details>
 ```
 
 ### Section 2 — Execution
 
-Written by the executing agent after the plan is complete.
+Written by the executing agent after the plan is complete. `## Summary` is required. All `<details>` blocks are optional — include only those with substantive content.
 
 ```markdown
 # Execution
@@ -239,9 +246,7 @@ Written by the executing agent after the plan is complete.
 <summary><strong>Verified</strong></summary><br/>
 
 - `yarn build:noEmit` — clean
-- `yarn lint` — only the pre-existing warning
-- Happy path — description
-- Edge case — description
+- `yarn lint` — clean
 </details>
 
 <details>
@@ -253,7 +258,7 @@ Any notes relevant for using the feature.
 
 ### Section 3 — Agent Self-Review
 
-Written by the executing agent after the self-review step.
+Written by the executing agent after the self-review step. One `<details>` block per review category from Step 4. Omit any category for which no substantive observation can be made. `Verification` is always included.
 
 ```markdown
 # Agent Self-Review
@@ -266,42 +271,6 @@ One or two sentences on the overall finding (e.g. "Implementation matches the pl
 <summary><strong>Alignment ✅</strong></summary><br/>
 
 - bullet observation
-- bullet observation
-</details>
-
-<details>
-<summary><strong>Impact on existing code ✅</strong></summary><br/>
-
-- bullet observation
-</details>
-
-<details>
-<summary><strong>Stability ✅</strong></summary><br/>
-
-- bullet observation
-</details>
-
-<details>
-<summary><strong>Security ✅</strong></summary><br/>
-
-- bullet observation
-</details>
-
-<details>
-<summary><strong>Accuracy ✅</strong></summary><br/>
-
-- bullet observation
-</details>
-
-<details>
-<summary><strong>Efficiency ✅</strong></summary><br/>
-
-- bullet observation
-</details>
-
-<details>
-<summary><strong>Clarity ✅</strong></summary><br/>
-
 - bullet observation
 </details>
 
