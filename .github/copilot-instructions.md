@@ -108,6 +108,9 @@ See `docs/naming.md`. Key points:
 - `removeEmptyFields` prunes `undefined`, `""`, `"n/a"`, and `"-"` before DB writes — don't defensively set fields to these values expecting them to persist
 - Path alias `#/` maps to `src/` (configured in `tsconfig.json` and `jest.config.js`)
 
+### Post-Plan Execution
+When a plan is approved and ready to execute, follow the git/GitHub workflow defined in `.github/instructions/plan-execution.instructions.md` — branch setup before execution, staged commits, self-review, and opening a pull request.
+
 ## Known Data Quality Issues
 
 See `analysis/` CSVs for field-presence reports from the last scrape run (February 2026, ~2154 authors).
