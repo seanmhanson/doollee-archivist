@@ -72,7 +72,7 @@ yarn install</code></pre>
 
   <p><strong>Option A — Docker (recommended)</strong></p>
   <p>Requires <a href="https://www.docker.com/products/docker-desktop/" target="_blank">Docker Desktop</a> or Docker Engine with the Compose plugin.</p>
-  <pre><code>docker compose up -d
+  <pre><code>docker compose up -d --wait
 yarn db:init</code></pre>
 
   <p><strong>Option B — Local MongoDB</strong></p>
