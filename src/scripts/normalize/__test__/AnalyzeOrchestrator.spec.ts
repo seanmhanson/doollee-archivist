@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from "@jest/globals";
+import { ObjectId } from "mongodb";
 
 import { AnalyzeOrchestrator } from "../AnalyzeOrchestrator";
 
@@ -39,13 +40,10 @@ describe("scripts/normalize/AnalyzeOrchestrator", () => {
       expect(instance.flattenForXlsx({ tags: ["a", "b"] })).toEqual({ tags: '["a","b"]' });
     });
 
-    it("calls toString() on BSON-typed values and stores the result", () => {
-      const mockObjectId = {
-        _bsontype: "ObjectId",
-        toString: () => "deadbeef12345678abcdef90",
-      };
-      expect(instance.flattenForXlsx({ _id: mockObjectId })).toEqual({
-        _id: "deadbeef12345678abcdef90",
+    it("calls toString() on BSON ObjectId values and stores the hex string", () => {
+      const id = new ObjectId();
+      expect(instance.flattenForXlsx({ _id: id })).toEqual({
+        _id: id.toString(),
       });
     });
 
@@ -58,16 +56,15 @@ describe("scripts/normalize/AnalyzeOrchestrator", () => {
     });
 
     it("handles a mix of field types at the top level", () => {
-      const mockId = { _bsontype: "ObjectId", toString: () => "aabbccddeeff001122334455" };
       const doc = {
-        _id: mockId,
+        _id: new ObjectId(),
         name: "Test",
         count: 0,
         tags: ["x"],
         meta: { active: true },
       };
       expect(instance.flattenForXlsx(doc)).toEqual({
-        _id: "aabbccddeeff001122334455",
+        _id: doc._id.toString(),
         name: "Test",
         count: 0,
         tags: '["x"]',
