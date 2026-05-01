@@ -656,10 +656,7 @@ export class AnalyzeOrchestrator {
     );
     await this.writeToCSV(csv, fileName);
 
-    this.workbook.addSheet(sheetName, results, results.length, collectionName, [
-      "value",
-      "count",
-    ]);
+    this.workbook.addSheet(sheetName, results, results.length, collectionName, ["value", "count"]);
   }
 
   private async analyzeReferentialIntegrity() {
@@ -719,13 +716,13 @@ export class AnalyzeOrchestrator {
     ].join("\n");
 
     await this.writeToCSV(csv, "integrity-referential");
-    this.workbook.addSheet(
-      "Integrity \u2014 Referential",
-      rows,
-      rows.length,
-      "authors + plays",
-      ["check", "displayName", "doolleeCount", "playCount", "count"],
-    );
+    this.workbook.addSheet("Integrity \u2014 Referential", rows, rows.length, "authors + plays", [
+      "check",
+      "displayName",
+      "doolleeCount",
+      "playCount",
+      "count",
+    ]);
   }
 }
 
