@@ -358,7 +358,7 @@ export function getPublishingInfoFormatsPipeline() {
           {
             $addFields: {
               _publisherMatch: {
-                $regexFind: { input: "$rawFields.publishingInfo", regex: "^[^,\\-(]+" },
+                $regexFind: { input: "$rawFields.publishingInfo", regex: "^.+?(?=,\\s|\\s-\\s|\\s\\(|$)" },
               },
             },
           },

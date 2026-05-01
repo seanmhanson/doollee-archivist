@@ -22,7 +22,7 @@ export default class XlsxWorkbook {
   addSheet(name: string, rows: Record<string, unknown>[], recordCount: number, collection = "", headers?: string[]) {
     const sheet = this.workbook.addWorksheet(name);
 
-    const resolvedHeaders = headers ?? (rows.length > 0 ? Object.keys(rows[0]) : null);
+    const resolvedHeaders = headers ?? (rows.length > 0 ? [...new Set(rows.flatMap(Object.keys))] : null);
     if (resolvedHeaders) {
       const headerRow = sheet.addRow(resolvedHeaders);
       headerRow.eachCell((cell) => {

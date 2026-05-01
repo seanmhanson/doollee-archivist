@@ -118,48 +118,47 @@ class AnalyzeOrchestrator {
   }
 
   public async run() {
-    await this.connect();
+    try {
+      await this.connect();
 
-    // Field presence
-    await this.analyzeAuthorsFieldPresence();
-    await this.analyzePlaysFieldPresence();
+      // Field presence
+      await this.analyzeAuthorsFieldPresence();
+      await this.analyzePlaysFieldPresence();
 
-    // Samples
-    await this.getSampleAuthors();
-    await this.getSamplePlays();
-    await this.getPublicationProductionInfoCSV();
+      // Samples
+      await this.getSampleAuthors();
+      await this.getSamplePlays();
+      await this.getPublicationProductionInfoCSV();
 
-    // Frequencies
-    await this.analyzeGenreTerms();
-    await this.analyzeParts();
-    await this.analyzeNationality();
-    await this.analyzeProductionDates();
-    await this.analyzePublicationDates();
+      // Frequencies
+      await this.analyzeGenreTerms();
+      await this.analyzeParts();
+      await this.analyzeNationality();
+      await this.analyzeProductionDates();
+      await this.analyzePublicationDates();
 
-    // Publishers (CSV only, no xlsx sheet)
-    await this.analyzePublishers();
+      // Publishers (CSV only, no xlsx sheet)
+      await this.analyzePublishers();
 
-    // Publishing info
-    await this.analyzePublishingInfoFormats();
+      // Publishing info
+      await this.analyzePublishingInfoFormats();
 
-    // Boilerplate
-    await this.analyzeBoilerplate();
+      // Boilerplate
+      await this.analyzeBoilerplate();
 
-    // Referential integrity
-    await this.analyzeReferentialIntegrity();
+      // Referential integrity
+      await this.analyzeReferentialIntegrity();
 
-    // Write xlsx workbook
-    const xlsxPath = path.resolve("analysis", "doollee-analysis.xlsx");
-    await this.workbook.write(xlsxPath);
-    this.writtenFiles.push(xlsxPath);
+      // Write xlsx workbook
+      const xlsxPath = path.resolve("analysis", "doollee-analysis.xlsx");
+      await this.workbook.write(xlsxPath);
+      this.writtenFiles.push(xlsxPath);
 
-    await this.close();
-  }
-
-  private async close() {
-    console.log("Analysis complete. Written files:");
-    this.writtenFiles.forEach((file) => console.log(`- ${file}`));
-    await this.services.dbService.close();
+      console.log("Analysis complete. Written files:");
+      this.writtenFiles.forEach((file) => console.log(`- ${file}`));
+    } finally {
+      await this.services.dbService.close();
+    }
   }
 
   private async analyzeGenreTerms() {
@@ -690,7 +689,7 @@ class AnalyzeOrchestrator {
 
     const rows: IntegrityRow[] = [
       {
-        check: "plays_missing_author_id",
+        check: "plays_missing_or_null_author_id",
         displayName: null,
         doolleeCount: null,
         playCount: null,
