@@ -225,7 +225,7 @@ export function getFieldPresencePipeline(fields: string[]) {
 
 /**
  * Generate a MongoDB aggregation pipeline that projects publication and production data fields,
- * matching only documents where publishing or production info is present.
+ * matching only documents where publishing or production info is non-null.
  */
 export function getProdPubDataPipeline() {
   const matchFields = ["rawFields.publishingInfo", "rawFields.productionInfo"];
