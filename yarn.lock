@@ -1192,15 +1192,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mongodb@npm:^4.0.7":
-  version: 4.0.7
-  resolution: "@types/mongodb@npm:4.0.7"
-  dependencies:
-    mongodb: "npm:*"
-  checksum: 10c0/19d7085bd14c01bed06220ba52f1b367048fd340581cb645e7b8da867eff388d20f8a9edb0c6c7c33df8489ce303505f31bb85340e5e36a6a356a60e32c1f04d
-  languageName: node
-  linkType: hard
-
 "@types/node@npm:*":
   version: 25.3.5
   resolution: "@types/node@npm:25.3.5"
@@ -2590,7 +2581,6 @@ __metadata:
     "@json2csv/plainjs": "npm:^7.0.6"
     "@json2csv/transforms": "npm:^7.0.6"
     "@playwright/test": "npm:^1.57.0"
-    "@types/mongodb": "npm:^4.0.7"
     "@types/node": "npm:^24.10.1"
     "@types/yargs": "npm:^17.0.35"
     "@typescript-eslint/eslint-plugin": "npm:^8.59.1"
@@ -5184,7 +5174,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:*, mongodb@npm:^7.0.0":
+"mongodb@npm:^7.0.0":
   version: 7.1.0
   resolution: "mongodb@npm:7.1.0"
   dependencies:
