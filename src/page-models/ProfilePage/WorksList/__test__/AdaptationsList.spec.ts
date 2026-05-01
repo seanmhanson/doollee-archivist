@@ -9,7 +9,7 @@ type EvaluateFn = <T>(fn: () => T) => Promise<T>;
 
 function createMockPage(rows: ScrapedAdaptationRow[]): Page {
   return {
-    evaluate: jest.fn<EvaluateFn>().mockResolvedValue(rows as never),
+    evaluate: jest.fn<EvaluateFn>().mockResolvedValue(rows),
   } as unknown as Page;
 }
 

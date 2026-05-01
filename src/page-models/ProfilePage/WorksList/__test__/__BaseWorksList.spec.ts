@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach } from "@jest/globals";
 
 import BaseWorksList from "../__BaseWorksList";
 
-import type { ScrapedPlayData } from "#/db-types/play/play.types";
 import type { Page } from "playwright";
 
 class TestBaseWorksList extends BaseWorksList {
@@ -16,7 +15,7 @@ class TestBaseWorksList extends BaseWorksList {
         playId: "123",
         title: "Test Play",
         _archive: { _type: "play", playId: "123", title: "Test Play" },
-      } as ScrapedPlayData,
+      },
     ];
     return Promise.resolve();
   }

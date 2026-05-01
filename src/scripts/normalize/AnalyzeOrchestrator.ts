@@ -549,7 +549,7 @@ export class AnalyzeOrchestrator {
       }
     };
 
-    recurse(doc as Record<string, unknown>, "");
+    recurse(doc, "");
     return result;
   }
 
@@ -656,7 +656,7 @@ export class AnalyzeOrchestrator {
     );
     await this.writeToCSV(csv, fileName);
 
-    this.workbook.addSheet(sheetName, results as unknown as Record<string, unknown>[], results.length, collectionName, [
+    this.workbook.addSheet(sheetName, results, results.length, collectionName, [
       "value",
       "count",
     ]);
@@ -721,7 +721,7 @@ export class AnalyzeOrchestrator {
     await this.writeToCSV(csv, "integrity-referential");
     this.workbook.addSheet(
       "Integrity \u2014 Referential",
-      rows as unknown as Record<string, unknown>[],
+      rows,
       rows.length,
       "authors + plays",
       ["check", "displayName", "doolleeCount", "playCount", "count"],
