@@ -77,7 +77,9 @@ describe("PlaysList", () => {
     });
 
     it("should return null and warn when the parts text has digits but does not match the expected format", () => {
-      const warnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+      const warnSpy = jest.spyOn(console, "warn").mockImplementation(() => {
+        /** no-op mock */
+      });
       try {
         const result = plays.parseParts("3 Male 2 Female");
         expect(result).toBeNull();

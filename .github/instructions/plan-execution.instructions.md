@@ -143,7 +143,7 @@ The self-review is an analytical code review performed independently of the cons
 3. Request a Copilot review as a separate step:
 
    ```sh
-   gh pr edit --add-reviewer copilot
+   gh pr edit --add-reviewer copilot-pull-request-reviewer
    ```
 
    If this fails, note it in the post-PR summary so review can be requested manually. Do not retry or block on this step.
