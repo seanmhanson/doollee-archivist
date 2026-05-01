@@ -332,7 +332,6 @@ class ScrapingOrchestrator {
 
   /**
    * Prepares the list of author batches to be processed by partitioning authors into groups of a max size
-   * @throws {SetupError} If there is an error loading or processing the author index files. Fatal error.
    */
   private getBatches() {
     const { batchSize, maxBatches } = getConfig();
