@@ -35,3 +35,64 @@
     <li>allowing the curation of modern search for easier surfacing of plays and playwrights</li>
   </ul>
 </section>
+
+<section>
+  <h2>Getting Started</h2>
+
+  <h3>Prerequisites</h3>
+  <ul>
+    <li><a href="https://nodejs.org/" target="_blank">Node.js</a> 24.14.0 — <a href="https://github.com/nvm-sh/nvm" target="_blank">nvm</a> recommended; a <code>.nvmrc</code> is provided</li>
+    <li><a href="https://yarnpkg.com/" target="_blank">Yarn</a> 4.12.0 — managed via Corepack (included with Node)</li>
+  </ul>
+  <p>A MongoDB instance is only required to run the scraper and analysis scripts locally. It is <strong>not</strong> required for the test suite, which uses an in-memory database automatically.</p>
+
+  <h3>Setup</h3>
+  <ol>
+    <li>Clone the repository and navigate into it:
+      <pre><code>git clone https://github.com/seanmhanson/doollee-archivist.git
+cd doollee-archivist</code></pre>
+    </li>
+    <li>Switch to the required Node version:
+      <pre><code>nvm use</code></pre>
+    </li>
+    <li>Enable Corepack and install dependencies:
+      <pre><code>corepack enable
+yarn install</code></pre>
+    </li>
+    <li>Install Playwright browser binaries:
+      <pre><code>yarn playwright install</code></pre>
+    </li>
+    <li>Copy the example environment file and review the values:
+      <pre><code>cp .env.example .env</code></pre>
+    </li>
+  </ol>
+
+  <h3>Database (scripts only)</h3>
+  <p>Choose one of the following options to start MongoDB before running any scraper or analysis scripts.</p>
+
+  <p><strong>Option A — Docker (recommended)</strong></p>
+  <p>Requires <a href="https://www.docker.com/products/docker-desktop/" target="_blank">Docker Desktop</a> or Docker Engine with the Compose plugin.</p>
+  <pre><code>docker compose up -d
+yarn db:init</code></pre>
+
+  <p><strong>Option B — Local MongoDB</strong></p>
+  <p>Install <a href="https://www.mongodb.com/try/download/community" target="_blank">MongoDB Community Edition 8.2</a>, start <code>mongod</code>, then:</p>
+  <pre><code>yarn db:init</code></pre>
+
+  <h3>Available Commands</h3>
+  <table>
+    <thead>
+      <tr><th>Command</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>yarn test</code></td><td>Run unit tests</td></tr>
+      <tr><td><code>yarn test:int</code></td><td>Run integration tests</td></tr>
+      <tr><td><code>yarn test:all</code></td><td>Run all tests</td></tr>
+      <tr><td><code>yarn build:noEmit</code></td><td>Type-check without emitting</td></tr>
+      <tr><td><code>yarn lint</code></td><td>Run ESLint</td></tr>
+      <tr><td><code>yarn format</code></td><td>Run Prettier</td></tr>
+      <tr><td><code>yarn scrape:all</code></td><td>Run the full scraping pipeline <em>(requires MongoDB)</em></td></tr>
+      <tr><td><code>yarn analyze</code></td><td>Run field-presence and frequency analysis <em>(requires MongoDB and a completed scrape)</em></td></tr>
+    </tbody>
+  </table>
+</section>
