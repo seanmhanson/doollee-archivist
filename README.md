@@ -71,14 +71,17 @@
         <td></td>
       </tr>
       <tr>
-      <td>
-        <a href="https://www.mongodb.com/try/download/community" target="_blank" rel="noopener noreferrer">
-          MongoDB 
-        </a>
-      </td>
-      <td><code>8.2</code></td>
-      <td><a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener noreferrer">Docker Desktop</a></td>
-      <td>Required for scraping and analysis scripts; not required for executing tests and other development</td>
+        <td>
+          <a href="https://www.mongodb.com/try/download/community" target="_blank" rel="noopener noreferrer">
+            MongoDB
+          </a>
+        </td>
+        <td><code>8.2</code></td>
+        <td>
+          <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener noreferrer">Docker Desktop</a>
+          / local installation
+        </td>
+        <td>Required for scraping and analysis scripts; can be provided via Docker Compose or a local MongoDB installation, but is not required for executing tests and other development</td>
       </tr>
     </tbody>
   </table>
@@ -109,11 +112,14 @@ yarn install</code></pre>
   You can find the installers for Docker Desktop and MongoDB in the prerequisites above.
   Additional options for installing MongoDB locally or using a hosted instance:
 
-  - macOS users may wish to install MongoDB using <a href="https://brew.sh/" target="_blank" rel="noopener noreferrer">Homebrew</a>
-  - Linux users may wish to install and then verify using <a href="https://www.mongodb.org/static/pgp/" target="_blank" rel="noopener noreferrer">the GPG keys provided by MongoDB</a>
-  - MongoDB Atlas users can 
-    <a href="https://www.mongodb.com/docs/manual/reference/connection-string/?deployment-type=atlas&amp;interface-atlas-only=atlas-cli" target="_blank" rel="noopener noreferrer">
-      provide the URI string to their cluster</a> in their local <code>.env</code> file and ensure the cluster is running.
+  <ul>
+    <li>macOS users may wish to install MongoDB using <a href="https://brew.sh/" target="_blank" rel="noopener noreferrer">Homebrew</a></li>
+    <li>Linux users may wish to install and then verify using <a href="https://www.mongodb.org/static/pgp/" target="_blank" rel="noopener noreferrer">the GPG keys provided by MongoDB</a></li>
+    <li>MongoDB Atlas users can
+      <a href="https://www.mongodb.com/docs/manual/reference/connection-string/?deployment-type=atlas&amp;interface-atlas-only=atlas-cli" target="_blank" rel="noopener noreferrer">
+        provide the URI string to their cluster</a> in their local <code>.env</code> file and ensure the cluster is running.
+    </li>
+  </ul>
 
   <h4>2. Start the database (if not already running)</h4>
   
