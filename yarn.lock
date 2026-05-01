@@ -2149,7 +2149,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bson@npm:^7.1.1, bson@npm:^7.2.0":
+"bson@npm:^7.1.1":
   version: 7.2.0
   resolution: "bson@npm:7.2.0"
   checksum: 10c0/f6d074d910a23e9fe2d6b6c2d1095ceab11f99e2b2e351062b396d5ea5c31ae276544582374e3c0c25e579d62c9187797c75460e48e8813306dc1d23ca1b0107
@@ -2595,7 +2595,6 @@ __metadata:
     "@types/yargs": "npm:^17.0.35"
     "@typescript-eslint/eslint-plugin": "npm:^8.55.0"
     "@typescript-eslint/parser": "npm:^8.55.0"
-    bson: "npm:^7.2.0"
     dotenv: "npm:^17.2.3"
     eslint: "npm:^9"
     eslint-config-prettier: "npm:^10.1.8"
