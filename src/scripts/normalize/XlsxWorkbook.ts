@@ -20,22 +20,21 @@ export default class XlsxWorkbook {
   }
 
   addSheet(name: string, rows: Record<string, unknown>[], recordCount: number, collection = "", headers?: string[]) {
-    const sheet = this.workbook.addWorksheet(name);
-
     const resolvedHeaders = headers ?? (rows.length > 0 ? [...new Set(rows.flatMap(Object.keys))] : null);
-    if (resolvedHeaders) {
-      const headerRow = sheet.addRow(resolvedHeaders);
-      headerRow.eachCell((cell) => {
-        cell.font = { bold: true };
-      });
-      sheet.views = [{ state: "frozen", xSplit: 0, ySplit: 1 }];
-      sheet.autoFilter = {
-        from: { row: 1, column: 1 },
-        to: { row: 1, column: resolvedHeaders.length },
-      };
-      for (const row of rows) {
-        sheet.addRow(resolvedHeaders.map((h) => row[h] ?? ""));
-      }
+    if (!resolvedHeaders) return;
+
+    const sheet = this.workbook.addWorksheet(name);
+    const headerRow = sheet.addRow(resolvedHeaders);
+    headerRow.eachCell((cell) => {
+      cell.font = { bold: true };
+    });
+    sheet.views = [{ state: "frozen", xSplit: 0, ySplit: 1 }];
+    sheet.autoFilter = {
+      from: { row: 1, column: 1 },
+      to: { row: 1, column: resolvedHeaders.length },
+    };
+    for (const row of rows) {
+      sheet.addRow(resolvedHeaders.map((h) => row[h] ?? ""));
     }
 
     this.sheetMeta.push({ sheet: name, collection, recordCount, generatedAt: this.generatedAt });
