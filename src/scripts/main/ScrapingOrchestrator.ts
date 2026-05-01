@@ -351,8 +351,21 @@ class ScrapingOrchestrator {
 
     let authorListIndex: AuthorListIndex = {};
     try {
-      const imported = await import(`#/input/authors/index`);
-      authorListIndex = imported.default;
+      /**
+       * [Tech Debt] - dynamic imports require a relative path instead of using the #/ alias because
+       * TypeScript's nodenext module resolution requires all #/ subpath imports to be declared in package.json
+       * which causes issues with static import resolution via tsconfig paths.
+       *
+       * TODO:
+       * - Use static imports for each letter file and combine them into an authorListIndex objects
+       *    Pro: no dynamic import issues, preserved type safety and detection
+       *    Con: more boilerplate, no lazy loading, though size considerations are minimal (ca. 2.1MB total)
+       * - Take no action, and wait to switch from commonjs to es modules across the project
+       *    Pro: minimal code change
+       *    Con: deferred as part of a larger, possibly dismissed migration task
+       */
+      const imported: { default: unknown } = await import("../../input/authors/index.js");
+      authorListIndex = imported.default as AuthorListIndex;
     } catch (error) {
       throw new SetupError(`Failed to load author list index from path: #/input/authors/index`, error);
     }
