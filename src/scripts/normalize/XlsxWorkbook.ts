@@ -20,10 +20,12 @@ export default class XlsxWorkbook {
   }
 
   addSheet(name: string, rows: Record<string, unknown>[], recordCount: number, collection = "", headers?: string[]) {
+    const sheet = this.workbook.addWorksheet(name);
+    this.sheetMeta.push({ sheet: name, collection, recordCount, generatedAt: this.generatedAt });
+
     const resolvedHeaders = headers ?? (rows.length > 0 ? [...new Set(rows.flatMap(Object.keys))] : null);
     if (!resolvedHeaders) return;
 
-    const sheet = this.workbook.addWorksheet(name);
     const headerRow = sheet.addRow(resolvedHeaders);
     headerRow.eachCell((cell) => {
       cell.font = { bold: true };
@@ -36,8 +38,6 @@ export default class XlsxWorkbook {
     for (const row of rows) {
       sheet.addRow(resolvedHeaders.map((h) => row[h] ?? ""));
     }
-
-    this.sheetMeta.push({ sheet: name, collection, recordCount, generatedAt: this.generatedAt });
   }
 
   private populateSummarySheet() {
