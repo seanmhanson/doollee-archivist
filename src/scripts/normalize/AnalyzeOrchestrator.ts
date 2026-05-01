@@ -3,7 +3,6 @@ import path from "path";
 
 import { Parser } from "@json2csv/plainjs";
 import { flatten } from "@json2csv/transforms";
-import { BSONValue } from "bson";
 
 import {
   getSingleFrequencyPipeline,
@@ -74,7 +73,7 @@ type IntegrityRow = {
   count: number | null;
 };
 
-class AnalyzeOrchestrator {
+export class AnalyzeOrchestrator {
   private services: Services;
   private playsCollection?: Collection<Document>;
   private authorsCollection?: Collection<Document>;
@@ -512,7 +511,7 @@ class AnalyzeOrchestrator {
     return `"${safeValue.replace(/"/g, '""')}"`;
   }
 
-  private flattenForXlsx(doc: Document): Record<string, unknown> {
+  protected flattenForXlsx(doc: Document): Record<string, unknown> {
     const result: Record<string, unknown> = {};
 
     const recurse = (obj: Record<string, unknown>, prefix: string) => {
@@ -533,14 +532,9 @@ class AnalyzeOrchestrator {
           continue;
         }
 
-        if (value instanceof BSONValue) {
-          // BSONValue defines toString() as abstract and all BSON types implement it, so it will not use the default
-          // Object.prototype.toString() method. However, typescript-eslint only recognizes the method as implemented
-          // when asserting against specific BSON types, so we bypass the check here safely instead of implementing
-          // numerous unnecessary type assertions.
-
-          // eslint-disable-next-line @typescript-eslint/no-base-to-string
-          result[fullKey] = String(value);
+        const isBsonValue = typeof (value as Record<string, unknown>)._bsontype === "string";
+        if (isBsonValue) {
+          result[fullKey] = (value as { toString(): string }).toString();
           continue;
         }
 
