@@ -16,8 +16,8 @@ import {
   getBoilerplateFrequencyPipeline,
   getPlaysWithoutAuthorPipeline,
   getAuthorsWithPlayCountMismatchPipeline,
-} from "./aggregation-utils";
-import XlsxWorkbook from "./XlsxWorkbook";
+} from "../utils/aggregation-utils";
+import XlsxWorkbook from "../utils/XlsxWorkbook";
 
 import type DatabaseService from "#/core/DatabaseService";
 import type { Collection, Document } from "mongodb";
@@ -73,7 +73,7 @@ type IntegrityRow = {
   count: number | null;
 };
 
-export class AnalyzeOrchestrator {
+class AnalyzeOrchestrator {
   private services: Services;
   private playsCollection?: Collection<Document>;
   private authorsCollection?: Collection<Document>;
