@@ -1,42 +1,33 @@
-import { readFileSync } from "fs";
-import { join } from "path";
-
-import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from "@jest/globals";
-import { firefox } from "playwright";
+import { describe, it, expect } from "@jest/globals";
 
 import IndexPage from "../IndexPage";
 
-import type { Browser, Page } from "playwright";
+import type { BasePageArgs } from "#/page-models/__BasePage";
+import type { UrlArgs } from "#/page-models/IndexPage/IndexPage";
+
+import setupBrowserTest from "#/test-utils/setupBrowserTest";
 
 describe("IndexPage (integration tests)", () => {
-  let browser: Browser;
-  let page: Page;
+  const { getPage, loadFixture } = setupBrowserTest(__dirname);
 
-  const loadFixture = (filename: string): string => {
-    return readFileSync(join(__dirname, "fixtures", filename), "utf-8");
-  };
+  async function getTestPage(
+    fixtureName: string,
+    pageArgs: BasePageArgs<UrlArgs>,
+    defaultTimeout?: number,
+  ): Promise<IndexPage> {
+    const html = loadFixture(fixtureName);
+    const page = getPage();
 
-  beforeAll(async () => {
-    browser = await firefox.launch();
-  });
+    if (defaultTimeout) {
+      page.setDefaultTimeout(defaultTimeout);
+    }
 
-  afterAll(async () => {
-    await browser.close();
-  });
-
-  beforeEach(async () => {
-    page = await browser.newPage();
-  });
-
-  afterEach(async () => {
-    await page.close();
-  });
+    await page.setContent(html, { waitUntil: "domcontentloaded" });
+    return new IndexPage(page, pageArgs);
+  }
 
   it("should extract links from standard index page structure", async () => {
-    const html = loadFixture("index-page-valid.html");
-    await page.setContent(html);
-
-    const indexPage = new IndexPage(page, { letter: "A" });
+    const indexPage = await getTestPage("index-page-valid.html", { letter: "A" });
     await indexPage.extractPage();
 
     // Should extract only valid links (has href, has range pattern, in <p> tag)
@@ -55,10 +46,7 @@ describe("IndexPage (integration tests)", () => {
   });
 
   it("should extract links from letter E page structure", async () => {
-    const html = loadFixture("index-page-letter-e.html");
-    await page.setContent(html);
-
-    const indexPage = new IndexPage(page, { letter: "E" });
+    const indexPage = await getTestPage("index-page-letter-e.html", { letter: "E" });
     await indexPage.extractPage();
 
     expect(indexPage.data).toEqual({
@@ -70,10 +58,7 @@ describe("IndexPage (integration tests)", () => {
   });
 
   it("should extract links from letter Q/X page structure", async () => {
-    const html = loadFixture("index-page-letter-q.html");
-    await page.setContent(html);
-
-    const indexPage = new IndexPage(page, { letter: "Q" });
+    const indexPage = await getTestPage("index-page-letter-q.html", { letter: "Q" });
     await indexPage.extractPage();
 
     expect(indexPage.data).toEqual({
@@ -82,23 +67,15 @@ describe("IndexPage (integration tests)", () => {
   });
 
   it("should return empty data for invalid page structure", async () => {
-    const html = loadFixture("index-page-invalid.html");
-    await page.setContent(html);
-
-    // Set a shorter timeout for this test to fail fast
-    page.setDefaultTimeout(3000);
-
-    const indexPage = new IndexPage(page, { letter: "C" });
+    const defaultTimeout = 1500; // set a shorter timeout for this test to fail quickly
+    const indexPage = await getTestPage("index-page-invalid.html", { letter: "C" }, defaultTimeout);
 
     // Should timeout waiting for proper structure
     await expect(indexPage.extractPage()).rejects.toThrow();
   });
 
   it("should extract the expected data from a full page fixture", async () => {
-    const html = loadFixture("index-page.html");
-    await page.setContent(html, { waitUntil: "domcontentloaded" });
-
-    const indexPage = new IndexPage(page, { letter: "H" });
+    const indexPage = await getTestPage("index-page.html", { letter: "H" });
     await indexPage.extractPage();
 
     expect(indexPage.data).toEqual({

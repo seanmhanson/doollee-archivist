@@ -3,7 +3,7 @@ import BasePage from "../__BasePage";
 import type { BasePageArgs } from "../__BasePage";
 import type { Page } from "@playwright/test";
 
-type UrlArgs = { letter: string };
+export type UrlArgs = { letter: string };
 type Data = Record<string, string>;
 type LinkContent = { text: string; href: string };
 type LinkData = { key: string; url: string };
