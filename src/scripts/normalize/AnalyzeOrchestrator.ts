@@ -19,10 +19,10 @@ import {
 } from "./aggregation-utils";
 import XlsxWorkbook from "./XlsxWorkbook";
 
+import type DatabaseService from "#/core/DatabaseService";
 import type { Collection, Document } from "mongodb";
 
-import DatabaseService from "#/core/DatabaseService";
-import { SetupError } from "#/scripts/main/ScrapingError";
+import { SetupError } from "#/scripts/scrape/ScrapingErrors/ScrapingErrors";
 
 type Services = {
   dbService: DatabaseService;

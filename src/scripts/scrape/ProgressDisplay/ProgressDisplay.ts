@@ -7,10 +7,10 @@ import type {
   PlayStats,
   LoggingStats,
   DisplayData,
-} from "#/scripts/main/ProgressDisplay.types";
+} from "#/scripts/scrape/ProgressDisplay/ProgressDisplay.types";
 
 import { getConfig } from "#/core/Config";
-import { defaults } from "#/scripts/main/ProgressDisplay.types";
+import { defaults } from "#/scripts/scrape/ProgressDisplay/ProgressDisplay.types";
 import debounce from "#/utils/debounce";
 
 const RENDER_DEBOUNCE_MS = 200;
