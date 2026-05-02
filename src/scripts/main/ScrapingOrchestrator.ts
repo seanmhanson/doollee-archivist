@@ -21,6 +21,7 @@ import type { ObjectId } from "mongodb";
 import { getConfig } from "#/core/Config";
 import Author from "#/db-types/author/Author.class";
 import Play from "#/db-types/play/Play.class";
+import authorsInput from "#/input/authors/index";
 import ProfilePage from "#/page-models/ProfilePage";
 import { defaults } from "#/scripts/main/ProgressDisplay.types";
 import {
@@ -206,7 +207,7 @@ class ScrapingOrchestrator {
    * @throws {SetupError} If there is an error during setup. Fatal error.
    */
   private async setup() {
-    await this.getBatches();
+    this.getBatches();
     this.globalStats.startTime = new Date();
     this.globalStats.globalBatchSize = getConfig().batchSize;
     this.globalStats.globalBatchCount = this.state.batches.length;
@@ -330,14 +331,10 @@ class ScrapingOrchestrator {
   }
 
   /**
-   * Prepares the list of author batches to be processed by reading all author index files
-   * provided in the configured input path (ex: A.ts, B.ts, etc.) and grouping authors into groups
-   * of a set maximum size.
-   * @throws {SetupError} If there is an error loading or processing the author index files. Fatal error.
+   * Prepares the list of author batches to be processed by partitioning authors into groups of a max size
    */
-  private async getBatches() {
+  private getBatches() {
     const { batchSize, maxBatches } = getConfig();
-
     const letters: string[] = [];
     const firstLetter = `A`.charCodeAt(0);
     const lastLetter = `A`.charCodeAt(0);
@@ -349,29 +346,18 @@ class ScrapingOrchestrator {
       letters.push(String.fromCharCode(i));
     }
 
-    let authorListIndex: AuthorListIndex = {};
-    try {
-      const imported = await import(`#/input/authors/index`);
-      authorListIndex = imported.default;
-    } catch (error) {
-      throw new SetupError(`Failed to load author list index from path: #/input/authors/index`, error);
-    }
-
-    try {
-      letterLoop: for (const letter of letters) {
-        const authorEntriesByLetter = Object.entries(authorListIndex[letter] || {});
-        for (let i = 0; i < authorEntriesByLetter.length; i += batchSize) {
-          if (maxBatches > 0 && this.state.batches.length >= maxBatches) {
-            break letterLoop; // exit both loops if we hit the provided batch limit
-          }
-
-          const batchEntries = authorEntriesByLetter.slice(i, i + batchSize);
-          const batch: Batch = Object.fromEntries(batchEntries);
-          this.state.batches.push(batch);
+    const authorListIndex: AuthorListIndex = authorsInput;
+    letterLoop: for (const letter of letters) {
+      const authorEntriesByLetter = Object.entries(authorListIndex[letter] || {});
+      for (let i = 0; i < authorEntriesByLetter.length; i += batchSize) {
+        if (maxBatches > 0 && this.state.batches.length >= maxBatches) {
+          break letterLoop; // exit both loops if we hit the provided batch limit
         }
+
+        const batchEntries = authorEntriesByLetter.slice(i, i + batchSize);
+        const batch: Batch = Object.fromEntries(batchEntries);
+        this.state.batches.push(batch);
       }
-    } catch (error) {
-      throw new SetupError(`Error preparing batches from author list data`, error);
     }
   }
 

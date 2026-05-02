@@ -9,7 +9,7 @@ type EvaluateFn = <T>(fn: () => T) => Promise<T>;
 
 function createMockPage(scrapedData: Partial<ScrapedData> = {}): Page {
   return {
-    evaluate: jest.fn<EvaluateFn>().mockResolvedValue(scrapedData as never),
+    evaluate: jest.fn<EvaluateFn>().mockResolvedValue(scrapedData),
   } as unknown as Page;
 }
 
