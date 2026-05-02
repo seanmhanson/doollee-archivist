@@ -23,7 +23,7 @@
     "scrape:all": "ts-node -r tsconfig-paths/register src/scripts/main/main.ts",
     "snapshots:update-profiles": "ts-node -r tsconfig-paths/register src/scripts/update-profile-snapshots.ts",
     "test:rateLimiting": "ts-node -r tsconfig-paths/register src/scripts/testRateLimiting.ts",
-    "analyze": "ts-node -r tsconfig-paths/register src/scripts/normalize/AnalyzeOrchestrator.ts",
+    "analyze": "ts-node -r tsconfig-paths/register src/scripts/normalize/main.ts",
     "test": "jest --testPathPatterns='(spec|test)\\.ts$'",
     "test:int": "jest --testPathPatterns='int\\.ts$'",
     "test:all": "jest",
