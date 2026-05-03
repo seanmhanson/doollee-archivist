@@ -16,13 +16,13 @@ import {
   getBoilerplateFrequencyPipeline,
   getPlaysWithoutAuthorPipeline,
   getAuthorsWithPlayCountMismatchPipeline,
-} from "./aggregation-utils";
-import XlsxWorkbook from "./XlsxWorkbook";
+} from "../utils/aggregation-utils";
+import XlsxWorkbook from "../utils/XlsxWorkbook";
 
+import type DatabaseService from "#/core/DatabaseService";
 import type { Collection, Document } from "mongodb";
 
-import DatabaseService from "#/core/DatabaseService";
-import { SetupError } from "#/scripts/main/ScrapingError";
+import { SetupError } from "#/scripts/scrape/ScrapingErrors/ScrapingErrors";
 
 type Services = {
   dbService: DatabaseService;
@@ -73,7 +73,7 @@ type IntegrityRow = {
   count: number | null;
 };
 
-export class AnalyzeOrchestrator {
+class AnalyzeOrchestrator {
   private services: Services;
   private playsCollection?: Collection<Document>;
   private authorsCollection?: Collection<Document>;
@@ -726,14 +726,4 @@ export class AnalyzeOrchestrator {
   }
 }
 
-async function main() {
-  try {
-    const dbService = new DatabaseService();
-    const orchestrator = new AnalyzeOrchestrator({ dbService });
-    await orchestrator.run();
-  } catch (error) {
-    console.error("Fatal error during analysis:", error);
-  }
-}
-
-main().catch(console.error);
+export default AnalyzeOrchestrator;

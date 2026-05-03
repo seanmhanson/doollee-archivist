@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "@jest/globals";
 import { ObjectId } from "mongodb";
 
-import { AnalyzeOrchestrator } from "../AnalyzeOrchestrator";
+import AnalyzeOrchestrator from "../AnalyzeOrchestrator";
 
 import type DatabaseService from "#/core/DatabaseService";
 

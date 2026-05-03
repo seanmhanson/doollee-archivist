@@ -8,14 +8,14 @@ import type ModuleWriter from "#/core/ModuleWriter";
 import type WebScraper from "#/core/WebScraper";
 import type { AuthorDocument, ScrapedAuthorData } from "#/db-types/author/author.types";
 import type { PlayDocument, PlayData, ScrapedPlayData } from "#/db-types/play/play.types";
-import type ProgressDisplay from "#/scripts/main/ProgressDisplay";
+import type ProgressDisplay from "#/scripts/scrape/ProgressDisplay/ProgressDisplay";
 import type {
   GlobalStats,
   PlayStats,
   AuthorStats,
   CurrentStats,
   ErrorStats,
-} from "#/scripts/main/ProgressDisplay.types";
+} from "#/scripts/scrape/ProgressDisplay/ProgressDisplay.types";
 import type { ObjectId } from "mongodb";
 
 import { getConfig } from "#/core/Config";
@@ -23,7 +23,7 @@ import Author from "#/db-types/author/Author.class";
 import Play from "#/db-types/play/Play.class";
 import authorsInput from "#/input/authors/index";
 import ProfilePage from "#/page-models/ProfilePage";
-import { defaults } from "#/scripts/main/ProgressDisplay.types";
+import { defaults } from "#/scripts/scrape/ProgressDisplay/ProgressDisplay.types";
 import {
   ScrapingError,
   PlayProcessingError,
@@ -31,7 +31,7 @@ import {
   WriteAuthorError,
   WritePlayError,
   AuthorProcessingError,
-} from "#/scripts/main/ScrapingError";
+} from "#/scripts/scrape/ScrapingErrors/ScrapingErrors";
 
 type AuthorItems = Record<string, string>;
 type AuthorListIndex = Record<string, AuthorItems>;

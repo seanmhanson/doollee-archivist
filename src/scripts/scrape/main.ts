@@ -2,8 +2,8 @@ import { getConfig } from "#/core/Config";
 import DatabaseService from "#/core/DatabaseService";
 import ModuleWriter from "#/core/ModuleWriter";
 import WebScraper from "#/core/WebScraper";
-import ProgressDisplay from "#/scripts/main/ProgressDisplay";
-import ScrapingOrchestrator from "#/scripts/main/ScrapingOrchestrator";
+import ProgressDisplay from "#/scripts/scrape/ProgressDisplay/ProgressDisplay";
+import ScrapingOrchestrator from "#/scripts/scrape/ScrapingOrchestrator";
 
 async function main() {
   const timestamp = new Date().toTimeString().slice(0, 8).replace(/:/g, "");
