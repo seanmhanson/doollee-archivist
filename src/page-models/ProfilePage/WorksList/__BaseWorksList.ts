@@ -162,7 +162,7 @@ export default abstract class BaseWorksList {
     return {
       publisher: removeAndNormalize(updatedString, ">>>"),
       publicationYear: normalizeWhitespace(extractedDate),
-      ...(isbnReviewNotes.length > 0 ? { reviewNotes: isbnReviewNotes } : {}),
+      reviewNotes: isbnReviewNotes,
       ...isbn,
     };
   }
