@@ -130,18 +130,29 @@ export default abstract class BaseWorksList {
     }
 
     let extractedDate = "";
-    let updatedString = workingString;
+
+    // Pre-process: insert space between a year and an adjacent letter so that
+    // word-boundary anchors (\b) in date patterns can match (e.g. "1973Methuen" → "1973 Methuen")
+    const ADJACENT_YEAR_LETTER = /(\d{4})([A-Za-z])/g;
+    const preprocessed = workingString.replace(ADJACENT_YEAR_LETTER, "$1 $2");
+    let updatedString = preprocessed;
 
     try {
-      [extractedDate, updatedString] = stringUtils.searchForAndRemove(workingString, [
+      [extractedDate, updatedString] = stringUtils.searchForAndRemove(preprocessed, [
         DATE_PATTERNS.MONTH_YEAR,
         DATE_PATTERNS.YEAR,
       ]);
     } catch (error) {
+      // Multiple years in the string — fall back to the last year match and flag for review
       console.error("Error parsing publication details, multiple matches found:", error);
+      const YEAR_GLOBAL = new RegExp(DATE_PATTERNS.YEAR.source, "gi");
+      const allYears = Array.from(preprocessed.matchAll(YEAR_GLOBAL));
+      const lastYear = allYears.at(-1);
+      const fallbackYear = lastYear ? lastYear[0] : "";
+      const fallbackString = lastYear ? preprocessed.replace(lastYear[0], "") : preprocessed;
       return {
-        publisher: removeAndNormalize(updatedString, ">>>"),
-        publicationYear: normalizeWhitespace(extractedDate),
+        publisher: removeAndNormalize(fallbackString, ">>>"),
+        publicationYear: normalizeWhitespace(fallbackYear),
         needsReview: true,
         needsReviewReason: "Multiple date matches found in publication details",
         ...isbn,
