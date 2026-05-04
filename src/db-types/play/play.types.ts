@@ -123,6 +123,8 @@ type OptionalRawFields = Partial<RawFields>;
 type RenamedFields = {
   id?: PlayDocument["_id"];
   originalAuthor?: PlayDocument["author"];
+  needsReview?: boolean;
+  needsReviewReason?: string;
 };
 
 export type ScrapedPlayData = RequiredFields & OptionalCoreFields & OptionalRawFields & RenamedFields;

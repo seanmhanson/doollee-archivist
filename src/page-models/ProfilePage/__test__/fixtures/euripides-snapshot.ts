@@ -902,6 +902,8 @@ export default {
       productionYear: "",
       publisher: "Aris & Phillips (Nick Hern Books, London, 2001), 1995",
       publicationYear: "",
+      needsReview: true,
+      needsReviewReason: "Multiple date matches found in publication details",
     },
     {
       _archive: {
@@ -1332,6 +1334,8 @@ export default {
       productionYear: "",
       publisher: "Aris & Phillips (Nick Hern Books, London, 2001), 1995",
       publicationYear: "",
+      needsReview: true,
+      needsReviewReason: "Multiple date matches found in publication details",
     },
     {
       _archive: {
@@ -9786,6 +9790,8 @@ export default {
       partsTextOther: "extras",
       productionLocation: "Dallas Theater Center, TX, USA 1963-1964 Season",
       productionYear: "",
+      needsReview: true,
+      needsReviewReason: "Multiple date matches found in production details",
       publisher: "Samuel French, NY,",
       publicationYear: "",
     },
@@ -11570,6 +11576,8 @@ export default {
       productionYear: "1991",
       publisher: 'in Dramatic Verse 1973-1985", Bloodaxe, Newcastle-upon-Tyne, 1985',
       publicationYear: "",
+      needsReview: true,
+      needsReviewReason: "Multiple date matches found in publication details",
     },
     {
       _archive: {

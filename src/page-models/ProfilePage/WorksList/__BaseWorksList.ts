@@ -5,11 +5,18 @@ import { DATE_PATTERNS } from "#/patterns";
 import { extractIsbn } from "#/utils/isbnUtils";
 import * as stringUtils from "#/utils/stringUtils";
 
-type ProductionDetails = { productionLocation: string; productionYear: string };
+type ProductionDetails = {
+  productionLocation: string;
+  productionYear: string;
+  needsReview?: boolean;
+  needsReviewReason?: string;
+};
 type PublicationDetails = {
   publisher: string;
   publicationYear: string;
   isbn?: string;
+  needsReview?: boolean;
+  needsReviewReason?: string;
 };
 
 const { hasAlphanumericCharacters, normalizeWhitespace, removeAndNormalize } = stringUtils;
@@ -80,6 +87,12 @@ export default abstract class BaseWorksList {
       ]);
     } catch (error) {
       console.error("Error parsing production details, multiple matches found:", error);
+      return {
+        productionLocation: removeAndNormalize(updatedString, ">>>"),
+        productionYear: normalizeWhitespace(extractedDate),
+        needsReview: true,
+        needsReviewReason: "Multiple date matches found in production details",
+      };
     }
 
     return {
@@ -126,6 +139,13 @@ export default abstract class BaseWorksList {
       ]);
     } catch (error) {
       console.error("Error parsing publication details, multiple matches found:", error);
+      return {
+        publisher: removeAndNormalize(updatedString, ">>>"),
+        publicationYear: normalizeWhitespace(extractedDate),
+        needsReview: true,
+        needsReviewReason: "Multiple date matches found in publication details",
+        ...isbn,
+      };
     }
 
     return {

@@ -40,13 +40,21 @@ export default class Play {
 
   private needsReview = false;
   private needsReviewReason?: string;
-  private needsReviewData?: Record<string, Record<string, string>> = {};
+  private needsReviewData?: Record<string, Record<string, string>>;
 
   public title: string;
   private displayTitle?: string;
 
   public get id(): ObjectId {
     return this._id;
+  }
+
+  public setNeedsReview(reason: string, data?: Record<string, Record<string, string>>): void {
+    this.needsReview = true;
+    this.needsReviewReason = reason;
+    if (data) {
+      this.needsReviewData = data;
+    }
   }
 
   public get doolleeId(): string {
