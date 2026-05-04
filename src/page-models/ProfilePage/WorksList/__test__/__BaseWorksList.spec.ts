@@ -189,6 +189,19 @@ describe("BaseWorksList", () => {
       const result = worksList.parsePublicationDetails("Samuel French 1972", false);
       expect(result).not.toHaveProperty("isbn");
     });
+
+    it("should extract a year concatenated directly to a publisher name (e.g. '1973Methuen')", () => {
+      const result = worksList.parsePublicationDetails("1973Methuen", false);
+      expect(result.publicationYear).toBe("1973");
+      expect(result.publisher).toBe("Methuen");
+    });
+
+    it("should extract the last year from a multi-year string and set needsReview", () => {
+      const result = worksList.parsePublicationDetails("Aris & Phillips (Nick Hern Books, London, 2001), 1995", false);
+      expect(result.needsReview).toBe(true);
+      expect(result.needsReviewReason).toBe("Multiple date matches found in publication details");
+      expect(result.publicationYear).toBe("1995");
+    });
   });
 
   describe("#formatPlayId", () => {

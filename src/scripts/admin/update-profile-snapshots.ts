@@ -6,7 +6,7 @@ import prettier from "prettier";
 
 import ProfilePage from "#/page-models/ProfilePage";
 
-const FIXTURES_DIR = path.join(__dirname, "..", "page-models", "ProfilePage", "__test__", "fixtures");
+const FIXTURES_DIR = path.join(__dirname, "..", "..", "page-models", "ProfilePage", "__test__", "fixtures");
 
 const FIXTURES = [
   { name: "pinter-harold", template: "standard" as const, htmlFile: "pinter-harold.html" },

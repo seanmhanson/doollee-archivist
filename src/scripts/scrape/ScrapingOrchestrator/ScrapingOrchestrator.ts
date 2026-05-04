@@ -564,6 +564,11 @@ class ScrapingOrchestrator {
       ...playData,
     };
     const play = new Play(completePlayData);
+
+    if (playData.needsReview) {
+      play.setNeedsReview(playData.needsReviewReason ?? "Flagged during scraping");
+    }
+
     this.state.currentPlay = play;
 
     if (play.isAdaptation) {

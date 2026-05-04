@@ -64,6 +64,7 @@ const PlaySchema: Document = {
     },
 
     title: { bsonType: "string" },
+    displayTitle: { bsonType: "string" },
     author: { bsonType: "string" },
     authorId: { bsonType: "objectId" },
     adaptingAuthor: { bsonType: "string" },

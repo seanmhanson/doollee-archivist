@@ -4,6 +4,8 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 
 import DatabaseService from "../DatabaseService";
 
+import type { CollectionInfo } from "mongodb";
+
 describe("core/DatabaseService", () => {
   let dbService: DatabaseService;
   let mongoServer: MongoMemoryServer;
@@ -80,6 +82,23 @@ describe("core/DatabaseService", () => {
       const playIdIndex = playIndexes.find((idx) => idx.key.playId === 1);
       expect(playIdIndex).toBeDefined();
       expect(playIdIndex?.unique).toBe(true);
+    });
+
+    it("should create collections with a $jsonSchema validator", async () => {
+      const db = await dbService.connect();
+      const collections = await db.listCollections().toArray();
+
+      for (const info of collections) {
+        const validator = (info as CollectionInfo).options?.validator as Record<string, unknown> | undefined;
+        expect(validator).toBeDefined();
+        expect(validator?.$jsonSchema).toBeDefined();
+      }
+    });
+
+    it("should reject writes that violate the collection schema", async () => {
+      const db = await dbService.connect();
+      // A document missing all required fields (playId, title, author, metadata, _archive)
+      await expect(db.collection("plays").insertOne({ invalid: true })).rejects.toThrow();
     });
   });
 

@@ -14,7 +14,7 @@ const shouldRemove = (value: unknown) => {
   // placeholders for missing data in Doollee sources
   if (typeof value === "string") {
     const isEmpty = value.trim() === "";
-    const isPlaceholder = value.trim() === "-" || value.trim().toLowerCase() === "n/a";
+    const isPlaceholder = value.trim() === "-" || value.trim() === "0" || value.trim().toLowerCase() === "n/a";
     return isEmpty || isPlaceholder;
   }
 
