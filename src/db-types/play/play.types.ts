@@ -1,3 +1,4 @@
+import type { ReviewNotes } from "#/review-notes";
 import type { ObjectId } from "mongodb";
 
 /**
@@ -56,9 +57,7 @@ export type PlayDocument = {
     updatedAt: Date;
     scrapedAt: Date;
     sourceUrl: string;
-    needsReview?: boolean;
-    needsReviewReason?: string;
-    needsReviewData?: Record<string, Record<string, string>>;
+    reviewNotes?: ReviewNotes;
   };
 
   rawFields: {
@@ -123,8 +122,7 @@ type OptionalRawFields = Partial<RawFields>;
 type RenamedFields = {
   id?: PlayDocument["_id"];
   originalAuthor?: PlayDocument["author"];
-  needsReview?: boolean;
-  needsReviewReason?: string;
+  reviewNotes?: ReviewNotes;
 };
 
 export type ScrapedPlayData = RequiredFields & OptionalCoreFields & OptionalRawFields & RenamedFields;

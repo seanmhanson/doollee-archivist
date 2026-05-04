@@ -2,6 +2,8 @@
 import type { ScrapedAuthorData } from "#/db-types/author/author.types";
 import type { ScrapedPlayData } from "#/db-types/play/play.types";
 
+import { REVIEW_NOTES } from "#/review-notes";
+
 export default {
   biography: {
     _archive: {
@@ -902,8 +904,7 @@ export default {
       productionYear: "",
       publisher: "Aris & Phillips (Nick Hern Books, London, 2001),",
       publicationYear: "1995",
-      needsReview: true,
-      needsReviewReason: "Multiple date matches found in publication details",
+      reviewNotes: [REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES],
     },
     {
       _archive: {
@@ -1334,8 +1335,7 @@ export default {
       productionYear: "",
       publisher: "Aris & Phillips (Nick Hern Books, London, 2001),",
       publicationYear: "1995",
-      needsReview: true,
-      needsReviewReason: "Multiple date matches found in publication details",
+      reviewNotes: [REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES],
     },
     {
       _archive: {
@@ -9790,8 +9790,7 @@ export default {
       partsTextOther: "extras",
       productionLocation: "Dallas Theater Center, TX, USA 1963-1964 Season",
       productionYear: "",
-      needsReview: true,
-      needsReviewReason: "Multiple date matches found in production details",
+      reviewNotes: [REVIEW_NOTES.MULTIPLE_PRODUCTION_DATES],
       publisher: "Samuel French, NY,",
       publicationYear: "",
     },
@@ -11576,8 +11575,7 @@ export default {
       productionYear: "1991",
       publisher: 'in Dramatic Verse 1973-1985", Bloodaxe, Newcastle-upon-Tyne,',
       publicationYear: "1985",
-      needsReview: true,
-      needsReviewReason: "Multiple date matches found in publication details",
+      reviewNotes: [REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES],
     },
     {
       _archive: {

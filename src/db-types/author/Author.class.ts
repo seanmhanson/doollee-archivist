@@ -10,6 +10,7 @@ import type {
 } from "#/db-types/author/author.types";
 import type { ObjectId as ObjectIdType } from "mongodb";
 
+import { type ReviewNote, REVIEW_NOTES } from "#/review-notes";
 import * as dbUtils from "#/utils/dbUtils";
 import { toTitleCase, removeDisambiguationSuffix, isAllCaps, stringArraysEqual } from "#/utils/stringUtils";
 
@@ -62,12 +63,14 @@ export default class Author {
   private adaptationIds: ObjectIdType[];
   private doolleePlayIds: string[];
 
-  private needsReview = false;
-  private needsReviewReason?: string;
-  private needsReviewData?: Record<string, Record<string, string>> = {};
+  private reviewNotes: ReviewNote[] = [];
 
   public get authorName(): string {
     return this.name;
+  }
+
+  public get hasReviewNotes(): boolean {
+    return this.reviewNotes.length > 0;
   }
 
   public get id(): ObjectIdType {
@@ -177,8 +180,9 @@ export default class Author {
     const orgName = altName.length > 0 ? altName : toTitleCase(listingName);
     const isOrganization = listingInAllCaps && matchesHeading && matchesAlt;
 
-    this.needsReview = listingName.split(" ").length === 1;
-    this.needsReviewReason = this.needsReview ? "Single word organization name" : undefined;
+    if (listingName.split(" ").length === 1) {
+      this.reviewNotes.push(REVIEW_NOTES.SINGLE_WORD_ORG_NAME);
+    }
 
     return {
       name: orgName,
@@ -222,14 +226,7 @@ export default class Author {
     const sameLastNames = stringArraysEqual([listingLastName], [headingLastName]);
 
     if (!(sameSuffixes && sameMiddleNames && sameFirstNames && sameLastNames)) {
-      this.needsReview = true;
-      this.needsReviewReason = "Author's listing and heading names are inconsistent.";
-      this.needsReviewData = {
-        ...this.prepareFlaggedNameData("First Name", [headingFirstName], [listingFirstName]),
-        ...this.prepareFlaggedNameData("Middle Name(s)", headingMiddleNames, listingMiddleNames),
-        ...this.prepareFlaggedNameData("Last Name", [headingLastName], [listingLastName]),
-        ...this.prepareFlaggedNameData("Suffix(es)", headingSuffixes, listingSuffixes),
-      };
+      this.reviewNotes.push(REVIEW_NOTES.NAME_INCONSISTENCY);
     }
 
     const firstName = toTitleCase(headingNames[0]);
@@ -247,20 +244,6 @@ export default class Author {
       lastName,
       middleNames,
       suffixes,
-    };
-  }
-
-  private prepareFlaggedNameData(label: string, headingValues: string[], listingValues: string[]) {
-    const matching = stringArraysEqual(headingValues, listingValues);
-    if (matching) {
-      return {};
-    }
-
-    return {
-      [label]: {
-        heading: headingValues.join(" ") || "<empty>",
-        listing: listingValues.join(" ") || "<empty>",
-      },
     };
   }
 
@@ -301,9 +284,7 @@ export default class Author {
         ...this.metadata,
         createdAt: this.metadata.createdAt ?? now,
         updatedAt: now,
-        needsReview: this.needsReview,
-        needsReviewReason: this.needsReviewReason,
-        needsReviewData: this.needsReviewData,
+        reviewNotes: this.reviewNotes,
       },
       rawFields: this.rawFields,
       name: this.name,
@@ -318,11 +299,6 @@ export default class Author {
       throw new Error("Failed to create author document: all fields are empty or undefined");
     }
 
-    if (!prunedDocument.metadata.needsReview) {
-      delete prunedDocument.metadata.needsReview;
-      delete prunedDocument.metadata.needsReviewReason;
-      delete prunedDocument.metadata.needsReviewData;
-    }
     if (!prunedDocument.isOrganization) {
       delete prunedDocument.isOrganization;
     }

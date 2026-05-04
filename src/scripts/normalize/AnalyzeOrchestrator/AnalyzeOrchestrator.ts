@@ -303,7 +303,7 @@ class AnalyzeOrchestrator {
       "partsTextMale",
       "partsTextFemale",
       "partsTextOther",
-      "metadata.needsReview",
+      "metadata.reviewNotes",
     ];
 
     const collection = this.getPlaysCollection();
@@ -328,9 +328,7 @@ class AnalyzeOrchestrator {
 
   private async analyzeAuthorsFieldPresence() {
     const fields = [
-      "metadata.needsReview",
-      "metadata.needsReviewReason",
-      "metadata.needsReviewData",
+      "metadata.reviewNotes",
       "displayName",
       "isOrganization",
       "lastName",

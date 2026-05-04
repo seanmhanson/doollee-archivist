@@ -35,6 +35,10 @@ export default class PlaysList extends BaseWorksList {
         const genres = this.formatGenres(rawGenres);
         const displayTitle = this.formatDisplayTitle(rest.title);
 
+        const reviewNotes = [...(publicationDetails.reviewNotes ?? []), ...(productionDetails.reviewNotes ?? [])];
+        const { reviewNotes: _pubNotes, ...publicationRest } = publicationDetails;
+        const { reviewNotes: _prodNotes, ...productionRest } = productionDetails;
+
         const _archive: PlayArchive = {
           _type: "play",
           playId: playIdText,
@@ -52,10 +56,11 @@ export default class PlaysList extends BaseWorksList {
           playId,
           genres,
           displayTitle,
-          ...publicationDetails,
-          ...productionDetails,
+          ...publicationRest,
+          ...productionRest,
           ...parts,
           ...rest,
+          ...(reviewNotes.length ? { reviewNotes } : {}),
         };
       },
     );

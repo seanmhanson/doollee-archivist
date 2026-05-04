@@ -4,6 +4,8 @@ import BaseWorksList from "../__BaseWorksList";
 
 import type { Page } from "playwright";
 
+import { REVIEW_NOTES } from "#/review-notes";
+
 class TestBaseWorksList extends BaseWorksList {
   constructor(page: Page) {
     super(page);
@@ -154,6 +156,11 @@ describe("BaseWorksList", () => {
       expect(result.productionLocation).toBe("The Yard");
       expect(result.productionYear).toBe("18 Oct 2011");
     });
+
+    it("should set reviewNotes when multiple date patterns match", () => {
+      const result = worksList.parseProductionDetails("London 1965 and New York 1970");
+      expect(result.reviewNotes).toEqual([REVIEW_NOTES.MULTIPLE_PRODUCTION_DATES]);
+    });
   });
 
   describe("#parsePublicationDetails", () => {
@@ -196,10 +203,9 @@ describe("BaseWorksList", () => {
       expect(result.publisher).toBe("Methuen");
     });
 
-    it("should extract the last year from a multi-year string and set needsReview", () => {
+    it("should extract the last year from a multi-year string and set reviewNotes", () => {
       const result = worksList.parsePublicationDetails("Aris & Phillips (Nick Hern Books, London, 2001), 1995", false);
-      expect(result.needsReview).toBe(true);
-      expect(result.needsReviewReason).toBe("Multiple date matches found in publication details");
+      expect(result.reviewNotes).toEqual([REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES]);
       expect(result.publicationYear).toBe("1995");
     });
   });

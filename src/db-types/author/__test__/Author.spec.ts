@@ -104,14 +104,7 @@ describe("Author.class", () => {
         ...worksData,
       };
 
-      const omittedFields = [
-        "metadata.needsReview",
-        "metadata.needsReviewReason",
-        "metadata.needsReviewData",
-        "isOrganization",
-        "middleNames",
-        "suffixes",
-      ];
+      const omittedFields = ["metadata.reviewNotes", "isOrganization", "middleNames", "suffixes"];
 
       const document = author.toDocument();
       omittedFields.forEach(expect(document).not.toHaveProperty);

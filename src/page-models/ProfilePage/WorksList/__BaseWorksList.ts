@@ -2,21 +2,20 @@ import type { ScrapedPlayData } from "#/db-types/play/play.types";
 import type { Page } from "playwright";
 
 import { DATE_PATTERNS } from "#/patterns";
+import { type ReviewNote, REVIEW_NOTES } from "#/review-notes";
 import { extractIsbn } from "#/utils/isbnUtils";
 import * as stringUtils from "#/utils/stringUtils";
 
 type ProductionDetails = {
   productionLocation: string;
   productionYear: string;
-  needsReview?: boolean;
-  needsReviewReason?: string;
+  reviewNotes?: ReviewNote[];
 };
 type PublicationDetails = {
   publisher: string;
   publicationYear: string;
   isbn?: string;
-  needsReview?: boolean;
-  needsReviewReason?: string;
+  reviewNotes?: ReviewNote[];
 };
 
 const { hasAlphanumericCharacters, normalizeWhitespace, removeAndNormalize } = stringUtils;
@@ -85,13 +84,11 @@ export default abstract class BaseWorksList {
         DATE_PATTERNS.MONTH_YEAR,
         DATE_PATTERNS.YEAR,
       ]);
-    } catch (error) {
-      console.error("Error parsing production details, multiple matches found:", error);
+    } catch (_) {
       return {
         productionLocation: removeAndNormalize(updatedString, ">>>"),
         productionYear: normalizeWhitespace(extractedDate),
-        needsReview: true,
-        needsReviewReason: "Multiple date matches found in production details",
+        reviewNotes: [REVIEW_NOTES.MULTIPLE_PRODUCTION_DATES],
       };
     }
 
@@ -142,9 +139,7 @@ export default abstract class BaseWorksList {
         DATE_PATTERNS.MONTH_YEAR,
         DATE_PATTERNS.YEAR,
       ]);
-    } catch (error) {
-      // Multiple years in the string — fall back to the last year match and flag for review
-      console.error("Error parsing publication details, multiple matches found:", error);
+    } catch (_) {
       const YEAR_GLOBAL = new RegExp(DATE_PATTERNS.YEAR.source, "gi");
       const allYears = Array.from(preprocessed.matchAll(YEAR_GLOBAL));
       const lastYear = allYears.at(-1);
@@ -155,8 +150,7 @@ export default abstract class BaseWorksList {
       return {
         publisher: removeAndNormalize(fallbackString, ">>>"),
         publicationYear: normalizeWhitespace(fallbackYear),
-        needsReview: true,
-        needsReviewReason: "Multiple date matches found in publication details",
+        reviewNotes: [REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES],
         ...isbn,
       };
     }

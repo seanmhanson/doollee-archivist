@@ -2,6 +2,7 @@ import { ObjectId } from "mongodb";
 
 import type { InitialMetadata, RawFields, PlayDocument, PlayData, PlayArchive } from "#/db-types/play/play.types";
 
+import { type ReviewNote } from "#/review-notes";
 import * as dbUtils from "#/utils/dbUtils";
 
 export default class Play {
@@ -38,9 +39,7 @@ export default class Play {
   private partsCountOther?: number;
   private partsCountTotal?: number;
 
-  private needsReview = false;
-  private needsReviewReason?: string;
-  private needsReviewData?: Record<string, Record<string, string>>;
+  private reviewNotes: ReviewNote[] = [];
 
   public title: string;
   private displayTitle?: string;
@@ -49,12 +48,20 @@ export default class Play {
     return this._id;
   }
 
-  public setNeedsReview(reason: string, data?: Record<string, Record<string, string>>): void {
-    this.needsReview = true;
-    this.needsReviewReason = reason;
-    if (data) {
-      this.needsReviewData = data;
-    }
+  public get hasReviewNotes(): boolean {
+    return this.reviewNotes.length > 0;
+  }
+
+  public get reviewNotesData(): ReviewNote[] {
+    return this.reviewNotes;
+  }
+
+  public addReviewNote(note: ReviewNote): void {
+    this.reviewNotes.push(note);
+  }
+
+  public addReviewNotes(notes: ReviewNote[]): void {
+    this.reviewNotes.push(...notes);
   }
 
   public get doolleeId(): string {
@@ -170,9 +177,7 @@ export default class Play {
         ...this.metadata,
         createdAt: this.metadata.createdAt ?? now,
         updatedAt: now,
-        needsReview: this.needsReview,
-        needsReviewReason: this.needsReviewReason,
-        needsReviewData: this.needsReviewData,
+        reviewNotes: this.reviewNotes,
       },
       rawFields: this.rawFields,
       playId: this.playId,
@@ -188,12 +193,6 @@ export default class Play {
     const prunedDocument = dbUtils.removeEmptyFields(document);
     if (!prunedDocument) {
       throw new Error("Failed to create play document: all fields are empty or undefined");
-    }
-
-    if (!prunedDocument.metadata.needsReview) {
-      delete prunedDocument.metadata.needsReview;
-      delete prunedDocument.metadata.needsReviewReason;
-      delete prunedDocument.metadata.needsReviewData;
     }
 
     return prunedDocument;
