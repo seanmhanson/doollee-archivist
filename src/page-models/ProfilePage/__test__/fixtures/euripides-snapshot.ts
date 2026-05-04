@@ -11574,7 +11574,7 @@ export default {
       partsTextOther: "extras",
       productionLocation: "Metropolitan Opera, New York",
       productionYear: "1991",
-      publisher: 'in Dramatic Verse 1973-", Bloodaxe, Newcastle-upon-Tyne, 1985',
+      publisher: 'in Dramatic Verse 1973-1985", Bloodaxe, Newcastle-upon-Tyne,',
       publicationYear: "1985",
       needsReview: true,
       needsReviewReason: "Multiple date matches found in publication details",
