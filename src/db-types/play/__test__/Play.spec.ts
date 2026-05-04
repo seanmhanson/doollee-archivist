@@ -78,4 +78,23 @@ describe("Play.class", () => {
       expect(play.hasReviewNotes).toBe(true);
     });
   });
+
+  describe("constructor reviewNotes hydration", () => {
+    it("should hydrate reviewNotes from input when provided", () => {
+      const play = new Play(
+        getPlayFixture({ reviewNotes: [REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES, REVIEW_NOTES.MULTIPLE_PRODUCTION_DATES] }),
+      );
+      expect(play.hasReviewNotes).toBe(true);
+      expect(play.toDocument().metadata.reviewNotes).toEqual([
+        REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES,
+        REVIEW_NOTES.MULTIPLE_PRODUCTION_DATES,
+      ]);
+    });
+
+    it("should initialize with no reviewNotes when none are provided", () => {
+      const play = new Play(getPlayFixture());
+      expect(play.hasReviewNotes).toBe(false);
+      expect(play.toDocument().metadata).not.toHaveProperty("reviewNotes");
+    });
+  });
 });

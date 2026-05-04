@@ -56,7 +56,7 @@ export default [
       // TypeScript-specific
       "@typescript-eslint/no-unused-vars": [
         "warn",
-        { argsIgnorePattern: "^_", caughtVarsIgnorePattern: "^_", ignoreRestSiblings: true },
+        { argsIgnorePattern: "^_", caughtErrorsIgnorePattern: "^_", ignoreRestSiblings: true },
       ],
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/explicit-function-return-type": "off",

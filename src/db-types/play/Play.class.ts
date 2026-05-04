@@ -165,6 +165,10 @@ export default class Play {
     this.partsCountFemale = input.partsCountFemale;
     this.partsCountOther = input.partsCountOther;
     this.partsCountTotal = input.partsCountTotal;
+
+    if (input.reviewNotes?.length) {
+      this.reviewNotes = [...input.reviewNotes];
+    }
   }
 
   toDocument(): PlayDocument {

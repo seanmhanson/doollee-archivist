@@ -563,10 +563,6 @@ class ScrapingOrchestrator {
     };
     const play = new Play(completePlayData);
 
-    if (playData.reviewNotes?.length) {
-      play.addReviewNotes(playData.reviewNotes);
-    }
-
     this.state.currentPlay = play;
 
     if (play.isAdaptation) {
