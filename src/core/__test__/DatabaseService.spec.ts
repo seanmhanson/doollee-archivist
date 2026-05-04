@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeAll, afterAll, beforeEach, afterEach } from "@jest/globals";
-import { Db } from "mongodb";
+import { Db, ObjectId } from "mongodb";
 import { MongoMemoryServer } from "mongodb-memory-server";
 
 import DatabaseService from "../DatabaseService";
@@ -95,10 +95,33 @@ describe("core/DatabaseService", () => {
       }
     });
 
-    it("should reject writes that violate the collection schema", async () => {
+    it("should accept a minimal valid play document", async () => {
       const db = await dbService.connect();
-      // A document missing all required fields (playId, title, author, metadata, _archive)
-      await expect(db.collection("plays").insertOne({ invalid: true })).rejects.toThrow();
+      const now = new Date();
+      const validPlay = {
+        _id: new ObjectId(),
+        playId: "12345",
+        title: "Test Play",
+        author: "Test Author",
+        metadata: { createdAt: now, updatedAt: now, scrapedAt: now, sourceUrl: "http://example.com" },
+        _archive: { _type: "play", playId: "12345", title: "Test Play" },
+      };
+      await expect(db.collection("plays").insertOne(validPlay)).resolves.toBeDefined();
+    });
+
+    it("should reject a play document with an unrecognised field", async () => {
+      const db = await dbService.connect();
+      const now = new Date();
+      const invalidPlay = {
+        _id: new ObjectId(),
+        playId: "12345",
+        title: "Test Play",
+        author: "Test Author",
+        metadata: { createdAt: now, updatedAt: now, scrapedAt: now, sourceUrl: "http://example.com" },
+        _archive: { _type: "play", playId: "12345", title: "Test Play" },
+        unknownField: "this is not in the schema",
+      };
+      await expect(db.collection("plays").insertOne(invalidPlay)).rejects.toThrow();
     });
   });
 
