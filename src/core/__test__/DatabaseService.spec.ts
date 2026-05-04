@@ -4,6 +4,8 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 
 import DatabaseService from "../DatabaseService";
 
+import type { CollectionInfo } from "mongodb";
+
 describe("core/DatabaseService", () => {
   let dbService: DatabaseService;
   let mongoServer: MongoMemoryServer;
@@ -87,9 +89,9 @@ describe("core/DatabaseService", () => {
       const collections = await db.listCollections().toArray();
 
       for (const info of collections) {
-        const validator = info.options?.validator as Record<string, unknown> | undefined;
+        const validator = (info as CollectionInfo).options?.validator as Record<string, unknown> | undefined;
         expect(validator).toBeDefined();
-        expect(validator!["$jsonSchema"]).toBeDefined();
+        expect(validator?.$jsonSchema).toBeDefined();
       }
     });
 
