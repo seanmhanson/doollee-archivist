@@ -135,10 +135,34 @@ describe("AdaptationsList", () => {
       expect(adaptationsList.worksData[0].genres).toBe("Adaptation");
     });
 
+    it("should prefix playId with 'A' for adaptations", async () => {
+      const page = createMockPage([{ ...minimalRow, playId: "12345" }]);
+      const adaptationsList = await AdaptationsList.create(page);
+      expect(adaptationsList.worksData[0].playId).toBe("A12345");
+    });
+
+    it("should use 'A0000000' for a missing playId", async () => {
+      const page = createMockPage([{ ...minimalRow, playId: "" }]);
+      const adaptationsList = await AdaptationsList.create(page);
+      expect(adaptationsList.worksData[0].playId).toBe("A0000000");
+    });
+
     it("should extract originalAuthor from the notes field", async () => {
       const page = createMockPage([{ ...minimalRow, notes: "Original Playwright - Euripides. A free adaptation" }]);
       const adaptationsList = await AdaptationsList.create(page);
       expect(adaptationsList.worksData[0].originalAuthor).toBe("Euripides. A free adaptation");
+    });
+
+    it("should omit originalAuthor when notes have no 'Original Playwright' label", async () => {
+      const page = createMockPage([{ ...minimalRow, notes: "A free adaptation of the Greek myth." }]);
+      const adaptationsList = await AdaptationsList.create(page);
+      expect(adaptationsList.worksData[0]).not.toHaveProperty("originalAuthor");
+    });
+
+    it("should omit originalAuthor when notes is empty", async () => {
+      const page = createMockPage([{ ...minimalRow, notes: "" }]);
+      const adaptationsList = await AdaptationsList.create(page);
+      expect(adaptationsList.worksData[0]).not.toHaveProperty("originalAuthor");
     });
 
     it("should spread parts count fields into the output when parts are non-empty", async () => {
@@ -163,12 +187,27 @@ describe("AdaptationsList", () => {
       expect(adaptationsList.worksData[0]).not.toHaveProperty("parts");
     });
 
-    it("should include productionLocation and productionYear from their separate scraped fields", async () => {
+    it("should parse productionLocation and productionYear via parseProductionDetails", async () => {
       const page = createMockPage([
         { ...minimalRow, productionLocation: "National Theatre", productionYear: "Oct 2010" },
       ]);
       const adaptationsList = await AdaptationsList.create(page);
       expect(adaptationsList.worksData[0].productionLocation).toBe("National Theatre");
+      expect(adaptationsList.worksData[0].productionYear).toBe("Oct 2010");
+    });
+
+    it("should strip '>>>' from productionLocation via parseProductionDetails", async () => {
+      const page = createMockPage([{ ...minimalRow, productionLocation: ">>> Donmar Warehouse", productionYear: "" }]);
+      const adaptationsList = await AdaptationsList.create(page);
+      expect(adaptationsList.worksData[0].productionLocation).toBe("Donmar Warehouse");
+    });
+
+    it("should extract a date from productionLocation to productionYear when productionYear is empty", async () => {
+      const page = createMockPage([
+        { ...minimalRow, productionLocation: "Donmar Warehouse Oct 2010", productionYear: "" },
+      ]);
+      const adaptationsList = await AdaptationsList.create(page);
+      expect(adaptationsList.worksData[0].productionLocation).toBe("Donmar Warehouse");
       expect(adaptationsList.worksData[0].productionYear).toBe("Oct 2010");
     });
 

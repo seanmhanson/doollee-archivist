@@ -35,6 +35,8 @@ export default abstract class BaseWorksList {
     try {
       await instance.extractData();
     } catch (error) {
+      // [TODO] - flag "needsReview" and details due to this error, if enough data was extracted for usage
+      // and otherwise, possibly re-throw the error for the scraping process to catch and handle
       console.error("Error extracting works list data:", error);
     }
     return instance;
@@ -152,10 +154,13 @@ export default abstract class BaseWorksList {
   }
 
   protected formatReference(reference: string): string {
+    // [TODO] - removing ">>>" typically indicates we needed to find this earlier when parsing and parse an anchor tag
+    // and consider its inclusion instead or in addition to the string following >>>
     return removeAndNormalize(reference, ">>>");
   }
 
   protected formatOrganizations(reference: string): string {
+    // [TODO] - ibid, see `formatReference`
     return removeAndNormalize(reference, ">>>");
   }
 
@@ -201,6 +206,8 @@ export default abstract class BaseWorksList {
   protected parseCount = (text: string): number => {
     if (text === "-" || text === "") return 0;
     const num = parseInt(text, 10);
+
+    // [TODO] - flag needsReview/needsReviewReason/needsReviewData on failure, to indicate a non-numeric value for a parts count
     return isNaN(num) ? 0 : num;
   };
 }

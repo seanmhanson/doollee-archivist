@@ -30,7 +30,7 @@ export default class PlaysList extends BaseWorksList {
       ({ playId: playIdText, parts: partsText, genres: rawGenres, publisher, production, ...rest }) => {
         const publicationDetails = this.parsePublicationDetails(publisher, true);
         const productionDetails = this.parseProductionDetails(production);
-        const playId = this.getPlayId(playIdText);
+        const playId = this.formatPlayId(playIdText, "play");
         const parts = this.parseParts(partsText);
         const genres = this.formatGenres(rawGenres);
         const displayTitle = this.formatDisplayTitle(rest.title);
@@ -136,6 +136,8 @@ export default class PlaysList extends BaseWorksList {
     const match = pattern.exec(normalizedText);
 
     if (!match) {
+      // [TODO] - flag "needsReview", needsReviewReason, and needsReviewData
+      // and then downgrade to info-level logging
       console.warn(`Parts text does not match expected format: ${partsText}`);
       return null;
     }
