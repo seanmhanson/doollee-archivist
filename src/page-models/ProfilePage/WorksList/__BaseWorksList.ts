@@ -149,7 +149,9 @@ export default abstract class BaseWorksList {
       const allYears = Array.from(preprocessed.matchAll(YEAR_GLOBAL));
       const lastYear = allYears.at(-1);
       const fallbackYear = lastYear ? lastYear[0] : "";
-      const fallbackString = lastYear ? preprocessed.replace(lastYear[0], "") : preprocessed;
+      const fallbackString = lastYear
+        ? preprocessed.slice(0, lastYear.index) + preprocessed.slice(lastYear.index + lastYear[0].length)
+        : preprocessed;
       return {
         publisher: removeAndNormalize(fallbackString, ">>>"),
         publicationYear: normalizeWhitespace(fallbackYear),
