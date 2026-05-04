@@ -81,6 +81,23 @@ describe("core/DatabaseService", () => {
       expect(playIdIndex).toBeDefined();
       expect(playIdIndex?.unique).toBe(true);
     });
+
+    it("should create collections with a $jsonSchema validator", async () => {
+      const db = await dbService.connect();
+      const collections = await db.listCollections().toArray();
+
+      for (const info of collections) {
+        const validator = info.options?.validator as Record<string, unknown> | undefined;
+        expect(validator).toBeDefined();
+        expect(validator!["$jsonSchema"]).toBeDefined();
+      }
+    });
+
+    it("should reject writes that violate the collection schema", async () => {
+      const db = await dbService.connect();
+      // A document missing all required fields (playId, title, author, metadata, _archive)
+      await expect(db.collection("plays").insertOne({ invalid: true })).rejects.toThrow();
+    });
   });
 
   describe("when resetting the database", () => {
