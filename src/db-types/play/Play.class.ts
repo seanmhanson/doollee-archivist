@@ -1,8 +1,8 @@
 import { ObjectId } from "mongodb";
 
 import type { InitialMetadata, RawFields, PlayDocument, PlayData, PlayArchive } from "#/db-types/play/play.types";
+import type { ReviewNote } from "#/review-notes";
 
-import { type ReviewNote } from "#/review-notes";
 import * as dbUtils from "#/utils/dbUtils";
 
 export default class Play {
@@ -39,7 +39,7 @@ export default class Play {
   private partsCountOther?: number;
   private partsCountTotal?: number;
 
-  private reviewNotes: ReviewNote[] = [];
+  private _reviewNotes: ReviewNote[] = [];
 
   public title: string;
   private displayTitle?: string;
@@ -49,19 +49,15 @@ export default class Play {
   }
 
   public get hasReviewNotes(): boolean {
-    return this.reviewNotes.length > 0;
+    return this._reviewNotes.length > 0;
   }
 
-  public get reviewNotesData(): ReviewNote[] {
-    return this.reviewNotes;
+  public get reviewNotes(): readonly ReviewNote[] {
+    return [...this._reviewNotes];
   }
 
   public addReviewNote(note: ReviewNote): void {
-    this.reviewNotes.push(note);
-  }
-
-  public addReviewNotes(notes: ReviewNote[]): void {
-    this.reviewNotes.push(...notes);
+    this._reviewNotes.push(note);
   }
 
   public get doolleeId(): string {
@@ -167,7 +163,7 @@ export default class Play {
     this.partsCountTotal = input.partsCountTotal;
 
     if (input.reviewNotes?.length) {
-      this.reviewNotes = [...input.reviewNotes];
+      this._reviewNotes = [...input.reviewNotes];
     }
   }
 
@@ -181,7 +177,7 @@ export default class Play {
         ...this.metadata,
         createdAt: this.metadata.createdAt ?? now,
         updatedAt: now,
-        reviewNotes: this.reviewNotes,
+        reviewNotes: this._reviewNotes,
       },
       rawFields: this.rawFields,
       playId: this.playId,

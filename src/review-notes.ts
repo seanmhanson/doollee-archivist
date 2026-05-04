@@ -17,6 +17,16 @@ export const REVIEW_NOTES = {
     className: "BaseWorksList",
     functionName: "parsePublicationDetails",
   },
+  INVALID_ISBN: {
+    reason: "Extracted ISBN failed validation",
+    className: "BaseWorksList",
+    functionName: "parsePublicationDetails",
+  },
+  POSSIBLE_ISBN: {
+    reason: "Possible ISBN found but could not be classified",
+    className: "BaseWorksList",
+    functionName: "parsePublicationDetails",
+  },
   NAME_INCONSISTENCY: {
     reason: "Author's listing and heading names are inconsistent",
     className: "Author",

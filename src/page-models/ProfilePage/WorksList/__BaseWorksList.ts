@@ -1,8 +1,9 @@
 import type { ScrapedPlayData } from "#/db-types/play/play.types";
+import type { ReviewNote } from "#/review-notes";
 import type { Page } from "playwright";
 
 import { DATE_PATTERNS } from "#/patterns";
-import { type ReviewNote, REVIEW_NOTES } from "#/review-notes";
+import { REVIEW_NOTES } from "#/review-notes";
 import { extractIsbn } from "#/utils/isbnUtils";
 import * as stringUtils from "#/utils/stringUtils";
 
@@ -108,6 +109,7 @@ export default abstract class BaseWorksList {
     }
 
     let workingString = publicationText;
+    const isbnReviewNotes: ReviewNote[] = [];
 
     if (includeISBN) {
       const extractedIsbn = extractIsbn(publicationText);
@@ -118,9 +120,10 @@ export default abstract class BaseWorksList {
 
         if (type === "ISBN10" || type === "ISBN13") {
           isbn.isbn = normalized;
+        } else if (type === "NEEDS_REVIEW") {
+          isbnReviewNotes.push(REVIEW_NOTES.POSSIBLE_ISBN);
         } else {
-          // flag needs review and provide data for manual review
-          console.warn(`Extracted ISBN is invalid (${type}): "${raw}" from publication text: "${publicationText}"`);
+          isbnReviewNotes.push(REVIEW_NOTES.INVALID_ISBN);
         }
         workingString = publicationText.replace(raw, "").replace(isbnLabelPattern, "");
       }
@@ -147,10 +150,11 @@ export default abstract class BaseWorksList {
       const fallbackString = lastYear
         ? preprocessed.slice(0, lastYear.index) + preprocessed.slice(lastYear.index + lastYear[0].length)
         : preprocessed;
+      const reviewNotes = [...isbnReviewNotes, REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES];
       return {
         publisher: removeAndNormalize(fallbackString, ">>>"),
         publicationYear: normalizeWhitespace(fallbackYear),
-        reviewNotes: [REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES],
+        reviewNotes,
         ...isbn,
       };
     }
@@ -158,6 +162,7 @@ export default abstract class BaseWorksList {
     return {
       publisher: removeAndNormalize(updatedString, ">>>"),
       publicationYear: normalizeWhitespace(extractedDate),
+      ...(isbnReviewNotes.length > 0 ? { reviewNotes: isbnReviewNotes } : {}),
       ...isbn,
     };
   }

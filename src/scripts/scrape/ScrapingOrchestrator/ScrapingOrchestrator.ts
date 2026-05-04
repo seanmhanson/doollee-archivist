@@ -285,7 +285,7 @@ class ScrapingOrchestrator {
       authorId,
       url,
       filename,
-      reviewNotes: this.state.currentPlay?.reviewNotesData ?? [],
+      reviewNotes: [...(this.state.currentPlay?.reviewNotes ?? [])],
     };
 
     this.reviewState.flaggedEntries.plays.push(flaggedPlay);

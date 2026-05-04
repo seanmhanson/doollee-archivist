@@ -203,6 +203,31 @@ describe("BaseWorksList", () => {
       expect(result.publisher).toBe("Methuen");
     });
 
+    it("should set INVALID_ISBN reviewNote when the extracted ISBN fails validation", () => {
+      // 9780573016500: last digit 0 fails checksum (expected 9)
+      const result = worksList.parsePublicationDetails("Samuel French ISBN: 9780573016500 1972", true);
+      expect(result.reviewNotes).toEqual([REVIEW_NOTES.INVALID_ISBN]);
+      expect(result.isbn).toBe("");
+      expect(result.publisher).toBe("Samuel French");
+      expect(result.publicationYear).toBe("1972");
+    });
+
+    it("should set POSSIBLE_ISBN reviewNote when a possible ISBN cannot be classified", () => {
+      // 14-digit sequence starting with 978: too long for ISBN13 match, unclassifiable
+      const result = worksList.parsePublicationDetails("Publisher 97812345678901", true);
+      expect(result.reviewNotes).toEqual([REVIEW_NOTES.POSSIBLE_ISBN]);
+      expect(result.isbn).toBe("");
+    });
+
+    it("should accumulate INVALID_ISBN and MULTIPLE_PUBLICATION_DATES when both occur", () => {
+      // Bad ISBN + multiple date matches
+      const result = worksList.parsePublicationDetails(
+        "Aris & Phillips ISBN: 9780573016500 (Nick Hern Books, 2001), 1995",
+        true,
+      );
+      expect(result.reviewNotes).toEqual([REVIEW_NOTES.INVALID_ISBN, REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES]);
+    });
+
     it("should extract the last year from a multi-year string and set reviewNotes", () => {
       const result = worksList.parsePublicationDetails("Aris & Phillips (Nick Hern Books, London, 2001), 1995", false);
       expect(result.reviewNotes).toEqual([REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES]);

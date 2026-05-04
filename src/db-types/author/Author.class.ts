@@ -8,9 +8,10 @@ import type {
   AuthorData,
   AuthorArchive,
 } from "#/db-types/author/author.types";
+import type { ReviewNote } from "#/review-notes";
 import type { ObjectId as ObjectIdType } from "mongodb";
 
-import { type ReviewNote, REVIEW_NOTES } from "#/review-notes";
+import { REVIEW_NOTES } from "#/review-notes";
 import * as dbUtils from "#/utils/dbUtils";
 import { toTitleCase, removeDisambiguationSuffix, isAllCaps, stringArraysEqual } from "#/utils/stringUtils";
 
