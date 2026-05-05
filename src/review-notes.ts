@@ -33,7 +33,7 @@ export const REVIEW_NOTES = {
     functionName: "parseAuthorName",
   },
   SINGLE_WORD_ORG_NAME: {
-    reason: "Single word organization name",
+    reason: "Single word listing name",
     className: "Author",
     functionName: "parseOrganization",
   },
