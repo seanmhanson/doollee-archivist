@@ -1,22 +1,22 @@
 import type { ScrapedPlayData } from "#/db-types/play/play.types";
+import type { ReviewNote } from "#/review-notes";
 import type { Page } from "playwright";
 
 import { DATE_PATTERNS } from "#/patterns";
+import { REVIEW_NOTES } from "#/review-notes";
 import { extractIsbn } from "#/utils/isbnUtils";
 import * as stringUtils from "#/utils/stringUtils";
 
 type ProductionDetails = {
   productionLocation: string;
   productionYear: string;
-  needsReview?: boolean;
-  needsReviewReason?: string;
+  reviewNotes?: ReviewNote[];
 };
 type PublicationDetails = {
   publisher: string;
   publicationYear: string;
   isbn?: string;
-  needsReview?: boolean;
-  needsReviewReason?: string;
+  reviewNotes?: ReviewNote[];
 };
 
 const { hasAlphanumericCharacters, normalizeWhitespace, removeAndNormalize } = stringUtils;
@@ -85,13 +85,11 @@ export default abstract class BaseWorksList {
         DATE_PATTERNS.MONTH_YEAR,
         DATE_PATTERNS.YEAR,
       ]);
-    } catch (error) {
-      console.error("Error parsing production details, multiple matches found:", error);
+    } catch (_) {
       return {
         productionLocation: removeAndNormalize(updatedString, ">>>"),
         productionYear: normalizeWhitespace(extractedDate),
-        needsReview: true,
-        needsReviewReason: "Multiple date matches found in production details",
+        reviewNotes: [REVIEW_NOTES.MULTIPLE_PRODUCTION_DATES],
       };
     }
 
@@ -111,6 +109,7 @@ export default abstract class BaseWorksList {
     }
 
     let workingString = publicationText;
+    const isbnReviewNotes: ReviewNote[] = [];
 
     if (includeISBN) {
       const extractedIsbn = extractIsbn(publicationText);
@@ -121,9 +120,10 @@ export default abstract class BaseWorksList {
 
         if (type === "ISBN10" || type === "ISBN13") {
           isbn.isbn = normalized;
+        } else if (type === "NEEDS_REVIEW") {
+          isbnReviewNotes.push(REVIEW_NOTES.POSSIBLE_ISBN);
         } else {
-          // flag needs review and provide data for manual review
-          console.warn(`Extracted ISBN is invalid (${type}): "${raw}" from publication text: "${publicationText}"`);
+          isbnReviewNotes.push(REVIEW_NOTES.INVALID_ISBN);
         }
         workingString = publicationText.replace(raw, "").replace(isbnLabelPattern, "");
       }
@@ -142,9 +142,7 @@ export default abstract class BaseWorksList {
         DATE_PATTERNS.MONTH_YEAR,
         DATE_PATTERNS.YEAR,
       ]);
-    } catch (error) {
-      // Multiple years in the string — fall back to the last year match and flag for review
-      console.error("Error parsing publication details, multiple matches found:", error);
+    } catch (_) {
       const YEAR_GLOBAL = new RegExp(DATE_PATTERNS.YEAR.source, "gi");
       const allYears = Array.from(preprocessed.matchAll(YEAR_GLOBAL));
       const lastYear = allYears.at(-1);
@@ -152,11 +150,11 @@ export default abstract class BaseWorksList {
       const fallbackString = lastYear
         ? preprocessed.slice(0, lastYear.index) + preprocessed.slice(lastYear.index + lastYear[0].length)
         : preprocessed;
+      const reviewNotes = [...isbnReviewNotes, REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES];
       return {
         publisher: removeAndNormalize(fallbackString, ">>>"),
         publicationYear: normalizeWhitespace(fallbackYear),
-        needsReview: true,
-        needsReviewReason: "Multiple date matches found in publication details",
+        reviewNotes,
         ...isbn,
       };
     }
@@ -164,6 +162,7 @@ export default abstract class BaseWorksList {
     return {
       publisher: removeAndNormalize(updatedString, ">>>"),
       publicationYear: normalizeWhitespace(extractedDate),
+      reviewNotes: isbnReviewNotes,
       ...isbn,
     };
   }

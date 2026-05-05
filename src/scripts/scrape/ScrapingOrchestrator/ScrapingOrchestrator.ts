@@ -23,6 +23,7 @@ import Author from "#/db-types/author/Author.class";
 import Play from "#/db-types/play/Play.class";
 import authorsInput from "#/input/authors/index";
 import ProfilePage from "#/page-models/ProfilePage";
+import { type ReviewNote } from "#/review-notes";
 import { defaults } from "#/scripts/scrape/ProgressDisplay/ProgressDisplay.types";
 import {
   ScrapingError,
@@ -91,8 +92,7 @@ type FlaggedAuthor = {
   name: string;
   url: string;
   filename: string;
-  reason: string;
-  needsReviewData?: Record<string, Record<string, string>>;
+  reviewNotes: ReviewNote[];
 };
 
 type FlaggedPlay = {
@@ -103,6 +103,7 @@ type FlaggedPlay = {
   authorId: string;
   url: string;
   filename: string;
+  reviewNotes: ReviewNote[];
 };
 
 type SkippedEntries = {
@@ -249,12 +250,8 @@ class ScrapingOrchestrator {
       url: document.metadata.sourceUrl ?? this.currentStats.currentAuthorUrl ?? "",
       id: document._id?.toHexString() ?? "",
       name: document.name ?? "",
-      reason: document.metadata.needsReviewReason ?? "(unspecified reason)",
+      reviewNotes: document.metadata.reviewNotes ?? [],
     };
-
-    if (document.metadata.needsReviewData) {
-      flaggedAuthor.needsReviewData = document.metadata.needsReviewData;
-    }
 
     this.reviewState.flaggedEntries.authors.push(flaggedAuthor);
     await this.writeReviewFile();
@@ -280,6 +277,7 @@ class ScrapingOrchestrator {
       }
     }
 
+    const reviewNotes = this.state.currentPlay?.getReviewNotes() ?? [];
     const flaggedPlay = {
       profileName,
       title,
@@ -288,6 +286,7 @@ class ScrapingOrchestrator {
       authorId,
       url,
       filename,
+      reviewNotes: [...reviewNotes],
     };
 
     this.reviewState.flaggedEntries.plays.push(flaggedPlay);
@@ -565,10 +564,6 @@ class ScrapingOrchestrator {
     };
     const play = new Play(completePlayData);
 
-    if (playData.needsReview) {
-      play.setNeedsReview(playData.needsReviewReason ?? "Flagged during scraping");
-    }
-
     this.state.currentPlay = play;
 
     if (play.isAdaptation) {
@@ -647,8 +642,8 @@ class ScrapingOrchestrator {
       }
     }
 
-    const { needsReview } = document.metadata;
-    if (needsReview) {
+    const hasFlaggedAuthor = (document.metadata.reviewNotes?.length ?? 0) > 0;
+    if (hasFlaggedAuthor) {
       this.authorStats.totalAuthorsFlagged++;
       this.authorStats.batchAuthorsFlagged++;
       await this.addFlaggedAuthor(document);
@@ -713,8 +708,8 @@ class ScrapingOrchestrator {
       }
     }
 
-    const { needsReview } = document.metadata;
-    if (needsReview) {
+    const hasFlaggedPlay = (document.metadata.reviewNotes?.length ?? 0) > 0;
+    if (hasFlaggedPlay) {
       this.playStats.totalPlaysFlagged++;
       this.playStats.batchPlaysFlagged++;
       await this.addFlaggedPlay();

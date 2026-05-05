@@ -49,6 +49,10 @@ export default class AdaptationsList extends BaseWorksList {
           isbn: this.formatISBN(adaptation.isbn),
         };
 
+        const reviewNotes = [...(productionDetails.reviewNotes ?? []), ...(publicationDetails.reviewNotes ?? [])];
+        const { reviewNotes: _prodNotes, ...productionRest } = productionDetails;
+        const { reviewNotes: _pubNotes, ...publicationRest } = publicationDetails;
+
         const altTitle = imgAlt || "";
 
         // scraped values that we will overwrite before returning
@@ -86,8 +90,9 @@ export default class AdaptationsList extends BaseWorksList {
           reference,
           ...parts,
           genres,
-          ...productionDetails,
-          ...publicationDetails,
+          ...productionRest,
+          ...publicationRest,
+          ...(reviewNotes.length ? { reviewNotes } : {}),
         };
       },
     );

@@ -5,6 +5,8 @@ import Play from "../Play.class";
 
 import type { PlayData } from "../play.types";
 
+import { REVIEW_NOTES } from "#/review-notes";
+
 function getPlayFixture(overrides: Partial<PlayData> = {}): PlayData {
   return {
     playId: "12345",
@@ -39,43 +41,62 @@ describe("Play.class", () => {
     });
   });
 
-  describe("#setNeedsReview", () => {
+  describe("#addReviewNote", () => {
     let play: Play;
 
     beforeEach(() => {
       play = new Play(getPlayFixture());
     });
 
-    it("should set needsReview to true in the document metadata", () => {
-      play.setNeedsReview("Test reason");
+    it("should add a note to reviewNotes in the document metadata", () => {
+      play.addReviewNote(REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES);
       const doc = play.toDocument();
-      expect(doc.metadata.needsReview).toBe(true);
+      expect(doc.metadata.reviewNotes).toEqual([REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES]);
     });
 
-    it("should set needsReviewReason in the document metadata", () => {
-      play.setNeedsReview("Multi-year publication string");
+    it("should accumulate multiple review notes in order", () => {
+      play.addReviewNote(REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES);
+      play.addReviewNote(REVIEW_NOTES.MULTIPLE_PRODUCTION_DATES);
       const doc = play.toDocument();
-      expect(doc.metadata.needsReviewReason).toBe("Multi-year publication string");
+      expect(doc.metadata.reviewNotes).toEqual([
+        REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES,
+        REVIEW_NOTES.MULTIPLE_PRODUCTION_DATES,
+      ]);
     });
 
-    it("should set needsReviewData when provided", () => {
-      const data = { field: { raw: "1973Methuen", extracted: "1973" } };
-      play.setNeedsReview("Test reason", data);
+    it("should omit reviewNotes from the document when none have been added", () => {
       const doc = play.toDocument();
-      expect(doc.metadata.needsReviewData).toEqual(data);
+      expect(doc.metadata).not.toHaveProperty("reviewNotes");
     });
 
-    it("should omit needsReviewData from the document when not provided", () => {
-      play.setNeedsReview("Test reason");
-      const doc = play.toDocument();
-      expect(doc.metadata).not.toHaveProperty("needsReviewData");
+    it("should expose hasReviewNotes as false before notes are added", () => {
+      expect(play.hasReviewNotes).toBe(false);
     });
 
-    it("should not set needsReview-related fields before setNeedsReview is called", () => {
-      const doc = play.toDocument();
-      expect(doc.metadata).not.toHaveProperty("needsReview");
-      expect(doc.metadata).not.toHaveProperty("needsReviewReason");
-      expect(doc.metadata).not.toHaveProperty("needsReviewData");
+    it("should expose hasReviewNotes as true after a note is added", () => {
+      play.addReviewNote(REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES);
+      expect(play.hasReviewNotes).toBe(true);
+    });
+  });
+
+  describe("constructor reviewNotes hydration", () => {
+    it("should hydrate reviewNotes from input when provided", () => {
+      const play = new Play(
+        getPlayFixture({
+          reviewNotes: [REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES, REVIEW_NOTES.MULTIPLE_PRODUCTION_DATES],
+        }),
+      );
+      expect(play.hasReviewNotes).toBe(true);
+      expect(play.toDocument().metadata.reviewNotes).toEqual([
+        REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES,
+        REVIEW_NOTES.MULTIPLE_PRODUCTION_DATES,
+      ]);
+    });
+
+    it("should initialize with no reviewNotes when none are provided", () => {
+      const play = new Play(getPlayFixture());
+      expect(play.hasReviewNotes).toBe(false);
+      expect(play.toDocument().metadata).not.toHaveProperty("reviewNotes");
     });
   });
 });
