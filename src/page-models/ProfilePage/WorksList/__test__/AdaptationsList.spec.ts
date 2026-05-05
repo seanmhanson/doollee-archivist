@@ -5,6 +5,8 @@ import AdaptationsList from "../AdaptationsList";
 import type { ScrapedAdaptationRow, UnparsedParts } from "../AdaptationsList";
 import type { Page } from "playwright";
 
+import { REVIEW_NOTES } from "#/review-notes";
+
 type EvaluateFn = <T>(fn: () => T) => Promise<T>;
 
 function createMockPage(rows: ScrapedAdaptationRow[]): Page {
@@ -231,6 +233,35 @@ describe("AdaptationsList", () => {
         expect(archive.femaleParts).toBe("-");
         expect(archive.otherParts).toBe("6 m/f");
       }
+    });
+
+    it("should accumulate reviewNotes from both productionDetails and publicationDetails", async () => {
+      const page = createMockPage([
+        {
+          ...minimalRow,
+          productionLocation: "London 1965",
+          productionYear: "1970",
+          publisher: "Aris & Phillips (Nick Hern Books, 2001), 1995",
+        },
+      ]);
+      const adaptationsList = await AdaptationsList.create(page);
+      expect(adaptationsList.worksData[0].reviewNotes).toEqual([
+        REVIEW_NOTES.MULTIPLE_PRODUCTION_DATES,
+        REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES,
+      ]);
+    });
+
+    it("should omit reviewNotes when neither production nor publication triggers a note", async () => {
+      const page = createMockPage([
+        {
+          ...minimalRow,
+          productionLocation: "National Theatre",
+          productionYear: "Oct 2010",
+          publisher: "Samuel French 1972",
+        },
+      ]);
+      const adaptationsList = await AdaptationsList.create(page);
+      expect(adaptationsList.worksData[0]).not.toHaveProperty("reviewNotes");
     });
   });
 });

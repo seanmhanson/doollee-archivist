@@ -5,6 +5,8 @@ import PlaysList from "../PlaysList";
 import type { ScrapedPlayRow } from "../PlaysList";
 import type { Page } from "playwright";
 
+import { REVIEW_NOTES } from "#/review-notes";
+
 type EvaluateFn = <T>(fn: () => T) => Promise<T>;
 
 function createMockPage(rows: ScrapedPlayRow[]): Page {
@@ -164,6 +166,29 @@ describe("PlaysList", () => {
       const archive = plays.worksData[0]._archive;
       expect(archive._type).toBe("play");
       expect(archive.genres).toBe("comedy");
+    });
+
+    it("should accumulate reviewNotes from both publicationDetails and productionDetails", async () => {
+      const page = createMockPage([
+        {
+          ...minimalRow,
+          publisher: "Aris & Phillips (Nick Hern Books, 2001), 1995",
+          production: "London 1965 and New York 1970",
+        },
+      ]);
+      const plays = await PlaysList.create(page);
+      expect(plays.worksData[0].reviewNotes).toEqual([
+        REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES,
+        REVIEW_NOTES.MULTIPLE_PRODUCTION_DATES,
+      ]);
+    });
+
+    it("should omit reviewNotes when neither publication nor production triggers a note", async () => {
+      const page = createMockPage([
+        { ...minimalRow, publisher: "Samuel French 1972", production: "National Theatre Oct 2010" },
+      ]);
+      const plays = await PlaysList.create(page);
+      expect(plays.worksData[0]).not.toHaveProperty("reviewNotes");
     });
   });
 });
