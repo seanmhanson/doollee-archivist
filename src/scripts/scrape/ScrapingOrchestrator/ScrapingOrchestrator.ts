@@ -277,6 +277,7 @@ class ScrapingOrchestrator {
       }
     }
 
+    const reviewNotes = this.state.currentPlay?.getReviewNotes() ?? [];
     const flaggedPlay = {
       profileName,
       title,
@@ -285,7 +286,7 @@ class ScrapingOrchestrator {
       authorId,
       url,
       filename,
-      reviewNotes: [...(this.state.currentPlay?.reviewNotes ?? [])],
+      reviewNotes: [...reviewNotes],
     };
 
     this.reviewState.flaggedEntries.plays.push(flaggedPlay);

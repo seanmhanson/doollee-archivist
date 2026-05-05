@@ -82,7 +82,9 @@ describe("Play.class", () => {
   describe("constructor reviewNotes hydration", () => {
     it("should hydrate reviewNotes from input when provided", () => {
       const play = new Play(
-        getPlayFixture({ reviewNotes: [REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES, REVIEW_NOTES.MULTIPLE_PRODUCTION_DATES] }),
+        getPlayFixture({
+          reviewNotes: [REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES, REVIEW_NOTES.MULTIPLE_PRODUCTION_DATES],
+        }),
       );
       expect(play.hasReviewNotes).toBe(true);
       expect(play.toDocument().metadata.reviewNotes).toEqual([

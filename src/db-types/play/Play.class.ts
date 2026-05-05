@@ -39,7 +39,7 @@ export default class Play {
   private partsCountOther?: number;
   private partsCountTotal?: number;
 
-  private _reviewNotes: ReviewNote[] = [];
+  private reviewNotes: ReviewNote[] = [];
 
   public title: string;
   private displayTitle?: string;
@@ -49,15 +49,15 @@ export default class Play {
   }
 
   public get hasReviewNotes(): boolean {
-    return this._reviewNotes.length > 0;
+    return this.reviewNotes.length > 0;
   }
 
-  public get reviewNotes(): readonly ReviewNote[] {
-    return [...this._reviewNotes];
+  public getReviewNotes(): readonly ReviewNote[] {
+    return [...this.reviewNotes];
   }
 
   public addReviewNote(note: ReviewNote): void {
-    this._reviewNotes.push(note);
+    this.reviewNotes.push(note);
   }
 
   public get doolleeId(): string {
@@ -163,7 +163,7 @@ export default class Play {
     this.partsCountTotal = input.partsCountTotal;
 
     if (input.reviewNotes?.length) {
-      this._reviewNotes = [...input.reviewNotes];
+      this.reviewNotes = [...input.reviewNotes];
     }
   }
 
@@ -177,7 +177,7 @@ export default class Play {
         ...this.metadata,
         createdAt: this.metadata.createdAt ?? now,
         updatedAt: now,
-        reviewNotes: this._reviewNotes,
+        reviewNotes: this.reviewNotes,
       },
       rawFields: this.rawFields,
       playId: this.playId,

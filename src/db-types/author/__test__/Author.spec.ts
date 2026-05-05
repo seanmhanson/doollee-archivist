@@ -116,7 +116,9 @@ describe("Author.class", () => {
 
   describe("#reviewNotes", () => {
     it("should add NAME_INCONSISTENCY when listing and heading names do not match", () => {
-      const author = new Author(getAuthorFixture({ listingName: "SMITH John", headingName: "JANE SMITH", altName: "" }));
+      const author = new Author(
+        getAuthorFixture({ listingName: "SMITH John", headingName: "JANE SMITH", altName: "" }),
+      );
       expect(author.hasReviewNotes).toBe(true);
       expect(author.toDocument().metadata.reviewNotes).toEqual([REVIEW_NOTES.NAME_INCONSISTENCY]);
     });
