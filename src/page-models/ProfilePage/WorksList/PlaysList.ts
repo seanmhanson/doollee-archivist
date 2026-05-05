@@ -24,10 +24,11 @@ export default class PlaysList extends BaseWorksList {
   }
 
   protected async extractData(): Promise<void> {
-    const data = this.normalizeStringFields(await this.scrapeData());
+    const rawData = await this.scrapeData();
+    const data = this.normalizeStringFields(rawData);
 
     this.data = data.map(
-      ({ playId: playIdText, parts: partsText, genres: rawGenres, publisher, production, ...rest }) => {
+      ({ playId: playIdText, parts: partsText, genres: rawGenres, publisher, production, ...rest }, index) => {
         const publicationDetails = this.parsePublicationDetails(publisher, true);
         const productionDetails = this.parseProductionDetails(production);
         const playId = this.formatPlayId(playIdText, "play");
@@ -41,12 +42,7 @@ export default class PlaysList extends BaseWorksList {
 
         const _archive: PlayArchive = {
           _type: "play",
-          playId: playIdText,
-          parts: partsText,
-          genres: rawGenres,
-          publisher,
-          production,
-          ...rest,
+          ...rawData[index],
         };
 
         return {

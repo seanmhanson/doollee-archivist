@@ -123,6 +123,41 @@ describe("core/DatabaseService", () => {
       };
       await expect(db.collection("plays").insertOne(invalidPlay)).rejects.toThrow();
     });
+
+    it("should accept a minimal valid author document", async () => {
+      const db = await dbService.connect();
+      const now = new Date();
+      const validAuthor = {
+        _id: new ObjectId(),
+        _archive: { name: "Test Author" },
+        metadata: { createdAt: now, updatedAt: now, scrapedAt: now, sourceUrl: "http://example.com" },
+        rawFields: {},
+        name: "Test Author",
+        displayName: "Test Author",
+        playIds: [],
+        adaptationIds: [],
+        doolleePlayIds: [],
+      };
+      await expect(db.collection("authors").insertOne(validAuthor)).resolves.toBeDefined();
+    });
+
+    it("should reject an author document with an unrecognised field", async () => {
+      const db = await dbService.connect();
+      const now = new Date();
+      const invalidAuthor = {
+        _id: new ObjectId(),
+        _archive: { name: "Test Author" },
+        metadata: { createdAt: now, updatedAt: now, scrapedAt: now, sourceUrl: "http://example.com" },
+        rawFields: {},
+        name: "Test Author",
+        displayName: "Test Author",
+        playIds: [],
+        adaptationIds: [],
+        doolleePlayIds: [],
+        unknownField: "this is not in the schema",
+      };
+      await expect(db.collection("authors").insertOne(invalidAuthor)).rejects.toThrow();
+    });
   });
 
   describe("when resetting the database", () => {
