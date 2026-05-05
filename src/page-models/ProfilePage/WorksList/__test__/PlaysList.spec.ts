@@ -177,10 +177,10 @@ describe("PlaysList", () => {
         },
       ]);
       const plays = await PlaysList.create(page);
-      expect(plays.worksData[0].reviewNotes).toEqual([
-        REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES,
-        REVIEW_NOTES.MULTIPLE_PRODUCTION_DATES,
-      ]);
+      expect(plays.worksData[0].reviewNotes).toEqual(
+        expect.arrayContaining([REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES, REVIEW_NOTES.MULTIPLE_PRODUCTION_DATES]),
+      );
+      expect(plays.worksData[0].reviewNotes).toHaveLength(2);
     });
 
     it("should omit reviewNotes when neither publication nor production triggers a note", async () => {

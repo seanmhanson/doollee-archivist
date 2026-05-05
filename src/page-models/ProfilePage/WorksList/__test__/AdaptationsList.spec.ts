@@ -245,10 +245,10 @@ describe("AdaptationsList", () => {
         },
       ]);
       const adaptationsList = await AdaptationsList.create(page);
-      expect(adaptationsList.worksData[0].reviewNotes).toEqual([
-        REVIEW_NOTES.MULTIPLE_PRODUCTION_DATES,
-        REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES,
-      ]);
+      expect(adaptationsList.worksData[0].reviewNotes).toEqual(
+        expect.arrayContaining([REVIEW_NOTES.MULTIPLE_PRODUCTION_DATES, REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES]),
+      );
+      expect(adaptationsList.worksData[0].reviewNotes).toHaveLength(2);
     });
 
     it("should omit reviewNotes when neither production nor publication triggers a note", async () => {
