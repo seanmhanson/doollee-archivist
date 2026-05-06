@@ -42,7 +42,12 @@ export default class PlaysList extends BaseWorksList {
 
         const _archive: PlayArchive = {
           _type: "play",
-          ...rawData[index],
+          playId: playIdText,
+          parts: partsText,
+          genres: rawGenres,
+          publisher,
+          production,
+          ...rest,
         };
 
         return {
