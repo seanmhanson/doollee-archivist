@@ -50,6 +50,10 @@ export function checkScrapedString(scrapedString: string | null | undefined): st
   // check for "n/a, N/A, etc"
   if (scrapedString.trim().toLowerCase() === "n/a") return "";
 
+  // check for "0" or "- 0" / "-0" used as numeric sentinels
+  if (scrapedString.trim() === "0") return "";
+  if (/^-\s*0$/.test(scrapedString.trim())) return "";
+
   return normalizeWhitespace(scrapedString);
 }
 

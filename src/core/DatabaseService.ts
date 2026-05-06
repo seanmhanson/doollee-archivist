@@ -102,15 +102,18 @@ export default class DatabaseService {
     const database = await this.connect();
     console.info("⏳ Creating collections:");
 
-    for (const { name } of COLLECTIONS) {
+    for (const { name, $jsonSchema } of COLLECTIONS) {
       const exists = await database.listCollections({ name }).hasNext();
       if (exists) {
         console.info(`   - Collection '${name}' already exists`);
         continue;
       }
 
-      /** TODO: Update to strict once data is production-ready */
-      await database.createCollection(name);
+      await database.createCollection(name, {
+        validator: { $jsonSchema },
+        validationAction: "error",
+        validationLevel: "strict",
+      });
       console.info(`   - Collection '${name}' created successfully`);
     }
     console.info("✅ Collection creation complete");

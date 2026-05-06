@@ -24,16 +24,21 @@ export default class PlaysList extends BaseWorksList {
   }
 
   protected async extractData(): Promise<void> {
-    const data = this.normalizeStringFields(await this.scrapeData());
+    const rawData = await this.scrapeData();
+    const data = this.normalizeStringFields(rawData);
 
     this.data = data.map(
-      ({ playId: playIdText, parts: partsText, genres: rawGenres, publisher, production, ...rest }) => {
+      ({ playId: playIdText, parts: partsText, genres: rawGenres, publisher, production, ...rest }, index) => {
         const publicationDetails = this.parsePublicationDetails(publisher, true);
         const productionDetails = this.parseProductionDetails(production);
-        const playId = this.getPlayId(playIdText);
+        const playId = this.formatPlayId(playIdText, "play");
         const parts = this.parseParts(partsText);
         const genres = this.formatGenres(rawGenres);
         const displayTitle = this.formatDisplayTitle(rest.title);
+
+        const reviewNotes = [...(publicationDetails.reviewNotes ?? []), ...(productionDetails.reviewNotes ?? [])];
+        const { reviewNotes: _pubNotes, ...publicationRest } = publicationDetails;
+        const { reviewNotes: _prodNotes, ...productionRest } = productionDetails;
 
         const _archive: PlayArchive = {
           _type: "play",
@@ -52,10 +57,11 @@ export default class PlaysList extends BaseWorksList {
           playId,
           genres,
           displayTitle,
-          ...publicationDetails,
-          ...productionDetails,
+          ...publicationRest,
+          ...productionRest,
           ...parts,
           ...rest,
+          ...(reviewNotes.length ? { reviewNotes } : {}),
         };
       },
     );
@@ -136,6 +142,8 @@ export default class PlaysList extends BaseWorksList {
     const match = pattern.exec(normalizedText);
 
     if (!match) {
+      // [TODO] - flag "needsReview", needsReviewReason, and needsReviewData
+      // and then downgrade to info-level logging
       console.warn(`Parts text does not match expected format: ${partsText}`);
       return null;
     }

@@ -4,6 +4,8 @@ import BaseWorksList from "../__BaseWorksList";
 
 import type { Page } from "playwright";
 
+import { REVIEW_NOTES } from "#/review-notes";
+
 class TestBaseWorksList extends BaseWorksList {
   constructor(page: Page) {
     super(page);
@@ -154,6 +156,11 @@ describe("BaseWorksList", () => {
       expect(result.productionLocation).toBe("The Yard");
       expect(result.productionYear).toBe("18 Oct 2011");
     });
+
+    it("should set reviewNotes when multiple date patterns match", () => {
+      const result = worksList.parseProductionDetails("London 1965 and New York 1970");
+      expect(result.reviewNotes).toEqual([REVIEW_NOTES.MULTIPLE_PRODUCTION_DATES]);
+    });
   });
 
   describe("#parsePublicationDetails", () => {
@@ -188,6 +195,43 @@ describe("BaseWorksList", () => {
     it("should not include isbn when includeISBN is false", () => {
       const result = worksList.parsePublicationDetails("Samuel French 1972", false);
       expect(result).not.toHaveProperty("isbn");
+    });
+
+    it("should extract a year concatenated directly to a publisher name (e.g. '1973Methuen')", () => {
+      const result = worksList.parsePublicationDetails("1973Methuen", false);
+      expect(result.publicationYear).toBe("1973");
+      expect(result.publisher).toBe("Methuen");
+    });
+
+    it("should set INVALID_ISBN reviewNote when the extracted ISBN fails validation", () => {
+      // 9780573016500: last digit 0 fails checksum (expected 9)
+      const result = worksList.parsePublicationDetails("Samuel French ISBN: 9780573016500 1972", true);
+      expect(result.reviewNotes).toEqual([REVIEW_NOTES.INVALID_ISBN]);
+      expect(result.isbn).toBe("");
+      expect(result.publisher).toBe("Samuel French");
+      expect(result.publicationYear).toBe("1972");
+    });
+
+    it("should set POSSIBLE_ISBN reviewNote when a possible ISBN cannot be classified", () => {
+      // 14-digit sequence starting with 978: too long for ISBN13 match, unclassifiable
+      const result = worksList.parsePublicationDetails("Publisher 97812345678901", true);
+      expect(result.reviewNotes).toEqual([REVIEW_NOTES.POSSIBLE_ISBN]);
+      expect(result.isbn).toBe("");
+    });
+
+    it("should accumulate INVALID_ISBN and MULTIPLE_PUBLICATION_DATES when both occur", () => {
+      // Bad ISBN + multiple date matches
+      const result = worksList.parsePublicationDetails(
+        "Aris & Phillips ISBN: 9780573016500 (Nick Hern Books, 2001), 1995",
+        true,
+      );
+      expect(result.reviewNotes).toEqual([REVIEW_NOTES.INVALID_ISBN, REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES]);
+    });
+
+    it("should extract the last year from a multi-year string and set reviewNotes", () => {
+      const result = worksList.parsePublicationDetails("Aris & Phillips (Nick Hern Books, London, 2001), 1995", false);
+      expect(result.reviewNotes).toEqual([REVIEW_NOTES.MULTIPLE_PUBLICATION_DATES]);
+      expect(result.publicationYear).toBe("1995");
     });
   });
 

@@ -34,7 +34,8 @@ export default class AdaptationsList extends BaseWorksList {
   }
 
   protected async extractData(): Promise<void> {
-    const data = this.normalizeStringFields(await this.scrapeTableData());
+    const rawTableData = await this.scrapeTableData();
+    const data = this.normalizeStringFields(rawTableData);
 
     // destructure values we will remove before returning
     this.data = data.map(
@@ -43,19 +44,20 @@ export default class AdaptationsList extends BaseWorksList {
         const productionInfo = `${productionLocation ?? ""} ${productionYear ?? ""}`.trim();
         const publishingInfo = publisher ?? "";
 
-        const productionDetails = {
-          productionLocation,
-          productionYear,
-        };
+        const productionDetails = this.parseProductionDetails(productionInfo);
         const publicationDetails = {
           ...this.parsePublicationDetails(publisher, false),
           isbn: this.formatISBN(adaptation.isbn),
         };
 
+        const reviewNotes = [...(productionDetails.reviewNotes ?? []), ...(publicationDetails.reviewNotes ?? [])];
+        const { reviewNotes: _prodNotes, ...productionRest } = productionDetails;
+        const { reviewNotes: _pubNotes, ...publicationRest } = publicationDetails;
+
         const altTitle = imgAlt || "";
 
         // scraped values that we will overwrite before returning
-        const playId = this.getPlayId(adaptation.playId);
+        const playId = this.formatPlayId(adaptation.playId, "adaptation");
 
         const parts = this.parseParts(rawParts);
         const organizations = this.formatOrganizations(adaptation.organizations);
@@ -67,11 +69,11 @@ export default class AdaptationsList extends BaseWorksList {
 
         const _archive: PlayArchive = {
           _type: "adaptation",
+          ...adaptation,
           productionLocation,
           productionYear,
           publisher,
           imgAlt,
-          ...adaptation,
           ...rawParts,
         };
 
@@ -81,7 +83,7 @@ export default class AdaptationsList extends BaseWorksList {
           playId,
           altTitle,
           displayTitle,
-          originalAuthor,
+          ...(originalAuthor ? { originalAuthor } : {}),
           adaptingAuthor,
           productionInfo,
           publishingInfo,
@@ -89,8 +91,9 @@ export default class AdaptationsList extends BaseWorksList {
           reference,
           ...parts,
           genres,
-          ...productionDetails,
-          ...publicationDetails,
+          ...productionRest,
+          ...publicationRest,
+          ...(reviewNotes.length ? { reviewNotes } : {}),
         };
       },
     );
@@ -184,6 +187,10 @@ export default class AdaptationsList extends BaseWorksList {
   protected parseOriginalAuthor(notesString: string): string {
     const regex = /Original Playwright\s*[-:]\s*(.+?)(;|$)/i;
     const match = regex.exec(notesString);
+
+    // [TODO] - flag needsReview/needsReviewReason/needsReviewData when
+    // the adaptation has a notes field that does not include the original playwright;
+    // later compare these flagged values across adaptations for normalization purposes
     return match?.[1].trim().replace(/\.$/, "") ?? "";
   }
 
@@ -195,6 +202,7 @@ export default class AdaptationsList extends BaseWorksList {
     const isEmpty = (text: string) => {
       return !text || text === "-" || text === "0";
     };
+
     if ([partsTextMale, partsTextFemale, partsTextOther].every(isEmpty)) {
       return {};
     }

@@ -4,9 +4,12 @@ import path from "path";
 import { firefox } from "playwright";
 import prettier from "prettier";
 
-import ProfilePage from "#/page-models/ProfilePage";
+import type { ReviewNote } from "#/review-notes";
 
-const FIXTURES_DIR = path.join(__dirname, "..", "page-models", "ProfilePage", "__test__", "fixtures");
+import ProfilePage from "#/page-models/ProfilePage";
+import { REVIEW_NOTES } from "#/review-notes";
+
+const FIXTURES_DIR = path.join(__dirname, "..", "..", "page-models", "ProfilePage", "__test__", "fixtures");
 
 const FIXTURES = [
   { name: "pinter-harold", template: "standard" as const, htmlFile: "pinter-harold.html" },
@@ -15,6 +18,27 @@ const FIXTURES = [
 
 type Fixture = (typeof FIXTURES)[number];
 type BrowserInstance = Awaited<ReturnType<typeof firefox.launch>>;
+
+// Build a reverse lookup: compact JSON fingerprint -> "REVIEW_NOTES.KEY"
+const REVIEW_NOTE_REFS = Object.entries(REVIEW_NOTES).reduce<Record<string, string>>((acc, [key, note]) => {
+  acc[JSON.stringify(note)] = `REVIEW_NOTES.${key}`;
+  return acc;
+}, {});
+
+const PLACEHOLDER_PREFIX = "__REVIEW_NOTE__";
+
+/**
+ * JSON replacer that substitutes known ReviewNote objects with placeholder strings.
+ * The placeholders are later replaced with REVIEW_NOTES.* constant references so
+ * that the generated snapshot file imports and references the shared registry.
+ */
+function reviewNoteReplacer(_key: string, value: unknown): unknown {
+  if (value && typeof value === "object" && !Array.isArray(value) && "reason" in (value as ReviewNote)) {
+    const ref = REVIEW_NOTE_REFS[JSON.stringify(value)];
+    if (ref) return `${PLACEHOLDER_PREFIX}${ref}`;
+  }
+  return value;
+}
 
 async function generateSnapshot(fixture: Fixture, browser: BrowserInstance): Promise<void> {
   const page = await browser.newPage();
@@ -34,12 +58,18 @@ async function generateSnapshot(fixture: Fixture, browser: BrowserInstance): Pro
 
     let content: string;
     try {
+      const serialized = JSON.stringify(profilePage.data, reviewNoteReplacer, 2);
+      // Replace quoted placeholder strings with bare REVIEW_NOTES.* constant references
+      const withConstants = serialized.replace(/"__REVIEW_NOTE__(REVIEW_NOTES\.[^"]+)"/g, "$1");
+      const hasReviewNotes = withConstants.includes("REVIEW_NOTES.");
+
       const raw = [
         `// AUTO-GENERATED — do not manually edit. Run \`yarn snapshots:update-profiles\` to regenerate.`,
         `import type { ScrapedAuthorData } from "#/db-types/author/author.types";`,
         `import type { ScrapedPlayData } from "#/db-types/play/play.types";`,
+        ...(hasReviewNotes ? [``, `import { REVIEW_NOTES } from "#/review-notes";`] : []),
         ``,
-        `export default ${JSON.stringify(profilePage.data, null, 2)} satisfies {`,
+        `export default ${withConstants} satisfies {`,
         `  biography: ScrapedAuthorData;`,
         `  works: ScrapedPlayData[];`,
         `};`,

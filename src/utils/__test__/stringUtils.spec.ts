@@ -106,6 +106,15 @@ describe("utils/stringUtils", () => {
       expect(checkScrapedString("  n/A  ")).toBe("");
     });
 
+    it("should return an empty string for '0'", () => {
+      expect(checkScrapedString("0")).toBe("");
+    });
+
+    it("should return an empty string for '- 0' and '-0' sentinel patterns", () => {
+      expect(checkScrapedString("- 0")).toBe("");
+      expect(checkScrapedString("-0")).toBe("");
+    });
+
     it("should normalize whitespace for valid strings", () => {
       expect(checkScrapedString("  Hello   World!  ")).toBe("Hello World!");
     });

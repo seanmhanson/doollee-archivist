@@ -44,11 +44,18 @@ const PlaySchema: Document = {
         updatedAt: { bsonType: "date" },
         scrapedAt: { bsonType: "date" },
         sourceUrl: { bsonType: "string" },
-        needsReview: { bsonType: "bool" },
-        needsReviewReason: { bsonType: "string" },
-        needsReviewData: {
-          bsonType: "object",
-          additionalProperties: true,
+        reviewNotes: {
+          bsonType: "array",
+          items: {
+            bsonType: "object",
+            required: ["reason"],
+            additionalProperties: false,
+            properties: {
+              reason: { bsonType: "string" },
+              functionName: { bsonType: "string" },
+              className: { bsonType: "string" },
+            },
+          },
         },
       },
     },
@@ -64,6 +71,7 @@ const PlaySchema: Document = {
     },
 
     title: { bsonType: "string" },
+    displayTitle: { bsonType: "string" },
     author: { bsonType: "string" },
     authorId: { bsonType: "objectId" },
     adaptingAuthor: { bsonType: "string" },

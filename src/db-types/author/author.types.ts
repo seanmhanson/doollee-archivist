@@ -1,3 +1,4 @@
+import type { ReviewNotes } from "#/review-notes";
 import type { ObjectId } from "mongodb";
 
 /**
@@ -33,9 +34,7 @@ export type AuthorDocument = {
     updatedAt: Date;
     scrapedAt: Date;
     sourceUrl: string;
-    needsReview?: boolean;
-    needsReviewReason?: string;
-    needsReviewData?: Record<string, Record<string, string>>;
+    reviewNotes?: ReviewNotes;
   };
 
   rawFields: {

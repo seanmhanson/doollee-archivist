@@ -1,8 +1,10 @@
 import { describe, expect, it, beforeAll, afterAll, beforeEach, afterEach } from "@jest/globals";
-import { Db } from "mongodb";
+import { Db, ObjectId } from "mongodb";
 import { MongoMemoryServer } from "mongodb-memory-server";
 
 import DatabaseService from "../DatabaseService";
+
+import type { CollectionInfo } from "mongodb";
 
 describe("core/DatabaseService", () => {
   let dbService: DatabaseService;
@@ -80,6 +82,81 @@ describe("core/DatabaseService", () => {
       const playIdIndex = playIndexes.find((idx) => idx.key.playId === 1);
       expect(playIdIndex).toBeDefined();
       expect(playIdIndex?.unique).toBe(true);
+    });
+
+    it("should create collections with a $jsonSchema validator", async () => {
+      const db = await dbService.connect();
+      const collections = await db.listCollections().toArray();
+
+      for (const info of collections) {
+        const validator = (info as CollectionInfo).options?.validator as Record<string, unknown> | undefined;
+        expect(validator).toBeDefined();
+        expect(validator?.$jsonSchema).toBeDefined();
+      }
+    });
+
+    it("should accept a minimal valid play document", async () => {
+      const db = await dbService.connect();
+      const now = new Date();
+      const validPlay = {
+        _id: new ObjectId(),
+        playId: "12345",
+        title: "Test Play",
+        author: "Test Author",
+        metadata: { createdAt: now, updatedAt: now, scrapedAt: now, sourceUrl: "http://example.com" },
+        _archive: { _type: "play", playId: "12345", title: "Test Play" },
+      };
+      await expect(db.collection("plays").insertOne(validPlay)).resolves.toBeDefined();
+    });
+
+    it("should reject a play document with an unrecognised field", async () => {
+      const db = await dbService.connect();
+      const now = new Date();
+      const invalidPlay = {
+        _id: new ObjectId(),
+        playId: "12345",
+        title: "Test Play",
+        author: "Test Author",
+        metadata: { createdAt: now, updatedAt: now, scrapedAt: now, sourceUrl: "http://example.com" },
+        _archive: { _type: "play", playId: "12345", title: "Test Play" },
+        unknownField: "this is not in the schema",
+      };
+      await expect(db.collection("plays").insertOne(invalidPlay)).rejects.toThrow();
+    });
+
+    it("should accept a minimal valid author document", async () => {
+      const db = await dbService.connect();
+      const now = new Date();
+      const validAuthor = {
+        _id: new ObjectId(),
+        _archive: { name: "Test Author" },
+        metadata: { createdAt: now, updatedAt: now, scrapedAt: now, sourceUrl: "http://example.com" },
+        rawFields: {},
+        name: "Test Author",
+        displayName: "Test Author",
+        playIds: [],
+        adaptationIds: [],
+        doolleePlayIds: [],
+      };
+      await expect(db.collection("authors").insertOne(validAuthor)).resolves.toBeDefined();
+    });
+
+    it("should reject an author document with an unrecognised field", async () => {
+      const db = await dbService.connect();
+      const now = new Date();
+      const invalidAuthor = {
+        _id: new ObjectId(),
+        _archive: { name: "Test Author" },
+        metadata: { createdAt: now, updatedAt: now, scrapedAt: now, sourceUrl: "http://example.com" },
+        rawFields: {},
+        name: "Test Author",
+        displayName: "Test Author",
+        playIds: [],
+        adaptationIds: [],
+        doolleePlayIds: [],
+        unknownField: "this is not in the schema",
+      };
+      await expect(db.collection("authors").insertOne(invalidAuthor)).rejects.toThrow();
     });
   });
 
