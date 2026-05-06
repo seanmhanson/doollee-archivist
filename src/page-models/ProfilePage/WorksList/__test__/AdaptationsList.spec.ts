@@ -213,14 +213,6 @@ describe("AdaptationsList", () => {
       expect(adaptationsList.worksData[0].productionYear).toBe("Oct 2010");
     });
 
-    it("should build productionInfo by joining productionLocation and productionYear", async () => {
-      const page = createMockPage([
-        { ...minimalRow, productionLocation: "National Theatre", productionYear: "Oct 2010" },
-      ]);
-      const adaptationsList = await AdaptationsList.create(page);
-      expect(adaptationsList.worksData[0].productionInfo).toBe("National Theatre Oct 2010");
-    });
-
     it("should store flat maleParts/femaleParts/otherParts in the _archive", async () => {
       const page = createMockPage([
         { ...minimalRow, parts: { maleParts: "3", femaleParts: "-", otherParts: "6 m/f" } },

@@ -1,15 +1,14 @@
 import { ObjectId } from "mongodb";
 
-import type { InitialMetadata, RawFields, PlayDocument, PlayData, PlayArchive } from "#/db-types/play/play.types";
+import type { InitialMetadata, PlayDocument, PlayData, PlayArchive } from "#/db-types/play/play.types";
 import type { ReviewNote } from "#/review-notes";
 
 import * as dbUtils from "#/utils/dbUtils";
 
 export default class Play {
   private _id: ObjectId;
-  private _archive: PlayArchive;
+  private _archive: Readonly<PlayArchive>;
   private metadata: InitialMetadata;
-  private rawFields: RawFields;
   private playId: string;
 
   private author: string;
@@ -58,6 +57,10 @@ export default class Play {
 
   public addReviewNote(note: ReviewNote): void {
     this.reviewNotes.push(note);
+  }
+
+  public get archiveData() {
+    return this._archive;
   }
 
   public get doolleeId(): string {
@@ -118,19 +121,13 @@ export default class Play {
 
   constructor(input: PlayData) {
     this._id = new ObjectId();
-    this._archive = input._archive;
+    this._archive = Object.freeze(input._archive);
     this.playId = input.playId;
     this.metadata = {
       createdAt: undefined,
       updatedAt: undefined,
       scrapedAt: input.scrapedAt,
       sourceUrl: input.sourceUrl,
-    };
-
-    this.rawFields = {
-      altTitle: input.altTitle,
-      publishingInfo: input.publishingInfo,
-      productionInfo: input.productionInfo,
     };
 
     this.title = input.title;
@@ -179,7 +176,6 @@ export default class Play {
         updatedAt: now,
         reviewNotes: this.reviewNotes,
       },
-      rawFields: this.rawFields,
       playId: this.playId,
       title: this.title,
       ...this.authorData,

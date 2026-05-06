@@ -1,11 +1,12 @@
 import type { AuthorData } from "../author.types";
 
+const DEFAULT_HEADING_NAME = "DAVID MAMET";
+
 const defaults = {
   name: "David Mamet",
   scrapedAt: new Date(),
   sourceUrl: "https://www.doollee.com/PlaywrightsM/mamet-david.php",
   listingName: "MAMET David",
-  headingName: "DAVID MAMET",
   altName: "David Mamet",
   nationality: "USA",
   email: "damnitmamet@example.co.uk",
@@ -19,13 +20,20 @@ const defaults = {
   yearDied: "2047",
 };
 
-function getAuthorFixture(overrides: Partial<AuthorData> = {}): AuthorData {
-  const authorData = { ...defaults, ...overrides };
-  const { yearBorn, yearDied, scrapedAt, sourceUrl, listingName, headingName, ...archiveData } = authorData;
+function getAuthorFixture(
+  overrides: Partial<AuthorData> & { headingName?: string; altName?: string } = {},
+): AuthorData {
+  const { headingName = DEFAULT_HEADING_NAME, altName: altOverride, ...authorOverrides } = overrides;
+  const authorData = { ...defaults, ...authorOverrides };
+  const { yearBorn, yearDied, scrapedAt, sourceUrl, listingName, altName: defaultAlt, ...archiveData } = authorData;
+  const altName = altOverride ?? defaultAlt;
   return {
     _archive: {
       dates: `(${yearBorn ?? ""} - ${yearDied ?? ""})`,
+      listingName,
       ...archiveData,
+      name: headingName,
+      ...(altName !== undefined ? { altName } : {}),
     },
     ...authorData,
   };
@@ -34,8 +42,9 @@ function getAuthorFixture(overrides: Partial<AuthorData> = {}): AuthorData {
 function getExpectedArchive(fixture: AuthorData) {
   return {
     dates: `(${fixture.yearBorn} - ${fixture.yearDied})`,
-    name: fixture.name,
-    altName: fixture.altName,
+    name: fixture._archive.name,
+    altName: fixture._archive.altName,
+    listingName: fixture.listingName,
     biography: fixture.biography,
     nationality: fixture.nationality,
     email: fixture.email,
@@ -62,14 +71,6 @@ function getExpectedBiographyData(fixture: AuthorData) {
   };
 }
 
-function getExpectedRawFields({ listingName, headingName, altName }: AuthorData) {
-  return {
-    listingName,
-    headingName,
-    altName,
-  };
-}
-
 function getExpectedWorksData() {
   return {
     playIds: [],
@@ -87,11 +88,4 @@ function getFixtureMetadata(fixture: AuthorData) {
   };
 }
 
-export {
-  getAuthorFixture,
-  getExpectedArchive,
-  getExpectedWorksData,
-  getExpectedBiographyData,
-  getExpectedRawFields,
-  getFixtureMetadata,
-};
+export { getAuthorFixture, getExpectedArchive, getExpectedWorksData, getExpectedBiographyData, getFixtureMetadata };

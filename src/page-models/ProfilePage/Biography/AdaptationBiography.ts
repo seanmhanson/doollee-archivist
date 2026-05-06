@@ -42,7 +42,6 @@ export default class AdaptationBiography extends BaseBiography {
     this.data = {
       _archive,
       name,
-      altName,
       yearBorn,
       yearDied,
       biography,

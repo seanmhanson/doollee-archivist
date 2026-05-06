@@ -10,6 +10,7 @@ import type { ObjectId } from "mongodb";
 export type AuthorArchive = {
   name: string;
   altName?: string;
+  listingName?: string;
   dates?: string;
   biography?: string;
   nationality?: string;
@@ -35,12 +36,6 @@ export type AuthorDocument = {
     scrapedAt: Date;
     sourceUrl: string;
     reviewNotes?: ReviewNotes;
-  };
-
-  rawFields: {
-    listingName?: string;
-    headingName?: string;
-    altName?: string;
   };
 
   name: string;
@@ -73,8 +68,6 @@ export type AuthorDocument = {
  */
 
 export type Metadata = AuthorDocument["metadata"];
-
-export type RawFields = AuthorDocument["rawFields"];
 
 type OptionalInitialMetadataKeys = "createdAt" | "updatedAt";
 export type InitialMetadata = Omit<Metadata, OptionalInitialMetadataKeys> &
@@ -110,7 +103,6 @@ type OptionalKeys =
   | "address"
   | "telephone";
 type OptionalFields = Partial<Pick<AuthorDocument, OptionalKeys>>;
-type OptionalRawFields = Partial<RawFields>;
 
-export type ScrapedAuthorData = RequiredFields & OptionalFields & OptionalRawFields;
-export type AuthorData = RequiredFields & RequiredMetadata & OptionalFields & OptionalRawFields;
+export type ScrapedAuthorData = RequiredFields & OptionalFields & { listingName?: string };
+export type AuthorData = RequiredFields & RequiredMetadata & OptionalFields & { listingName?: string };

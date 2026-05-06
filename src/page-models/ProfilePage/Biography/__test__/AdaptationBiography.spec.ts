@@ -68,7 +68,6 @@ describe("AdaptationBiography", () => {
           literaryAgent: "",
         },
         name,
-        altName,
         yearBorn: "480 BC?",
         yearDied: "406 BC",
         biography,

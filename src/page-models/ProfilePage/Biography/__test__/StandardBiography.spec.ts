@@ -73,7 +73,6 @@ describe("StandardBiography", () => {
           research: "Member of the Unit Test Dramatists Guild",
         },
         name,
-        altName,
         yearBorn: "1971",
         yearDied: "1999",
         biography: expectedBiography,

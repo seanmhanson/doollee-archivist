@@ -3,17 +3,7 @@ import type { Document } from "mongodb";
 const AuthorSchema: Document = {
   bsonType: "object",
   additionalProperties: false,
-  required: [
-    "_id",
-    "_archive",
-    "metadata",
-    "rawFields",
-    "name",
-    "displayName",
-    "playIds",
-    "adaptationIds",
-    "doolleePlayIds",
-  ],
+  required: ["_id", "_archive", "metadata", "name", "displayName", "playIds", "adaptationIds", "doolleePlayIds"],
   properties: {
     _id: { bsonType: "objectId" },
     _archive: {
@@ -23,6 +13,7 @@ const AuthorSchema: Document = {
       properties: {
         name: { bsonType: "string" },
         altName: { bsonType: "string" },
+        listingName: { bsonType: "string" },
         dates: { bsonType: "string" },
         biography: { bsonType: "string" },
         nationality: { bsonType: "string" },
@@ -56,15 +47,6 @@ const AuthorSchema: Document = {
             },
           },
         },
-      },
-    },
-    rawFields: {
-      bsonType: "object",
-      additionalProperties: false,
-      properties: {
-        listingName: { bsonType: "string" },
-        headingName: { bsonType: "string" },
-        altName: { bsonType: "string" },
       },
     },
     name: { bsonType: "string" },
