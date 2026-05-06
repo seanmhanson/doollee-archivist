@@ -12,7 +12,21 @@ function getPlayFixture(overrides: Partial<PlayData> = {}): PlayData {
     playId: "12345",
     title: "Test Play",
     originalAuthor: "Test Author",
-    _archive: { _type: "play", playId: "12345", title: "Test Play" },
+    _archive: {
+      _type: "play",
+      playId: "12345",
+      title: "Test Play",
+      altTitle: "An Alternate Title",
+      synopsis: "A test synopsis.",
+      notes: "Some notes.",
+      production: "National Theatre Oct 2010",
+      organizations: "Test Org",
+      publisher: "Samuel French 1972",
+      music: "Original Score",
+      genres: "Comedy Drama",
+      parts: "Male: 2 Female: 3 Other: -",
+      reference: "ref123",
+    },
     scrapedAt: new Date("2026-01-01"),
     sourceUrl: "https://example.com",
     ...overrides,
@@ -38,6 +52,19 @@ describe("Play.class", () => {
     it("should be an adaptation when adaptingAuthor is present", () => {
       const adaptationPlay = new Play(getPlayFixture({ adaptingAuthor: "Adaptor Name" }));
       expect(adaptationPlay.isAdaptation).toBe(true);
+    });
+  });
+
+  describe("#archiveData", () => {
+    it("should return the archive data", () => {
+      const fixture = getPlayFixture();
+      const play = new Play(fixture);
+      expect(play.archiveData).toEqual(fixture._archive);
+    });
+
+    it("should return a frozen archive object", () => {
+      const play = new Play(getPlayFixture());
+      expect(Object.isFrozen(play.archiveData)).toBe(true);
     });
   });
 

@@ -43,6 +43,7 @@ describe("Author.class", () => {
       expect(biographyData).toEqual(getExpectedBiographyData(fixture));
       expect(worksData).toEqual(getExpectedWorksData());
       expect(archiveData).toEqual(getExpectedArchive(fixture));
+      expect(Object.isFrozen(author.archiveData)).toBe(true);
     });
 
     it("should initialize with no associated works and allow additions", () => {
