@@ -32,8 +32,8 @@ export const REVIEW_NOTES = {
     className: "Author",
     functionName: "parseAuthorName",
   },
-  SINGLE_WORD_ORG_NAME: {
-    reason: "Single word listing name",
+  SINGLE_WORD_AUTHOR_NAME: {
+    reason: "The author name is a single word, and may also represent an organization",
     className: "Author",
     functionName: "parseOrganization",
   },

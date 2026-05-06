@@ -182,7 +182,7 @@ export default class Author {
     const isOrganization = listingInAllCaps && matchesHeading && matchesAlt;
 
     if (listingName.split(" ").length === 1) {
-      this.reviewNotes.push(REVIEW_NOTES.SINGLE_WORD_ORG_NAME);
+      this.reviewNotes.push(REVIEW_NOTES.SINGLE_WORD_AUTHOR_NAME);
     }
 
     return {

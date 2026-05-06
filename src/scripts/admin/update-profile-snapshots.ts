@@ -67,7 +67,7 @@ async function generateSnapshot(fixture: Fixture, browser: BrowserInstance): Pro
         `// AUTO-GENERATED — do not manually edit. Run \`yarn snapshots:update-profiles\` to regenerate.`,
         `import type { ScrapedAuthorData } from "#/db-types/author/author.types";`,
         `import type { ScrapedPlayData } from "#/db-types/play/play.types";`,
-        ...(hasReviewNotes ? [`import { REVIEW_NOTES } from "#/review-notes";`] : []),
+        ...(hasReviewNotes ? [``, `import { REVIEW_NOTES } from "#/review-notes";`] : []),
         ``,
         `export default ${withConstants} satisfies {`,
         `  biography: ScrapedAuthorData;`,

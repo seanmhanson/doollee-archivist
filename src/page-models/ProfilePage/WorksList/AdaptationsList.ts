@@ -39,7 +39,7 @@ export default class AdaptationsList extends BaseWorksList {
 
     // destructure values we will remove before returning
     this.data = data.map(
-      ({ productionLocation, productionYear, publisher, imgAlt, parts: rawParts, ...adaptation }, index) => {
+      ({ productionLocation, productionYear, publisher, imgAlt, parts: rawParts, ...adaptation }) => {
         // scraped values that we will add before returning
         const productionInfo = `${productionLocation ?? ""} ${productionYear ?? ""}`.trim();
         const publishingInfo = publisher ?? "";
@@ -67,11 +67,14 @@ export default class AdaptationsList extends BaseWorksList {
         const genres = this.formatGenres(adaptation.genres);
         const adaptingAuthor = stringUtils.toTitleCase(adaptation.adaptingAuthor);
 
-        const { parts: rawArchiveParts, ...rawRest } = rawTableData[index];
         const _archive: PlayArchive = {
           _type: "adaptation",
-          ...rawRest,
-          ...rawArchiveParts,
+          ...adaptation,
+          productionLocation,
+          productionYear,
+          publisher,
+          imgAlt,
+          ...rawParts,
         };
 
         return {

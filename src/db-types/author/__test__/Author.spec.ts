@@ -123,21 +123,21 @@ describe("Author.class", () => {
       expect(author.toDocument().metadata.reviewNotes).toEqual([REVIEW_NOTES.NAME_INCONSISTENCY]);
     });
 
-    it("should add SINGLE_WORD_ORG_NAME when the listing name is a single word", () => {
+    it("should add SINGLE_WORD_AUTHOR_NAME when the listing name is a single word", () => {
       const author = new Author(
         getAuthorFixture({ listingName: "SHAKESPEARE", headingName: "SHAKESPEARE", altName: "" }),
       );
       expect(author.hasReviewNotes).toBe(true);
-      expect(author.toDocument().metadata.reviewNotes).toEqual([REVIEW_NOTES.SINGLE_WORD_ORG_NAME]);
+      expect(author.toDocument().metadata.reviewNotes).toEqual([REVIEW_NOTES.SINGLE_WORD_AUTHOR_NAME]);
     });
 
-    it("should accumulate both SINGLE_WORD_ORG_NAME and NAME_INCONSISTENCY when applicable", () => {
+    it("should accumulate both SINGLE_WORD_AUTHOR_NAME and NAME_INCONSISTENCY when applicable", () => {
       const author = new Author(
         getAuthorFixture({ listingName: "Shakespeare", headingName: "WILLIAM SHAKESPEARE", altName: "" }),
       );
       expect(author.hasReviewNotes).toBe(true);
       expect(author.toDocument().metadata.reviewNotes).toEqual([
-        REVIEW_NOTES.SINGLE_WORD_ORG_NAME,
+        REVIEW_NOTES.SINGLE_WORD_AUTHOR_NAME,
         REVIEW_NOTES.NAME_INCONSISTENCY,
       ]);
     });
