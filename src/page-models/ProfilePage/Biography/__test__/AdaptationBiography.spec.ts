@@ -91,36 +91,30 @@ describe("AdaptationBiography", () => {
         <strong>Telephone:</strong> +30-1234-5678
         <strong>Research: </strong> Ancient sources and modern scholarship
       `;
-      const logSpy = jest.spyOn(console, "log").mockImplementation(() => {
-        /** no-op mock */
-      });
-      try {
-        const mockPage = createMockPage({
-          bio: biography,
-          dates,
-          imageSrc,
-          imageAlt: altName,
-          innerHTML: fullLabelHTML,
-        });
-        const bio = new TestAdaptationBiography(mockPage);
-        await bio.extractData();
 
-        expect(bio.biographyData._archive).toEqual({
-          name,
-          altName,
-          dates,
-          biography,
-          nationality: "Greek",
-          email: "test@example.com",
-          website: "https://example.com",
-          literaryAgent: "Test Agent",
-          address: "1 Test Street, Athens, Greece",
-          telephone: "+30-1234-5678",
-          research: "Ancient sources and modern scholarship",
-        });
-      } finally {
-        logSpy.mockRestore();
-      }
+      const mockPage = createMockPage({
+        bio: biography,
+        dates,
+        imageSrc,
+        imageAlt: altName,
+        innerHTML: fullLabelHTML,
+      });
+      const bio = new TestAdaptationBiography(mockPage);
+      await bio.extractData();
+
+      expect(bio.biographyData._archive).toEqual({
+        name,
+        altName,
+        dates,
+        biography,
+        nationality: "Greek",
+        email: "test@example.com",
+        website: "https://example.com",
+        literaryAgent: "Test Agent",
+        address: "1 Test Street, Athens, Greece",
+        telephone: "+30-1234-5678",
+        research: "Ancient sources and modern scholarship",
+      });
     });
   });
 

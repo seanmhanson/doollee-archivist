@@ -44,6 +44,8 @@ describe("Author.class", () => {
       expect(worksData).toEqual(getExpectedWorksData());
       expect(archiveData).toEqual(getExpectedArchive(fixture));
       expect(Object.isFrozen(author.archiveData)).toBe(true);
+      expect(Object.isFrozen(fixture._archive)).toBe(false);
+      expect(author.archiveData).not.toBe(fixture._archive);
     });
 
     it("should initialize with no associated works and allow additions", () => {

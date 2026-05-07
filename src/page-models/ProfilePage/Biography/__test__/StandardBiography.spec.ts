@@ -97,30 +97,24 @@ describe("StandardBiography", () => {
         <strong>Telephone:</strong> 020-1234-5678
         <strong>Research: </strong> Some research text
       `;
-      const logSpy = jest.spyOn(console, "log").mockImplementation(() => {
-        /** no-op mock */
-      });
-      try {
-        const mockPage = createMockPage({ altName, name, dates, innerHTML: fullLabelHTML });
-        const biography = new TestStandardBiography(mockPage);
-        await biography.extractData();
 
-        expect(biography.biographyData._archive).toEqual({
-          name,
-          altName,
-          dates,
-          biography: "",
-          nationality: "English",
-          email: "test@example.com",
-          website: "https://example.com",
-          literaryAgent: "Test Agent",
-          address: "1 Test Street, London, UK",
-          telephone: "020-1234-5678",
-          research: "Some research text",
-        });
-      } finally {
-        logSpy.mockRestore();
-      }
+      const mockPage = createMockPage({ altName, name, dates, innerHTML: fullLabelHTML });
+      const biography = new TestStandardBiography(mockPage);
+      await biography.extractData();
+
+      expect(biography.biographyData._archive).toEqual({
+        name,
+        altName,
+        dates,
+        biography: "",
+        nationality: "English",
+        email: "test@example.com",
+        website: "https://example.com",
+        literaryAgent: "Test Agent",
+        address: "1 Test Street, London, UK",
+        telephone: "020-1234-5678",
+        research: "Some research text",
+      });
     });
   });
 

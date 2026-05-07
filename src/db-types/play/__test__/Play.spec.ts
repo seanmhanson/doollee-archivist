@@ -60,6 +60,8 @@ describe("Play.class", () => {
       const fixture = getPlayFixture();
       const play = new Play(fixture);
       expect(play.archiveData).toEqual(fixture._archive);
+      expect(play.archiveData).not.toBe(fixture._archive);
+      expect(Object.isFrozen(fixture._archive)).toBe(false);
     });
 
     it("should return a frozen archive object", () => {

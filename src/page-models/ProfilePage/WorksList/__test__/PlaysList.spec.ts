@@ -183,23 +183,13 @@ describe("PlaysList", () => {
         parts: "Male: 2 Female: 3 Other: -",
         reference: "ref123",
       };
+      const expectedArchive = {
+        _type: "play",
+        ...fullRow,
+      };
       const page = createMockPage([fullRow]);
       const plays = await PlaysList.create(page);
-      expect(plays.worksData[0]._archive).toEqual({
-        _type: "play",
-        playId: "42",
-        title: "Test Play",
-        altTitle: "An Alternate Title",
-        synopsis: "A test synopsis.",
-        notes: "Some notes.",
-        production: "National Theatre Oct 2010",
-        organizations: "Test Org",
-        publisher: "Samuel French 1972",
-        music: "Original Score",
-        genres: "comedy drama",
-        parts: "Male: 2 Female: 3 Other: -",
-        reference: "ref123",
-      });
+      expect(plays.worksData[0]._archive).toEqual(expectedArchive);
     });
 
     it("should accumulate reviewNotes from both publicationDetails and productionDetails", async () => {

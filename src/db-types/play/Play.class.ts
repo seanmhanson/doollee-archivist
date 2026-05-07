@@ -122,7 +122,7 @@ export default class Play {
 
   constructor(input: PlayData) {
     this._id = new ObjectId();
-    this._archive = Object.freeze(input._archive);
+    this._archive = Object.freeze({ ...input._archive });
     this.playId = input.playId;
     this.metadata = {
       createdAt: undefined,

@@ -239,28 +239,15 @@ describe("AdaptationsList", () => {
         reference: "ref123",
         parts: { maleParts: "3", femaleParts: "2", otherParts: "-" },
       };
+      const { parts, ...baseArchiveFields } = fullRow;
+      const expectedArchive = {
+        _type: "adaptation",
+        ...baseArchiveFields,
+        ...parts,
+      };
       const page = createMockPage([fullRow]);
       const adaptationsList = await AdaptationsList.create(page);
-      expect(adaptationsList.worksData[0]._archive).toEqual({
-        _type: "adaptation",
-        playId: "12345",
-        adaptingAuthor: "JAY MILLER",
-        title: "Test Adaptation",
-        productionLocation: "Donmar Warehouse",
-        productionYear: "Oct 2010",
-        organizations: "Test Org",
-        publisher: "Nick Hern Books 2001",
-        isbn: "9780571231041",
-        music: "Original Score",
-        genres: "adaptation",
-        notes: "Original Playwright - Euripides. A free adaptation.",
-        imgAlt: "Test Image Alt",
-        synopsis: "A test synopsis.",
-        reference: "ref123",
-        maleParts: "3",
-        femaleParts: "2",
-        otherParts: "-",
-      });
+      expect(adaptationsList.worksData[0]._archive).toEqual(expectedArchive);
     });
 
     it("should accumulate reviewNotes from both productionDetails and publicationDetails", async () => {
