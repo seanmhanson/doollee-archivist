@@ -304,7 +304,7 @@ export function getGenreTermsPipeline() {
 }
 
 /**
- * Generate a MongoDB aggregation pipeline that analyses the rawFields.publishingInfo field,
+ * Generate a MongoDB aggregation pipeline that analyses the _archive.publisher field,
  * producing two facets: format-category frequency and inferred publisher name frequency.
  */
 export function getPublishingInfoFormatsPipeline() {
