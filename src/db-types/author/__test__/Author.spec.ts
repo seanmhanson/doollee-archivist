@@ -35,6 +35,7 @@ describe("Author.class", () => {
         middleNames: [],
         suffixes: [],
       });
+      expect(fixture._archive).not.toHaveProperty("listingName");
       expect(biographyData).toEqual(getExpectedBiographyData(fixture));
       expect(worksData).toEqual(getExpectedWorksData());
       expect(archiveData).toEqual(getExpectedArchive(fixture));

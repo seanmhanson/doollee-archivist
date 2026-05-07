@@ -30,7 +30,6 @@ function getAuthorFixture(
   return {
     _archive: {
       dates: `(${yearBorn ?? ""} - ${yearDied ?? ""})`,
-      listingName,
       ...archiveData,
       name: headingName,
       ...(altName !== undefined ? { altName } : {}),
