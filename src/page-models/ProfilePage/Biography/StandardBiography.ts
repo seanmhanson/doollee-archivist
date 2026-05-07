@@ -39,7 +39,6 @@ export default class StandardBiography extends BaseBiography {
     this.data = {
       _archive,
       name,
-      altName,
       yearBorn,
       yearDied,
       biography,

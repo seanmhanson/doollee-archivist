@@ -3,13 +3,7 @@ import { ObjectId } from "mongodb";
 
 import Author from "../Author.class";
 
-import {
-  getAuthorFixture,
-  getExpectedArchive,
-  getExpectedWorksData,
-  getExpectedBiographyData,
-  getExpectedRawFields,
-} from "./Author.fixture";
+import { getAuthorFixture, getExpectedArchive, getExpectedWorksData, getExpectedBiographyData } from "./Author.fixture";
 
 import type { AuthorData } from "../author.types";
 
@@ -27,7 +21,8 @@ describe("Author.class", () => {
 
     it("should create an Author instance with the expected properties", () => {
       const { authorName, id, nameData, biographyData, worksData, archiveData } = author;
-      const { name, altName } = fixture;
+      const { name } = fixture;
+      const { altName } = fixture._archive;
       expect(author).toBeInstanceOf(Author);
       expect(id).toBeInstanceOf(ObjectId);
 
@@ -40,6 +35,7 @@ describe("Author.class", () => {
         middleNames: [],
         suffixes: [],
       });
+      expect(fixture._archive).not.toHaveProperty("listingName");
       expect(biographyData).toEqual(getExpectedBiographyData(fixture));
       expect(worksData).toEqual(getExpectedWorksData());
       expect(archiveData).toEqual(getExpectedArchive(fixture));
@@ -79,7 +75,6 @@ describe("Author.class", () => {
       author.addDoolleeIds(doolleePlayIds);
 
       const _archive = getExpectedArchive(fixture);
-      const rawFields = getExpectedRawFields(fixture);
       const biographyData = getExpectedBiographyData(fixture);
       const metadata = {
         scrapedAt: fixture.scrapedAt,
@@ -89,7 +84,7 @@ describe("Author.class", () => {
       };
       const nameData = {
         name: fixture.name,
-        displayName: fixture.altName,
+        displayName: fixture._archive.altName,
         lastName: "Mamet",
         firstName: "David",
       };
@@ -103,7 +98,6 @@ describe("Author.class", () => {
         _id: expect.any(ObjectId),
         _archive,
         metadata,
-        rawFields,
         ...nameData,
         ...biographyData,
         ...worksData,
@@ -119,9 +113,7 @@ describe("Author.class", () => {
 
   describe("#reviewNotes", () => {
     it("should add NAME_INCONSISTENCY when listing and heading names do not match", () => {
-      const author = new Author(
-        getAuthorFixture({ listingName: "SMITH John", headingName: "JANE SMITH", altName: "" }),
-      );
+      const author = new Author(getAuthorFixture({ listingName: "SMITH John", headingName: "JANE SMITH" }));
       expect(author.hasReviewNotes).toBe(true);
       expect(author.toDocument().metadata.reviewNotes).toEqual([REVIEW_NOTES.NAME_INCONSISTENCY]);
     });
@@ -135,9 +127,7 @@ describe("Author.class", () => {
     });
 
     it("should accumulate both SINGLE_WORD_AUTHOR_NAME and NAME_INCONSISTENCY when applicable", () => {
-      const author = new Author(
-        getAuthorFixture({ listingName: "Shakespeare", headingName: "WILLIAM SHAKESPEARE", altName: "" }),
-      );
+      const author = new Author(getAuthorFixture({ listingName: "Shakespeare", headingName: "WILLIAM SHAKESPEARE" }));
       expect(author.hasReviewNotes).toBe(true);
       expect(author.toDocument().metadata.reviewNotes).toEqual([
         REVIEW_NOTES.SINGLE_WORD_AUTHOR_NAME,

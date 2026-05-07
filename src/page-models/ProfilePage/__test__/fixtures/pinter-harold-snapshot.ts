@@ -16,7 +16,6 @@ export default {
       literaryAgent: "Judy Daish Associates Ltd (Estate of)",
     },
     name: "HAROLD PINTER",
-    altName: "Harold Pinter",
     yearBorn: "1930",
     yearDied: "2008",
     biography:
@@ -28,8 +27,6 @@ export default {
   },
   works: [
     {
-      publishingInfo: "in Harold Pinter plays 4, Faber and Faber Ltd, London (2012) >>> 978-0571288403",
-      productionInfo: "the Inner Temple, London 11 May 2006",
       _archive: {
         _type: "play",
         playId: "136074",
@@ -62,7 +59,6 @@ export default {
       partsTextFemale: "1",
       partsTextOther: "-",
       title: "Apart From That",
-      altTitle: "Apart From That",
       synopsis: "Two people talking on mobile phones",
       notes:
         "performed by Harold Pinter And Antonia Fraser At A charity event in Aid of Patrick pakenham Scholarships for young ex-offenders. the sketch was braodcast on BBC Radio 3 on 12 may 2006.",
@@ -71,8 +67,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Methuen Drama -",
-      productionInfo: "BBC Third Programme 1964",
       _archive: {
         _type: "play",
         playId: "27974",
@@ -105,7 +99,6 @@ export default {
       partsTextFemale: "1",
       partsTextOther: "-",
       title: "Applicant",
-      altTitle: "",
       synopsis:
         "Applying for a job, a young man is given a bizarre psychological test which leaves him gasping, blushing and rolling on the floor in shock.",
       notes: "excerpt from the Hothouse",
@@ -114,8 +107,6 @@ export default {
       reference: "Theatre Record Vol XII (1992) Page 0540 - [Theatre: Man in the Moon]",
     },
     {
-      publishingInfo: "Faber and Faber, London, 1996 -",
-      productionInfo: "Royal Court at the Ambassadors Theatre, London >>> 12 Sep 1996",
       _archive: {
         _type: "play",
         playId: "27975",
@@ -148,7 +139,6 @@ export default {
       partsTextFemale: "1",
       partsTextOther: "-",
       title: "Ashes To Ashes",
-      altTitle: "",
       synopsis:
         "This dark, elegiac play, studded with brutally and swaggeringly funny jokes is one of Pinter's most haunting works' Daily Telegraph",
       notes: "",
@@ -157,8 +147,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "Tea Party & Other Plays" Methuen, London, 1967 -',
-      productionInfo: "Off Broadway, New York 1968",
       _archive: {
         _type: "play",
         playId: "27976",
@@ -191,7 +179,6 @@ export default {
       partsTextFemale: "1",
       partsTextOther: "-",
       title: "Basement, The",
-      altTitle: "",
       synopsis:
         'the play, in the words of Edith Oliver, is "about a fussy, spinsterish bachelor whose carefully furnished basement flat is invaded late one night by his former roommate with a young girl in tow. Host is effusive in his welcome to former roommate, that is. Girl and former roommate strip naked and get into bed, as host, terribly rattled, continues to chatter. (the chatter is absolutely fine.) the intruders move in permanently, and soon the host\'s old pictures and bits of sculpture are replaced by a huge, bright, modern abstract. And there are other innovations. As the action progresses, the roles of lover and leftover switch back and forth, and the girl, like the old bum in the Caretaker, tries to set the men against each other and succeeds. there are scenes at a beach, in a cafe, and at a bogus deathbed, and there is a duel, which is fought on a dark stage with lighted broken bottles." In the end we are, it seems, back where we started. But not quite. We have seen, if only for a moment, the rather pathetic, tragic consequences',
       notes: "Televised 1967",
@@ -200,8 +187,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Eyre Methuen, London, 1978 -",
-      productionInfo: "National Theatre, London 15 Nov 1978",
       _archive: {
         _type: "play",
         playId: "27977",
@@ -235,7 +220,6 @@ export default {
       partsTextFemale: "1",
       partsTextOther: "-",
       title: "Betrayal",
-      altTitle: "",
       synopsis:
         "the play begins in the present, with the meeting of Emma and Jerry, whose adulterous affair of seven years ended two years earlier. Emma's marriage to Robert, Jerry's best friend, is now breaking up, and she needs someone to talk to. their reminiscences reveal that Robert knew of their affair all along and, to Jerry's dismay, regarded it with total nonchalance. thereafter, in a series of contiguous scenes, the play moves backward in time, from the end of the Emma-Jerry affair to its beginning, throwing into relief the little lies and oblique remarks which, in this timereverse, reveal more than direct statements, or overt actions, ever could.",
       notes: "",
@@ -245,8 +229,6 @@ export default {
         "Theatre Record Vol III (1983) Page 0325 - [Theatre: Greenwich]Theatre Record Vol XI (1991) Page 0077 - [Theatre: Almeida]Theatre Record Vol XIV (1994) Page 0580 - [Theatre: BAC Studio 1]Theatre Record Vol XIV (1994) Page 0897 - [Theatre: West Yorkshire Playhouse - Leeds]Theatre Record Vol XV (1995) Page 0439 - [Theatre: Citizens' Circle - Glasgow]Theatre Record Vol XVIII (1998) Page 1583 - [Theatre: Lyttelton]Theatre Record Vol XXIII (2003) Page 0908 - [Theatre: Theatre Royal - Bath]Theatre Record Vol XXIII (2003) Page 1375 - [Theatre: Duchess]Theatre Record Vol XXV (2005) Page 0379 - [Theatre: Duke's - Lancaster]Theatre Record Vol XXV (2005) Page 1259 - [Theatre: Mercury - Colchester]Theatre Record Vol XXV (2005) Page 1400 - [Theatre: Arches - Glasgow]Theatre Record Vol XXVII (2007) Page 0683 - [Theatre: Donmar Warehouse]Theatre Record Vol XXVIII (2008) Page 0963 - [Theatre: Byre - St. Andrews]Theatre Record Vol XXXI (2011) Page 0666 - [Theatre: Comedy]Theatre Record Vol XXXII (2012) Page 0254 - [Theatre: Citizens - Glasgow]Theatre Record Vol XXXII (2012) Page 0618 - [Theatre: Crucible - Sheffield]Theatre Record Vol XXXIV (2014) Page 1005 - [Theatre: Theatre Royal - York]",
     },
     {
-      publishingInfo: 'in "Birthday Party & Other Plays" Methuen, London, 1960 -',
-      productionInfo: "Arts Theatre, Cambridge 1958",
       _archive: {
         _type: "play",
         playId: "27978",
@@ -279,7 +261,6 @@ export default {
       partsTextFemale: "2",
       partsTextOther: "-",
       title: "Birthday Party, The",
-      altTitle: "",
       synopsis:
         "Goldberg and McCann arrive at a seaside boarding house where Meg and Petey live with their guest Stanley. they inquire about Stanley: we soon find out that McCann and Goldberg have a job to do. Learning it is his birthday they give Stanley a party at which Stanley is verbally bludgeoned into submission. the next day Stanley is removed. It is the collective impact of the dialogue which welds the seemingly inexplicable actions of Goldberg and McCann into a menacing whole.",
       notes: "",
@@ -288,8 +269,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Methuen Drama -",
-      productionInfo: "Lyric Opera House, London 1959",
       _archive: {
         _type: "play",
         playId: "27979",
@@ -322,7 +301,6 @@ export default {
       partsTextFemale: "2",
       partsTextOther: "-",
       title: "Black And White, The",
-      altTitle: "",
       synopsis:
         "Two old buddies, with little to do and nowhere to go, make small talk over soup in a crowded milk bar.",
       notes: "in One to Another",
@@ -331,8 +309,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Eyre Methuen, London, 1960 -",
-      productionInfo: "Arts Theatre Club, London 1960",
       _archive: {
         _type: "play",
         playId: "27980",
@@ -365,7 +341,6 @@ export default {
       partsTextFemale: "-",
       partsTextOther: "-",
       title: "Caretaker, The",
-      altTitle: "",
       synopsis:
         'the New York Times comments: "An old bum receives shelter in a cluttered room of an abandoned house. His samaritan is a gentle young man whose kindness is so casual that he seems almost indifferent. Dirty, tattered, unkempt, itching and scratching, the tramp is by turns wheedling, truculent and full of bravado. . .He speaks the proud lingo of those who have untold resources awaiting them at near-by havens. He pronounces his meager phrases with the exaggerated precision of one unaccustomed to being heeded. He flails a fist into a palm or into the air with the belligerence of a fighter no one will ever corner. He associates himself with fastidious practices like soap as if they were his daily habit. He is very funny-at first. But the laughter shades increasingly into pity. Like a cornered animal, he cannot believe that anyone means to be kind to him. . .He hates foreigners. He trusts no one, and fears everyone. He alienates the two brothers who separately have offered him a job as caretaker of the premises',
       notes: "",
@@ -374,8 +349,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "in Harold Pinter plays 4, Faber and Faber Ltd, London (2012) >>> 978-0571288403",
-      productionInfo: "Almeida Theatre, London >>> 16 Mar 2000",
       _archive: {
         _type: "play",
         playId: "27981",
@@ -408,7 +381,6 @@ export default {
       partsTextFemale: "4",
       partsTextOther: "-",
       title: "Celebration",
-      altTitle: "Celebration",
       synopsis:
         "All the action takes place in a swish London restaurant where two coarse-grained strategy consultants are dining with their respective wives. At an adjacent table a banker and his wife banter over his recently discovered affair. But while Pinter gets a lot of laughs out of these gold-plated philistines, he also suggests they are displaced people. Shorn of any inherited values, they live in an eternal present of sex, food and conspicuous consumption. - Michael Billington, Guardian",
       notes: "",
@@ -417,8 +389,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Samuel French, London, 1962 -",
-      productionInfo: "London 1962",
       _archive: {
         _type: "play",
         playId: "27982",
@@ -451,7 +421,6 @@ export default {
       partsTextFemale: "1",
       partsTextOther: "-",
       title: "Collection, The",
-      altTitle: "",
       synopsis:
         "As George Oppenheimer describes \"the action of the COLLECTION takes place on a divided stage, shared by a house in London's Belgravia and a flat in Chelsea. In the house live Harry, an older man, and Bill, a young dress designer. One night the life of Harry and Bill is distorted by an anonymous phone call, followed by a visit from a young man who refuses to leave his name. the visitor turns out to be James, owner of the flat where he lives with his wife, Stella, a decorative model, who has confessed to her husband that she had a one-night affair with Bill. James is obsessed with a desire to meet the man who had cuckolded him and when he does, a weird attraction-repulsion arise between the two young men. Harry discovers what is going on and in the end casts doubt on whether the affair ever took place and thereby reestablishes an uneasy status quo. All this is done with subtlety and good taste and affords a stimulating glimpse into the shadow abyss that lies between the true and the false, illusion and reality.",
       notes: "Televised 1961",
@@ -460,8 +429,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "Stand" Newcastle vol 6, no 3, 1963 -',
-      productionInfo: "BBC Third Programme 1964",
       _archive: {
         _type: "play",
         playId: "27983",
@@ -493,7 +460,6 @@ export default {
       partsTextFemale: "1",
       partsTextOther: "-",
       title: "Dialogue For Three",
-      altTitle: "",
       synopsis: "",
       notes: "",
       organizations: "",
@@ -501,8 +467,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "Birthday Party & Other Plays" Methuen, London, 1960 -',
-      productionInfo: "Frankfurt am Main, Germany 1959",
       _archive: {
         _type: "play",
         playId: "27984",
@@ -535,7 +499,6 @@ export default {
       partsTextFemale: "-",
       partsTextOther: "-",
       title: "Dumb Waiter, The",
-      altTitle: "",
       synopsis:
         'As the New York World-Telegram & Sun describes: "In the basement of a long-abandoned restaurant, two hired killers nervously await their next assignment. Barred from daylight and living public contact by the nature of their work, they expend their waiting time in bickering. So eerie is the situation that everything becomes comic, or grotesque, or both. Ben re-reading a newspaper and exclaiming in disbelief over the news items, Gus fussing with an offstage stove and offstage plumbing. Ben bludgeoning Gus into silence if he as much as mentions their work. Gus worrying that someone had slept in his bed. So then the ancient dumbwaiter comes to life, the suspense becomes almost unbearable-that expertly has Pinter put the nerves of his characters and audience on edge."',
       notes: "in German, Frankfurt 1959",
@@ -544,8 +507,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "A Slight Ache & Other Plays" Methuen, London, 1961 978-0413308306',
-      productionInfo: "New Arts Theatre, London 1963",
       _archive: {
         _type: "play",
         playId: "27985",
@@ -578,7 +539,6 @@ export default {
       partsTextFemale: "-",
       partsTextOther: "-",
       title: "Dwarfs, The",
-      altTitle: "Dwarfs, The",
       synopsis:
         "the play is concerned with three young men, Len, Pete and Mark, and the scene of action shifts back and forth between Len's house and Mark's. Sometimes all three come together, sometimes only two, and often Len is on stage alone. there are conversations and soliloquies filled with the brilliant convolutions of thought, the sudden flashes of truth which distinguish Pinter's unique style, with the mood ranging from calm introspection to explosive outpouring. Much of what is said hints at deeper thoughts left unspoken, and the sense of horror and alienation which often emerges is a searing indictment of our life and times. We meet, we talk, we tear at each other, but our insularity is seldom penetrated. We are together but alone, as though life were a mirror which reflects only our own image. But there is humor too, again distinctively Pinteresque in its startling swings from the direct to the illusive.",
       notes: "Broadcast 1960",
@@ -587,8 +547,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Methuen Drama -",
-      productionInfo: "London 1978",
       _archive: {
         _type: "play",
         playId: "27986",
@@ -620,7 +578,6 @@ export default {
       partsTextFemale: "-",
       partsTextOther: "-",
       title: "Examination, The",
-      altTitle: "",
       synopsis: "short prose piece",
       notes: "",
       organizations: "",
@@ -628,8 +585,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Next Editions, 1981 -",
-      productionInfo: "Lytlelton Theatre, National Theatre, London >>> 13 Feb 1981",
       _archive: {
         _type: "play",
         playId: "27987",
@@ -662,7 +617,6 @@ export default {
       partsTextFemale: "1",
       partsTextOther: "-",
       title: "Family Voices",
-      altTitle: "",
       synopsis:
         "a series of parallel monologues between a mother and son in the form of letters probably written but never mailed, in which the facade of a happy family gradually disintegrates into a cauldron of recrimination.",
       notes: "broadcast 22 Jan 1981, in Other Places",
@@ -671,8 +625,6 @@ export default {
       reference: "Theatre Record Volume I (1981) Page 69",
     },
     {
-      publishingInfo: "in Harold Pinter plays 4, Faber and Faber Ltd, London (2012) >>> 978-0571288403",
-      productionInfo: "Lyric Hammersmith, Lyric Square, King St, London W6 0QL >>> Mar 1997",
       _archive: {
         _type: "play",
         playId: "136073",
@@ -704,7 +656,6 @@ export default {
       partsTextFemale: "1",
       partsTextOther: "-",
       title: "God's District",
-      altTitle: "God's District",
       synopsis: '"I\'m here in Putney to save souls."',
       notes: "part of the revue then Again",
       organizations: "",
@@ -712,8 +663,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Faber and Faber, London, 1989 -",
-      productionInfo: "Granada TV 1989",
       _archive: {
         _type: "play",
         playId: "27988",
@@ -745,7 +694,6 @@ export default {
       partsTextFemale: "9",
       partsTextOther: "-",
       title: "Heat Of the Day, The",
-      altTitle: "",
       synopsis: "London is at war, couple are in love but a mysterious stranger intervenes.",
       notes: "novel by Elizabeth Bowen",
       organizations: "",
@@ -753,8 +701,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Methuen Drama -",
-      productionInfo: "Cardiff 1965",
       _archive: {
         _type: "play",
         playId: "27989",
@@ -787,7 +733,6 @@ export default {
       partsTextFemale: "1",
       partsTextOther: "-",
       title: "Homecoming, The",
-      altTitle: "",
       synopsis: "Eldest son returns to find his repeatability has made him a misfit amongst the squalor and amorality.",
       notes: "Cardiff March 26, London June 3",
       organizations: "",
@@ -795,8 +740,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Eyre Methuen, London, 1980 -",
-      productionInfo: "London 1980",
       _archive: {
         _type: "play",
         playId: "27990",
@@ -829,7 +772,6 @@ export default {
       partsTextFemale: "1",
       partsTextOther: "-",
       title: "Hothouse, The",
-      altTitle: "",
       synopsis:
         "the scene is a government institution, possibly mental or medical and presumably penal, where the inmates are kept behind locked gates and are referred to by number rather than name. In charge is Roote, a pompous ex-colonel who is surely as psychologically disturbed as his charges, and who is abetted by two main lackeys: the quietly sinister Gibbs and a seedy alcoholic appropriately named Lush. there is also the sexy Miss Cutts, whose favors appear to be shared by the various staff members. Among the matters at issue are the disturbing fact that one of the patients has given birth to a baby, though no one has filed an official report about having had sex with her and also the need for Roote to pull himself together to address the understaff Christmas party. In the final essence these bureaucratic crises hardly matter, however, as the play ends as ominously as it began, with a burst of lethal violence which leaves only one survivor to search for answers and, perhaps, to accept responsibility for the chaos which ensues.",
       notes: "written 1958",
@@ -838,8 +780,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "Plays 3" Faber, London, 1991 -',
-      productionInfo: "BBC Third Programme 1964",
       _archive: {
         _type: "play",
         playId: "27991",
@@ -872,7 +812,6 @@ export default {
       partsTextFemale: "-",
       partsTextOther: "-",
       title: "Interview",
-      altTitle: "",
       synopsis:
         'During an interview, the proprietor of a pornographic book store confides that the "security police" have dossiers on all his customers-and so does he. After all, they\'re a pack of Communists.',
       notes: "",
@@ -881,8 +820,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Methuen Drama -",
-      productionInfo: "London 14 Oct 1982",
       _archive: {
         _type: "play",
         playId: "27992",
@@ -915,7 +852,6 @@ export default {
       partsTextFemale: "2",
       partsTextOther: "-",
       title: "Kind Of Alaska, A",
-      altTitle: "",
       synopsis:
         "a masterly study of a middle-aged woman waking up after 30 years passed in a coma induced by sleeping sickness. In her mind she is still 16, and her attempts to fathom the changed world into which she re-emerges is not only poignant and emotionally charged but, in the end, devastatingly brilliant theatre as well.",
       notes: "in Other Places",
@@ -924,8 +860,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Pendragon Press, 1968 -",
-      productionInfo: "Aldwych Theatre, London >>> 1969",
       _archive: {
         _type: "play",
         playId: "27993",
@@ -958,7 +892,6 @@ export default {
       partsTextFemale: "1",
       partsTextOther: "-",
       title: "Landscape",
-      altTitle: "",
       synopsis:
         "a middle aged couple, housekeeper and chauffeur sit in the huge bare kitchen of a country house pursuing their own thoughts aloud in a ghastly semblance of conversation.",
       notes: "Broadcast 1968",
@@ -967,8 +900,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "A Slight Ache & Other Plays" Methuen, London, 1961 978-0413308306',
-      productionInfo: "Apollo Theatre, London 1959",
       _archive: {
         _type: "play",
         playId: "27994",
@@ -1001,7 +932,6 @@ export default {
       partsTextFemale: "-",
       partsTextOther: "-",
       title: "Last To Go",
-      altTitle: "Last To Go",
       synopsis:
         "A coffee stall. the attendant and an old newspaper seller chat idly about a variety of pointless topics which probably mean little to either of them.",
       notes: "in Pieces of Eight",
@@ -1010,8 +940,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "the Collection & the Lover" Methuen, London, 1963 -',
-      productionInfo: "Arts Theatre Club, London 1963",
       _archive: {
         _type: "play",
         playId: "27995",
@@ -1044,7 +972,6 @@ export default {
       partsTextFemale: "1",
       partsTextOther: "-",
       title: "Lover, The",
-      altTitle: "",
       synopsis:
         "As the New York Herald-Tribune outlines \"A husband goes to his office politely asking if his wife's lover will be coming today. She murmurs 'mmmm,' and suggest he not return before six. In order not to return before six he will no doubt visit a prostitute. A competition is glossily established. When the lover does come, he is the husband, which is not surprising. the kind of sex-play follows that suggests this is the necessary titillation, and the necessary release of hostility, between a man who means to be master of the house and a wife who means to be both wife and mistress, whatever the house may be. But there is a flaw in the accommodation. the lover is weary of his mistress; she is no longer particularly appetizing. By the time he returns, as husband, in the evening, his wife is still disturbed by the news. the performance of the afternoon has begun to carry over into the reality (or pretense) of the evening. Suddenly the husband is not quite husband, diffident over his drink.",
       notes: "Televised 1963",
@@ -1053,8 +980,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "Plays 3" Faber, London, 1991 -',
-      productionInfo: "- 1969",
       _archive: {
         _type: "play",
         playId: "27996",
@@ -1086,7 +1011,6 @@ export default {
       partsTextFemale: "-",
       partsTextOther: "-",
       title: "Mac-a Memoir",
-      altTitle: "",
       synopsis: "",
       notes: "",
       organizations: "",
@@ -1094,8 +1018,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Covent Garden Press, 1973 -",
-      productionInfo: "London 1973",
       _archive: {
         _type: "play",
         playId: "27997",
@@ -1127,7 +1049,6 @@ export default {
       partsTextFemale: "-",
       partsTextOther: "-",
       title: "Monologue",
-      altTitle: "",
       synopsis: "Woolf, in a seedy room, talks to the empty chair in which he is seated.",
       notes: "Televised 13 April 1973",
       organizations: "",
@@ -1135,8 +1056,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Faber and Faber Ltd, London (1993) >>> 978-0571276608",
-      productionInfo: "Almeida Theatre, London >>> 07 Sep 1993",
       _archive: {
         _type: "play",
         playId: "27998",
@@ -1169,7 +1088,6 @@ export default {
       partsTextFemale: "2",
       partsTextOther: "1g",
       title: "Moonlight",
-      altTitle: "Moonlight",
       synopsis:
         "In a dark space you can't measure, a once visceral Father lies on his deathbed, looking over his life, his youth, loves, lusts and betrayals of his wife. At the same time, in another bedroom, somewhere in the same space, the man's two sons intellectually, clinically and conspiratorially speak of their relationship with their father. Side-stepping their estrangement from him, they rationalize their love-hate relationship with him and defend the distance they are incapable of closing, even when their mother calls them home. In contrast to these closed sons, is the man's daughter, the baby sister, who refuses the dourness and bridges the space between the light and dark, youth and age, and death and life.",
       notes: "",
@@ -1178,8 +1096,6 @@ export default {
       reference: "Theatre Record Volume XXXI (2011) Issue 08 Page 394",
     },
     {
-      publishingInfo: "Faber and Faber, London, 1988 -",
-      productionInfo: "London 20 Oct 1988",
       _archive: {
         _type: "play",
         playId: "27999",
@@ -1212,7 +1128,6 @@ export default {
       partsTextFemale: "2",
       partsTextOther: "-",
       title: "Mountain Language",
-      altTitle: "",
       synopsis:
         'Furthering the theme of political consciousness expressed so forcefully and eloquently in his earlier play ONE FOR the ROAD, the author\'s present play takes place in an anonymous country where individual liberties have been forfeited to the state. Set in a prison where the inmates are forbidden to speak their own language, the play is comprised of four terse, arresting scenes which make masterful use of nuance and subtle understatement (with sudden bursts of violence) to create an overwhelming sense of terror and shocking futility. In one scene uniformed officers taunt and belittle the women who have come to visit their men, who are political prisoners; in another a mother and son are allowed to speak only in "the language of the capital," which they do not know; in the third scene a young woman accidentally sees a guard holding a limp, tortured man whom she knows to be her husband; and, in the final scene the old woman reunited with her bloody, trembling son and, though told she may now speak.',
       notes: "",
@@ -1221,8 +1136,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "Granata" No 37, 1991 -',
-      productionInfo: "Royal Court Theatre Upstairs, London >>> 19 Jul 1991",
       _archive: {
         _type: "play",
         playId: "28000",
@@ -1255,7 +1168,6 @@ export default {
       partsTextFemale: "-",
       partsTextOther: "-",
       title: "New World Order, The",
-      altTitle: "",
       synopsis:
         "Two men stand above a third-tied and blindfolded-talking to each other, but addressing the third man. the insinuations and threats about what will become of-and what will be done to-this third man, represent the forces in today's world which stifle freedom in its many forms. the fear and uncertainty conveyed by this short piece powerfully reminds us that the evils of the world will always try to conquer us if we don't heed the warnings.",
       notes: "",
@@ -1264,8 +1176,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "Landscape & Silence" Methuen, London, 1969 -',
-      productionInfo: "Hampstead Theatre, London, Eur >>> 1969",
       _archive: {
         _type: "play",
         playId: "28001",
@@ -1298,7 +1208,6 @@ export default {
       partsTextFemale: "1",
       partsTextOther: "-",
       title: "Night",
-      altTitle: "",
       synopsis: "long married couple cast their minds back to their first meeting.",
       notes:
         'Originally presented As one of eight plays under the title "We Who Are About To. . ." At the Hampstead theatre Club on February 6th 1969, which was subsequently presented As "Mixed Doubles" At the Comedy theatre, London on April 9th 1969',
@@ -1307,8 +1216,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "A Slight Ache & Other Plays" Methuen, London, 1961 978-0413308306',
-      productionInfo: "Dublin 1961",
       _archive: {
         _type: "play",
         playId: "28002",
@@ -1341,7 +1248,6 @@ export default {
       partsTextFemale: "5",
       partsTextOther: "-",
       title: "Night Out, A",
-      altTitle: "Night Out, A",
       synopsis:
         "Living at home with his widowed, domineering mother, Albert is a meek, hen-pecked fellow for whom the invitation to an office party is a rare and welcome chance for a bit of fun. With his mother's exhortations to behave himself ringing in his ears (and his dinner in the oven lest he lose his nerve and turn back home), Albert meets his friends and goes off to the party. Once there, he struggles to overcome his shyness and join in the small talk, but when he is falsely accused of pinching a girl the resulting furor is more than he can cope with. Slinking home he is confronted with maternal diatribe which is, for poor Albert, the last straw. In a rage he rushes back into the London night and, picking up a girl at a coffee stand, goes with her to her room. But when they are alone the girl rambles on incessantly about what a lady she really is and Albert, perhaps sensing in her the personification of all the prattling women in the world, turns on her vindictively and annihilates her seamy and pathetic pretensions.",
       notes: 'broadcast 1960; part of triple bill "Counterpoint"',
@@ -1350,8 +1256,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "Tea Party & Other Plays" Methuen, London, 1967 -',
-      productionInfo: "Associated Rediffussion 1960",
       _archive: {
         _type: "play",
         playId: "28003",
@@ -1383,7 +1287,6 @@ export default {
       partsTextFemale: "3",
       partsTextOther: "-",
       title: "Night School",
-      altTitle: "",
       synopsis: "man leaves jail and returns home to find his two aunts have let his room.",
       notes: "",
       organizations: "",
@@ -1391,8 +1294,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Eyre Methuen, London, 1975 -",
-      productionInfo: "London 1975",
       _archive: {
         _type: "play",
         playId: "28004",
@@ -1425,7 +1326,6 @@ export default {
       partsTextFemale: "-",
       partsTextOther: "-",
       title: "No Man's Land",
-      altTitle: "",
       synopsis:
         "Involves the confrontation of two aging writers, one a success, one not. they meet at the comfortable flat of the successful author for a nightcap, even though it is not clearly apparent that they are previously acquainted, and the failed, seedy writer is soon forced to acknowledge that he now works as an attendant in a pub. the rich author, Hirst, having drunk too much, is put to bed by the two rather sinister servant-bodyguards who attend him, and his guest, Spooner, is left alone-with the door locked. In the morning the mood changes. Spooner is served a lavish breakfast, and then a rejuvenated Hirst bursts in, greeting Spooner as though he were a dear old school chum, and the sharer of many past escapades. Spooner plays along, and there is the sudden hope that he will be able to secure their relationship to his personal benefit. But Hirst can only acknowledge the cold around him, and order the curtains drawn, before slipping irretrievably into that place which never changes-the icy, silent no man's land.",
       notes: "",
@@ -1434,8 +1334,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Methuen Drama -",
-      productionInfo: "Oxford Playhouse 1971",
       _archive: {
         _type: "play",
         playId: "28005",
@@ -1468,7 +1366,6 @@ export default {
       partsTextFemale: "2",
       partsTextOther: "-",
       title: "Old Times",
-      altTitle: "",
       synopsis:
         "the scene is a fashionably remodeled farmhouse in the countryside somewhere beyond London, where a prosperous and urbane couple are entertaining the wife's former roommate and friend whom they have not seen for twenty years. At first the husband and wife banter, then the friend joins them and a flood of intertwining memories ensues. the action shifts back and forth in time, as recollection of what did-or, perhaps, did not-happen are pondered and, as the tension builds, we are aware that the husband and the friend have become locked in a duel for the wife's very soul. Reveries and ambiguities abound, hinting at much more than is said, and forming together into a surprising entity which challenges the heart and mind and will linger on enticingly in the memory.",
       notes: "",
@@ -1477,8 +1374,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Methuen Drama -",
-      productionInfo: "Lyric Studio Hammersmith, Lyric Square, King St, London W6 0QL >>> Mar 1984",
       _archive: {
         _type: "play",
         playId: "28006",
@@ -1511,7 +1406,6 @@ export default {
       partsTextFemale: "1",
       partsTextOther: "1b",
       title: "One For the Road",
-      altTitle: "",
       synopsis:
         'powerful statement about the abuse of human rights by totalitarian governments, finds an unctuous and "civilized" interrogator humiliating the doomed members of a family who have become enemies of the state.',
       notes: "part of Other Places",
@@ -1520,8 +1414,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Samuel French, London, 1960 -",
-      productionInfo: "Margate: Theatre Royal 30 Jun 1959",
       _archive: {
         _type: "play",
         playId: "28007",
@@ -1554,7 +1446,6 @@ export default {
       partsTextFemale: "4",
       partsTextOther: "-",
       title: "One to Another",
-      altTitle: "",
       synopsis: "",
       notes:
         "written by Patrick Gowers (mus, sk, lyr) And Joseph Horovitz (mus,t'sk, lyr) And Stanley Myers (mus, sk, lyr) And Humphrey Searle (mus, sk, lyr) And Charles Cansley (sk, lyr) And Robert Benchley (sk, lyr) And John Cranko (sk. lyr) And Serge Gainsbourg (sk. lyr) And Bamber Gascoigne (sk, lyr) And David Heneker (sk. lyr) And Roddy Maude-Roxby (sk, lyr) And Julian More (sk, lyr) And John Mortimer (sk, lyr) And David Nobbs (sk, lyr) And Monty Norman (sk, lyr) And Dorothy Parker (sk, lyr) And Harold Pinter (sk, lyr) And Alistair Sampson (sk, lyr) And William Sansom (sk, lyr) And N.F. Simpson (sk, lyr) And Keith Statham (mus, sk, lyr) And Brian Tester (sk, lyr).",
@@ -1563,8 +1454,6 @@ export default {
       reference: "Wearing - the London Stage 59.155",
     },
     {
-      publishingInfo: "Methuen Drama -",
-      productionInfo: "London 14 Oct 1982",
       _archive: {
         _type: "play",
         playId: "28008",
@@ -1596,7 +1485,6 @@ export default {
       partsTextFemale: "2",
       partsTextOther: "-",
       title: "Other Places",
-      altTitle: "",
       synopsis: "Family Voices; Victoria Station; A Kind of Alaska",
       notes: "",
       organizations: "",
@@ -1604,8 +1492,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Faber and Faber, London, 1991 -",
-      productionInfo: "Almeida Theatre, London >>> 31 Oct 1991",
       _archive: {
         _type: "play",
         playId: "28009",
@@ -1637,7 +1523,6 @@ export default {
       partsTextFemale: "4",
       partsTextOther: "-",
       title: "Party Time",
-      altTitle: "",
       synopsis: "A party in an elegant flat. Below, in the streets, a military presence. the party goes on.",
       notes: "",
       organizations: "",
@@ -1645,8 +1530,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "A Slight Ache & Other Plays" Methuen, London, 1961 978-0413308306',
-      productionInfo: "Oxford: New Theatre 31 Aug 1959",
       _archive: {
         _type: "play",
         playId: "28010",
@@ -1678,7 +1561,6 @@ export default {
       partsTextFemale: "2",
       partsTextOther: "-",
       title: "Pieces Of Eight",
-      altTitle: "Pieces Of Eight",
       synopsis: "Last To Go; Request Stop; Special Offer",
       notes: "",
       organizations: "",
@@ -1686,8 +1568,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "the Big One" Methuen, London, 1984 -',
-      productionInfo: "Apollo Theatre, London 18 Dec 1983",
       _archive: {
         _type: "play",
         playId: "28011",
@@ -1719,7 +1599,6 @@ export default {
       partsTextFemale: "-",
       partsTextOther: "-",
       title: "Precisely",
-      altTitle: "",
       synopsis: "in anti-nuclear weapons show, how many dead would be acceptable ?",
       notes: "Part of the Big One",
       organizations: "",
@@ -1727,8 +1606,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "",
-      productionInfo: "Cottesloe, National Theatre, London, Eur >>> 2000",
       _archive: {
         _type: "play",
         playId: "57461",
@@ -1761,7 +1638,6 @@ export default {
       partsTextFemale: "-",
       partsTextOther: "cast of 30",
       title: "Rememberance Of Things Past",
-      altTitle: "",
       synopsis:
         'Proust\'s recollection of his childhood in the French countryside of the 1870\'s, his move to Paris and the story that unfolds as France goes into the first world war. Notes: the novels of Marcel Proust Adapted by Di Trevis from the screenplay by Harold Pinter. 1st Produced: Cottesloe, National Theatre, London, Eur >>> 2000 Organisations: - 1st Published: - - Music: - To Buy This Play: If Publisher (above) is underlined then the play may be purchased by direct click from the Publisher, otherwise (below) are AbeBooks for secondhand, signed & 1st eds and other Booksellers for new copies Booksellers: abebooks.com abebooks.co.uk stageplays.com amazon.com amazon.co.uk amazon.ca Genre: Adaptation Parts: Male: - Female: - Other: cast of 30 Further Reference: - Top of Page Request Stop A brief monologue by a "lady" waiting in a bus queue. Is it her fault if the men she asked directions of should race to the wrong conclusions? Notes: in Pieces of Eight 1st Produced: Apollo Theatre, London 1959 Organisations: - 1st Published: in "A Slight Ache & Other Plays" Methuen, London, 1961 978-0413308306 Music: - To Buy This Play: If Publisher (above) is underlined then the play may be purchased by direct click from the Publisher, otherwise (below) are AbeBooks for secondhand, signed & 1st eds and other Booksellers for new copies Booksellers: abebooks.com abebooks.co.uk stageplays.com amazon.com amazon.co.uk amazon.ca Genre: Revue Sketches Show Parts: Male: 2 Female: 3 Other: - Further Reference: - Top of Page Room, The Synopsis: While her taciturn husband remains engrossed in his magazine, Rose bustles about getting breakfast. As she works she carries on a monologue touching on the weather, the coziness of their cramped quarters, and the mysterious tenant who occupies a damp, windowless room in the basement. the aged landlord, Mr. Kidd, enters, and while he at least responds to Rose\'s small talk, he does little to allay her nameless fears of the room below. After Mr. Kidd and Bert, the husband, depart, a young couple appears in search of lodgings and Rose discovers that they had wandered into the basement room while looking for the landlord. their description of what they saw, or rather felt in the darkness only heightens her growing sense of apprehension. then, after they have gone, Mr. Kidd returns to tell Rose that she must see the man who has been waiting for her below, waiting for Bert to be gone. the stranger, when Mr. Kidd brings him in, proves to be a blind black man with a message for Rose, and while she disclaims any knowledge. Notes: - 1st Produced: Bristol 1957 Organisations: - 1st Published: in "Birthday Party & Other Plays" Methuen, London, 1960 - Music: - To Buy This Play: If Publisher (above) is underlined then the play may be purchased by direct click from the Publisher, otherwise (below) are AbeBooks for secondhand, signed & 1st eds and other Booksellers for new copies Booksellers: abebooks.com abebooks.co.uk stageplays.com amazon.com amazon.co.uk amazon.ca Genre: One Act Parts: Male: 4 Female: 2 Other: - Further Reference: - Top of Page Silence Synopsis: spoken reminiscences of three seated people hidden behind a grey screen. Notes: - 1st Produced: Aldwych Theatre, London >>> 1969 Organisations: - 1st Published: in "Landscape & Silence" Methuen, London, 1969 - Music: - To Buy This Play: If Publisher (above) is underlined then the play may be purchased by direct click from the Publisher, otherwise (below) are AbeBooks for secondhand, signed & 1st eds and other Booksellers for new copies Booksellers: abebooks.com abebooks.co.uk stageplays.com amazon.com amazon.co.uk amazon.ca Genre: One Act Parts: Male: 2 Female: 1 Other: - Further Reference: - Top of Page Sketches By Pinter Synopsis: Night Out; Night School; Revue Sketches Notes: - 1st Produced: New York 1969 Organisations: - 1st Published: in"Early Plays2 Grove Press, New York, 1968 - Music: - To Buy This Play: If Publisher (above) is underlined then the play may be purchased by direct click from the Publisher, otherwise (below) are AbeBooks for secondhand, signed & 1st eds and other Booksellers for new copies Booksellers: abebooks.com abebooks.co.uk stageplays.com amazon.com amazon.co.uk amazon.ca Genre: sketches Sketch Parts: Male: 1 Female: 1 Other: - Further Reference: - Top of Page Slight Ache, A Flora and Edward sit at the breakfast table chatting of flowers and wasps and of the slight ache which Edward feels in his eyes. their conversation, which seems so simple and is yet so strangely revealing, then shifts to the mysterious matchseller who has been standing by their back gate for many weeks. Somehow his presence intimidates them, particularly Edward, whose ache becomes aggravated as they discuss who the matchseller may really be, and they resolve to call him in for a direct confrontation. Flora goes out to invite him to come into the house, and when he appears he proves to be an old man, dressed in rags, and so feeble that it is doubtful whether he can see or hear. Seating him in a chair Edward speaks to him in an unnaturally jovial and somehow terrifying manner and soon Edward, without a word of reply from the matchseller, is so unstrung that he cannot go on. Flora takes over the interrogation, and again the old man\'s silence spurs the spilling out of buried frustrations and fears. Notes: broadcast 29/07/59 1st Produced: Arts Theatre Club, London 1961 Organisations: - 1st Published: in "A Slight Ache & Other Plays" Methuen, London, 1961 978-0413308306 Music: - To Buy This Play: If Publisher (above) is underlined then the play may be purchased by direct click from the Publisher, otherwise (below) are AbeBooks for secondhand, signed & 1st eds and other Booksellers for new copies Booksellers: abebooks.com abebooks.co.uk stageplays.com amazon.com amazon.co.uk amazon.ca Genre: One Act Parts: Male: 2 Female: 1 Other: one man is non speaking Further Reference: - Top of Page Special Offer - Notes: in Pieces of Eight 1st Produced: London 1959 Organisations: - 1st Published: in "A Slight Ache & Other Plays" Methuen, London, 1961 978-0413308306 Music: - To Buy This Play: If Publisher (above) is underlined then the play may be purchased by direct click from the Publisher, otherwise (below) are AbeBooks for secondhand, signed & 1st eds and other Booksellers for new copies Booksellers: abebooks.com abebooks.co.uk stageplays.com amazon.com amazon.co.uk amazon.ca Genre: Sketch Parts: Male: - Female: 1 Other: - Further Reference: - Top of Page Tea Party, The Synopsis: As the New Yorker describes: "TEA PARTY is about a middle-aged self-made business man named Sisson who engages a young secretary, marries a beautiful young second wife, and takes his new brother-in-law into his business-all in the same day. Mysteries abound. What is going on between the wife and her brother? Are they indeed brother and sister? Sisson has his doubts about that (and so do I). Why does Sisson feel that there must be something wrong with his eyes, although he knows that he can see clearly and his eye doctor has assured him that his vision is perfect? He forces his secretary to tie a chiffon scarf over his eyes, and then he is able to make a pass at her, in response to one of her many come-ons. Ordinary events assume a sinister tinge. Sisson\'s two sons, giving him the deadpan treatment that little boys have been inflicting on their elders from time immemorial, seem as eerie as characters out of a ghost story. Always the questions remain. Is there a conspiracy against Sisson. Notes: Televised 1965 1st Produced: New York 1968 Organisations: - 1st Published: Methuen Drama - Music: - To Buy This Play: If Publisher (above) is underlined then the play may be purchased by direct click from the Publisher, otherwise (below) are AbeBooks for secondhand, signed & 1st eds and other Booksellers for new copies Booksellers: abebooks.com abebooks.co.uk stageplays.com amazon.com amazon.co.uk amazon.ca Genre: Comedy One Act Parts: Male: 5 Female: 4 Other: 2b Further Reference: - Top of Page That\'s All Synopsis: It sings, often beautifully, of how love came and worked its transfiguration and then went away. Harold Hobson Notes: - 1st Produced: BBC Third Programme 1964 Organisations: - 1st Published: in "Plays 3" Faber, London, 1991 - Music: - To Buy This Play: If Publisher (above) is underlined then the play may be purchased by direct click from the Publisher, otherwise (below) are AbeBooks for secondhand, signed & 1st eds and other Booksellers for new copies Booksellers: abebooks.com abebooks.co.uk stageplays.com amazon.com amazon.co.uk amazon.ca Genre: Radio Sketch Parts: Male: - Female: 2 Other: - Further Reference: - Top of Page That\'s Your Trouble Synopsis: Two men in a park engage in a heated discussion about where a aman carrying a sandwich board will feel the strain first-and most. Notes: - 1st Produced: BBC Third Programme 1964 Organisations: - 1st Published: in "Plays 3" Faber, London, 1991 - Music: - To Buy This Play: If Publisher (above) is underlined then the play may be purchased by direct click from the Publisher, otherwise (below) are AbeBooks for secondhand, signed & 1st eds and other Booksellers for new copies Booksellers: abebooks.com abebooks.co.uk stageplays.com amazon.com amazon.co.uk amazon.ca Genre: Radio Sketch Parts: Male: 2 Female: - Other: - Further Reference: - Top of Page Trouble In the Works Synopsis: A worker tells the boss that the men in the mill are satisfied with working conditions-its the products they object to. Notes: in One to Another 1st Produced: Lyric Opera House, London 1959 Organisations: - 1st Published: Methuen Drama - Music: - To Buy This Play: If Publisher (above) is underlined then the play may be purchased by direct click from the Publisher, otherwise (below) are AbeBooks for secondhand, signed & 1st eds and other Booksellers for new copies Booksellers: abebooks.com abebooks.co.uk stageplays.com amazon.com amazon.co.uk amazon.ca Genre: Revue Sketches Show Parts: Male: 2 Female: - Other: - Further Reference: - Top of Page Umbrellas Synopsis: set on the sunbathed terrace of a large hotel with two men in shorts discussing umbrellas Notes: part of the revue "You, Me And the Gatepost" 1st Produced: Nottingham: Playhouse, Wellington Circus, Nottingham, NG1 5AF >>> 1960 Organisations: - 1st Published: Guardian Newspaper, London 25 Oct 2011, page 3 - Music: - To Buy This Play: If Publisher (above) is underlined then the play may be purchased by direct click from the Publisher, otherwise (below) are AbeBooks for secondhand, signed & 1st eds and other Booksellers for new copies Booksellers: abebooks.com abebooks.co.uk stageplays.com amazon.com amazon.co.uk amazon.ca Genre: sketch Parts: Male: 2 Female: - Other: - Further Reference: - Top of Page Victoria Station Synopsis: brilliantly funny yet eerily chilling dialogue between a bewildered taxi driver (who may have gone mad) and the exasperated dispatcher who is trying, without success, to direct him to a waiting fare. the driver, who says he has fallen in love with the passenger who is asleep (or perhaps dead) on his back seat, doesn\'t seem to know his own location, much less that of Victoria Station. Notes: in Other Places 1st Produced: London 14 Oct 1982 Organisations: - 1st Published: Methuen Drama - Music: - To Buy This Play: If Publisher (above) is underlined then the play may be purchased by direct click from the Publisher, otherwise (below) are AbeBooks for secondhand, signed & 1st eds and other Booksellers for new copies Booksellers: abebooks.com abebooks.co.uk stageplays.com amazon.com amazon.co.uk amazon.ca Genre: One Act Parts: Male: 2 Female: - Other: - Further Reference: - Top of Page Victory Synopsis: Conrad\'s last major novel tells the story of a Swedish baron who seeks solitude in the Dutch East Indies. He is brought back into the world, however, when he becomes involved in the life of the young English girl he rescues-only to find himself in a deadly duel with her exploiter. Notes: from J Conrad\'s novel 1st Produced: - 1990 Organisations: - 1st Published: Collected Screenplays Volume 2 Faber and Faber, London, 2000 - Music: - To Buy This Play: If Publisher (above) is underlined then the play may be purchased by direct click from the Publisher, otherwise (below) are AbeBooks for secondhand, signed & 1st eds and other Booksellers for new copies Booksellers: abebooks.com abebooks.co.uk stageplays.com amazon.com amazon.co.uk amazon.ca Genre: screenplay Parts: Male: - Female: - Other: - Further Reference: - Top of Page Copyright 2003 - All Rights Reserved TOP | home | playwrights | plays | characters | agents | publishers | theatres | gay/lesbian theatre | links | about doollee | submit info to doollee',
       notes: "the novels of Marcel Proust Adapted by Di Trevis from the screenplay by Harold Pinter.",
@@ -1770,8 +1646,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "A Slight Ache & Other Plays" Methuen, London, 1961 978-0413308306',
-      productionInfo: "Apollo Theatre, London 1959",
       _archive: {
         _type: "play",
         playId: "28012",
@@ -1804,7 +1678,6 @@ export default {
       partsTextFemale: "3",
       partsTextOther: "-",
       title: "Request Stop",
-      altTitle: "Request Stop",
       synopsis:
         'A brief monologue by a "lady" waiting in a bus queue. Is it her fault if the men she asked directions of should race to the wrong conclusions?',
       notes: "in Pieces of Eight",
@@ -1813,8 +1686,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "Birthday Party & Other Plays" Methuen, London, 1960 -',
-      productionInfo: "Bristol 1957",
       _archive: {
         _type: "play",
         playId: "28013",
@@ -1847,7 +1718,6 @@ export default {
       partsTextFemale: "2",
       partsTextOther: "-",
       title: "Room, The",
-      altTitle: "",
       synopsis:
         "While her taciturn husband remains engrossed in his magazine, Rose bustles about getting breakfast. As she works she carries on a monologue touching on the weather, the coziness of their cramped quarters, and the mysterious tenant who occupies a damp, windowless room in the basement. the aged landlord, Mr. Kidd, enters, and while he at least responds to Rose's small talk, he does little to allay her nameless fears of the room below. After Mr. Kidd and Bert, the husband, depart, a young couple appears in search of lodgings and Rose discovers that they had wandered into the basement room while looking for the landlord. their description of what they saw, or rather felt in the darkness only heightens her growing sense of apprehension. then, after they have gone, Mr. Kidd returns to tell Rose that she must see the man who has been waiting for her below, waiting for Bert to be gone. the stranger, when Mr. Kidd brings him in, proves to be a blind black man with a message for Rose, and while she disclaims any knowledge.",
       notes: "",
@@ -1856,8 +1726,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "Landscape & Silence" Methuen, London, 1969 -',
-      productionInfo: "Aldwych Theatre, London >>> 1969",
       _archive: {
         _type: "play",
         playId: "28014",
@@ -1889,7 +1757,6 @@ export default {
       partsTextFemale: "1",
       partsTextOther: "-",
       title: "Silence",
-      altTitle: "",
       synopsis: "spoken reminiscences of three seated people hidden behind a grey screen.",
       notes: "",
       organizations: "",
@@ -1897,8 +1764,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in"Early Plays2 Grove Press, New York, 1968 -',
-      productionInfo: "New York 1969",
       _archive: {
         _type: "play",
         playId: "28015",
@@ -1930,7 +1795,6 @@ export default {
       partsTextFemale: "1",
       partsTextOther: "-",
       title: "Sketches By Pinter",
-      altTitle: "",
       synopsis: "Night Out; Night School; Revue Sketches",
       notes: "",
       organizations: "",
@@ -1938,8 +1802,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "A Slight Ache & Other Plays" Methuen, London, 1961 978-0413308306',
-      productionInfo: "Arts Theatre Club, London 1961",
       _archive: {
         _type: "play",
         playId: "28016",
@@ -1972,7 +1834,6 @@ export default {
       partsTextFemale: "1",
       partsTextOther: "one man is non speaking",
       title: "Slight Ache, A",
-      altTitle: "Slight Ache, A",
       synopsis:
         "Flora and Edward sit at the breakfast table chatting of flowers and wasps and of the slight ache which Edward feels in his eyes. their conversation, which seems so simple and is yet so strangely revealing, then shifts to the mysterious matchseller who has been standing by their back gate for many weeks. Somehow his presence intimidates them, particularly Edward, whose ache becomes aggravated as they discuss who the matchseller may really be, and they resolve to call him in for a direct confrontation. Flora goes out to invite him to come into the house, and when he appears he proves to be an old man, dressed in rags, and so feeble that it is doubtful whether he can see or hear. Seating him in a chair Edward speaks to him in an unnaturally jovial and somehow terrifying manner and soon Edward, without a word of reply from the matchseller, is so unstrung that he cannot go on. Flora takes over the interrogation, and again the old man's silence spurs the spilling out of buried frustrations and fears.",
       notes: "broadcast 29/07/59",
@@ -1981,8 +1842,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "A Slight Ache & Other Plays" Methuen, London, 1961 978-0413308306',
-      productionInfo: "London 1959",
       _archive: {
         _type: "play",
         playId: "28017",
@@ -2014,7 +1873,6 @@ export default {
       partsTextFemale: "1",
       partsTextOther: "-",
       title: "Special Offer",
-      altTitle: "Special Offer",
       synopsis: "",
       notes: "in Pieces of Eight",
       organizations: "",
@@ -2022,8 +1880,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Methuen Drama -",
-      productionInfo: "New York 1968",
       _archive: {
         _type: "play",
         playId: "28018",
@@ -2056,7 +1912,6 @@ export default {
       partsTextFemale: "4",
       partsTextOther: "2b",
       title: "Tea Party, The",
-      altTitle: "",
       synopsis:
         "As the New Yorker describes: \"TEA PARTY is about a middle-aged self-made business man named Sisson who engages a young secretary, marries a beautiful young second wife, and takes his new brother-in-law into his business-all in the same day. Mysteries abound. What is going on between the wife and her brother? Are they indeed brother and sister? Sisson has his doubts about that (and so do I). Why does Sisson feel that there must be something wrong with his eyes, although he knows that he can see clearly and his eye doctor has assured him that his vision is perfect? He forces his secretary to tie a chiffon scarf over his eyes, and then he is able to make a pass at her, in response to one of her many come-ons. Ordinary events assume a sinister tinge. Sisson's two sons, giving him the deadpan treatment that little boys have been inflicting on their elders from time immemorial, seem as eerie as characters out of a ghost story. Always the questions remain. Is there a conspiracy against Sisson.",
       notes: "Televised 1965",
@@ -2065,8 +1920,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "Plays 3" Faber, London, 1991 -',
-      productionInfo: "BBC Third Programme 1964",
       _archive: {
         _type: "play",
         playId: "28019",
@@ -2099,7 +1952,6 @@ export default {
       partsTextFemale: "2",
       partsTextOther: "-",
       title: "That's All",
-      altTitle: "",
       synopsis:
         "It sings, often beautifully, of how love came and worked its transfiguration and then went away. Harold Hobson",
       notes: "",
@@ -2108,8 +1960,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: 'in "Plays 3" Faber, London, 1991 -',
-      productionInfo: "BBC Third Programme 1964",
       _archive: {
         _type: "play",
         playId: "28020",
@@ -2142,7 +1992,6 @@ export default {
       partsTextFemale: "-",
       partsTextOther: "-",
       title: "That's Your Trouble",
-      altTitle: "",
       synopsis:
         "Two men in a park engage in a heated discussion about where a aman carrying a sandwich board will feel the strain first-and most.",
       notes: "",
@@ -2151,8 +2000,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Methuen Drama -",
-      productionInfo: "Lyric Opera House, London 1959",
       _archive: {
         _type: "play",
         playId: "28021",
@@ -2185,7 +2032,6 @@ export default {
       partsTextFemale: "-",
       partsTextOther: "-",
       title: "Trouble In the Works",
-      altTitle: "",
       synopsis:
         "A worker tells the boss that the men in the mill are satisfied with working conditions-its the products they object to.",
       notes: "in One to Another",
@@ -2194,8 +2040,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Guardian Newspaper, London 25 Oct 2011, page 3 -",
-      productionInfo: "Nottingham: Playhouse, Wellington Circus, Nottingham, NG1 5AF >>> 1960",
       _archive: {
         _type: "play",
         playId: "133423",
@@ -2227,7 +2071,6 @@ export default {
       partsTextFemale: "-",
       partsTextOther: "-",
       title: "Umbrellas",
-      altTitle: "",
       synopsis: "set on the sunbathed terrace of a large hotel with two men in shorts discussing umbrellas",
       notes: 'part of the revue "You, Me And the Gatepost"',
       organizations: "",
@@ -2235,8 +2078,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Methuen Drama -",
-      productionInfo: "London 14 Oct 1982",
       _archive: {
         _type: "play",
         playId: "28022",
@@ -2269,7 +2110,6 @@ export default {
       partsTextFemale: "-",
       partsTextOther: "-",
       title: "Victoria Station",
-      altTitle: "",
       synopsis:
         "brilliantly funny yet eerily chilling dialogue between a bewildered taxi driver (who may have gone mad) and the exasperated dispatcher who is trying, without success, to direct him to a waiting fare. the driver, who says he has fallen in love with the passenger who is asleep (or perhaps dead) on his back seat, doesn't seem to know his own location, much less that of Victoria Station.",
       notes: "in Other Places",
@@ -2278,8 +2118,6 @@ export default {
       reference: "",
     },
     {
-      publishingInfo: "Collected Screenplays Volume 2 Faber and Faber, London, 2000 -",
-      productionInfo: "- 1990",
       _archive: {
         _type: "play",
         playId: "28023",
@@ -2305,7 +2143,6 @@ export default {
       productionLocation: "-",
       productionYear: "1990",
       title: "Victory",
-      altTitle: "",
       synopsis:
         "Conrad's last major novel tells the story of a Swedish baron who seeks solitude in the Dutch East Indies. He is brought back into the world, however, when he becomes involved in the life of the young English girl he rescues-only to find himself in a deadly duel with her exploiter.",
       notes: "from J Conrad's novel",

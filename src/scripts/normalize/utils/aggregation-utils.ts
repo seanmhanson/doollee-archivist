@@ -228,7 +228,12 @@ export function getFieldPresencePipeline(fields: string[]) {
  * matching only documents where publishing or production info is non-null.
  */
 export function getProdPubDataPipeline() {
-  const matchFields = ["rawFields.publishingInfo", "rawFields.productionInfo"];
+  const matchFields = [
+    "_archive.publisher",
+    "_archive.production",
+    "_archive.productionLocation",
+    "_archive.productionYear",
+  ];
   const projectionFields = [
     "publisher",
     "publicationYear",
@@ -304,7 +309,7 @@ export function getGenreTermsPipeline() {
 }
 
 /**
- * Generate a MongoDB aggregation pipeline that analyses the rawFields.publishingInfo field,
+ * Generate a MongoDB aggregation pipeline that analyses the _archive.publisher field,
  * producing two facets: format-category frequency and inferred publisher name frequency.
  */
 export function getPublishingInfoFormatsPipeline() {
@@ -315,7 +320,7 @@ export function getPublishingInfoFormatsPipeline() {
   const ISBN_REGEX = "97[89][0-9]{10}";
 
   return [
-    { $match: { "rawFields.publishingInfo": { $exists: true, $nin: ["", null] } } },
+    { $match: { "_archive.publisher": { $exists: true, $nin: ["", null] } } },
     {
       $facet: {
         formatCategories: [
@@ -325,23 +330,23 @@ export function getPublishingInfoFormatsPipeline() {
                 $switch: {
                   branches: [
                     {
-                      case: { $regexMatch: { input: "$rawFields.publishingInfo", regex: CONTAINED_IN_REGEX } },
+                      case: { $regexMatch: { input: "$_archive.publisher", regex: CONTAINED_IN_REGEX } },
                       then: "Contained in:",
                     },
                     {
-                      case: { $regexMatch: { input: "$rawFields.publishingInfo", regex: URL_REGEX } },
+                      case: { $regexMatch: { input: "$_archive.publisher", regex: URL_REGEX } },
                       then: "URL present",
                     },
                     {
-                      case: { $regexMatch: { input: "$rawFields.publishingInfo", regex: TRAILING_DASH_REGEX } },
+                      case: { $regexMatch: { input: "$_archive.publisher", regex: TRAILING_DASH_REGEX } },
                       then: "ends with -",
                     },
                     {
-                      case: { $regexMatch: { input: "$rawFields.publishingInfo", regex: ISBN_REGEX } },
+                      case: { $regexMatch: { input: "$_archive.publisher", regex: ISBN_REGEX } },
                       then: "ISBN-like string",
                     },
                     {
-                      case: { $regexMatch: { input: "$rawFields.publishingInfo", regex: YEAR_REGEX } },
+                      case: { $regexMatch: { input: "$_archive.publisher", regex: YEAR_REGEX } },
                       then: "four-digit year embedded",
                     },
                   ],
@@ -358,14 +363,14 @@ export function getPublishingInfoFormatsPipeline() {
           {
             $addFields: {
               _publisherMatch: {
-                $regexFind: { input: "$rawFields.publishingInfo", regex: "^.+?(?=,\\s|\\s-\\s|\\s\\(|$)" },
+                $regexFind: { input: "$_archive.publisher", regex: "^.+?(?=,\\s|\\s-\\s|\\s\\(|$)" },
               },
             },
           },
           {
             $addFields: {
               _publisherName: {
-                $trim: { input: { $ifNull: ["$_publisherMatch.match", "$rawFields.publishingInfo"] } },
+                $trim: { input: { $ifNull: ["$_publisherMatch.match", "$_archive.publisher"] } },
               },
             },
           },

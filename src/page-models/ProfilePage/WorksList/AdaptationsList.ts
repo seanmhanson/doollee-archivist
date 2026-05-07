@@ -42,7 +42,6 @@ export default class AdaptationsList extends BaseWorksList {
       ({ productionLocation, productionYear, publisher, imgAlt, parts: rawParts, ...adaptation }) => {
         // scraped values that we will add before returning
         const productionInfo = `${productionLocation ?? ""} ${productionYear ?? ""}`.trim();
-        const publishingInfo = publisher ?? "";
 
         const productionDetails = this.parseProductionDetails(productionInfo);
         const publicationDetails = {
@@ -53,8 +52,6 @@ export default class AdaptationsList extends BaseWorksList {
         const reviewNotes = [...(productionDetails.reviewNotes ?? []), ...(publicationDetails.reviewNotes ?? [])];
         const { reviewNotes: _prodNotes, ...productionRest } = productionDetails;
         const { reviewNotes: _pubNotes, ...publicationRest } = publicationDetails;
-
-        const altTitle = imgAlt || "";
 
         // scraped values that we will overwrite before returning
         const playId = this.formatPlayId(adaptation.playId, "adaptation");
@@ -81,12 +78,9 @@ export default class AdaptationsList extends BaseWorksList {
           _archive,
           ...adaptation,
           playId,
-          altTitle,
           displayTitle,
           ...(originalAuthor ? { originalAuthor } : {}),
           adaptingAuthor,
-          productionInfo,
-          publishingInfo,
           organizations,
           reference,
           ...parts,

@@ -1,12 +1,12 @@
 import type { AuthorData } from "../author.types";
 
 const defaults = {
-  name: "David Mamet",
-  scrapedAt: new Date(),
-  sourceUrl: "https://www.doollee.com/PlaywrightsM/mamet-david.php",
-  listingName: "MAMET David",
   headingName: "DAVID MAMET",
   altName: "David Mamet",
+};
+
+const commonData = {
+  name: "David Mamet",
   nationality: "USA",
   email: "damnitmamet@example.co.uk",
   website: "https://damnitmamet.co.uk",
@@ -15,18 +15,31 @@ const defaults = {
   research: "Member of the Dramatists Guild of America (as at 2015)",
   address: "Mr. David Mamet, 275 Doollee Avenue, LONDON, NW10 1JN, UNITED KINGDOM",
   telephone: "020-7946-0111",
-  yearBorn: "1947",
-  yearDied: "2047",
 };
 
-function getAuthorFixture(overrides: Partial<AuthorData> = {}): AuthorData {
-  const authorData = { ...defaults, ...overrides };
-  const { yearBorn, yearDied, scrapedAt, sourceUrl, listingName, headingName, ...archiveData } = authorData;
+const authorOnlyData = {
+  yearBorn: "1947",
+  yearDied: "2047",
+  scrapedAt: new Date(),
+  sourceUrl: "https://www.doollee.com/PlaywrightsM/mamet-david.php",
+  listingName: "MAMET David",
+};
+
+function getAuthorFixture(
+  overrides: Partial<AuthorData> & { headingName?: string; altName?: string } = {},
+): AuthorData {
+  const { headingName: nameOverride, altName: altNameOverride, ...authorOverrides } = overrides;
+  const authorData = { ...commonData, ...authorOnlyData, ...authorOverrides };
+  const altName = altNameOverride ?? defaults.altName;
+  const _archive = {
+    ...commonData,
+    dates: `(${authorData.yearBorn} - ${authorData.yearDied})`,
+    name: nameOverride ?? defaults.headingName,
+    ...(altName !== undefined ? { altName } : {}),
+  };
+
   return {
-    _archive: {
-      dates: `(${yearBorn ?? ""} - ${yearDied ?? ""})`,
-      ...archiveData,
-    },
+    _archive,
     ...authorData,
   };
 }
@@ -34,8 +47,9 @@ function getAuthorFixture(overrides: Partial<AuthorData> = {}): AuthorData {
 function getExpectedArchive(fixture: AuthorData) {
   return {
     dates: `(${fixture.yearBorn} - ${fixture.yearDied})`,
-    name: fixture.name,
-    altName: fixture.altName,
+    name: fixture._archive.name,
+    altName: fixture._archive.altName,
+    listingName: fixture.listingName,
     biography: fixture.biography,
     nationality: fixture.nationality,
     email: fixture.email,
@@ -62,14 +76,6 @@ function getExpectedBiographyData(fixture: AuthorData) {
   };
 }
 
-function getExpectedRawFields({ listingName, headingName, altName }: AuthorData) {
-  return {
-    listingName,
-    headingName,
-    altName,
-  };
-}
-
 function getExpectedWorksData() {
   return {
     playIds: [],
@@ -87,11 +93,4 @@ function getFixtureMetadata(fixture: AuthorData) {
   };
 }
 
-export {
-  getAuthorFixture,
-  getExpectedArchive,
-  getExpectedWorksData,
-  getExpectedBiographyData,
-  getExpectedRawFields,
-  getFixtureMetadata,
-};
+export { getAuthorFixture, getExpectedArchive, getExpectedWorksData, getExpectedBiographyData, getFixtureMetadata };

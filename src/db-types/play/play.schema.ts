@@ -92,16 +92,6 @@ const PlaySchema: Document = {
       },
     },
 
-    rawFields: {
-      bsonType: "object",
-      additionalProperties: false,
-      properties: {
-        altTitle: { bsonType: "string" },
-        publishingInfo: { bsonType: "string" },
-        productionInfo: { bsonType: "string" },
-      },
-    },
-
     title: { bsonType: "string" },
     displayTitle: { bsonType: "string" },
     author: { bsonType: "string" },

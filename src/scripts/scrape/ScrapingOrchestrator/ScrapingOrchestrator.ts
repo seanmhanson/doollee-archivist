@@ -525,12 +525,10 @@ class ScrapingOrchestrator {
       throw new AuthorProcessingError(`Incomplete author data scraped for author: ${this.state.profileName} at ${url}`);
     }
 
-    const headingName = biographyData.name;
     const scrapedAt = new Date();
     const author = new Author({
       ...biographyData,
       listingName: this.state.profileName,
-      headingName,
       sourceUrl,
       scrapedAt,
     });

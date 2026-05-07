@@ -60,12 +60,6 @@ export type PlayDocument = {
     reviewNotes?: ReviewNotes;
   };
 
-  rawFields: {
-    altTitle?: string;
-    publishingInfo?: string;
-    productionInfo?: string;
-  };
-
   title: string;
   displayTitle?: string;
   author: string;
@@ -98,7 +92,6 @@ export type PlayDocument = {
  */
 
 export type Metadata = PlayDocument["metadata"];
-export type RawFields = PlayDocument["rawFields"];
 
 type OptionalInitialMetadataKeys = "createdAt" | "updatedAt";
 export type InitialMetadata = Omit<Metadata, OptionalInitialMetadataKeys> &
@@ -115,9 +108,8 @@ type RequiredFields = Pick<PlayDocument, RequiredKeys>;
 type RequiredMetadataKeys = "scrapedAt" | "sourceUrl";
 type RequiredMetadata = Pick<Metadata, RequiredMetadataKeys>;
 
-type OmittedKeys = "_id" | "author" | "metadata" | "rawFields";
+type OmittedKeys = "_id" | "author" | "metadata";
 type OptionalCoreFields = Partial<Omit<PlayDocument, OmittedKeys | RequiredKeys>>;
-type OptionalRawFields = Partial<RawFields>;
 
 type RenamedFields = {
   id?: PlayDocument["_id"];
@@ -125,5 +117,5 @@ type RenamedFields = {
   reviewNotes?: ReviewNotes;
 };
 
-export type ScrapedPlayData = RequiredFields & OptionalCoreFields & OptionalRawFields & RenamedFields;
-export type PlayData = RequiredFields & RequiredMetadata & OptionalCoreFields & OptionalRawFields & RenamedFields;
+export type ScrapedPlayData = RequiredFields & OptionalCoreFields & RenamedFields;
+export type PlayData = RequiredFields & RequiredMetadata & OptionalCoreFields & RenamedFields;

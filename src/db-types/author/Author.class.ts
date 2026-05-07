@@ -4,7 +4,6 @@ import type {
   AuthorDocument,
   InitialMetadata,
   AuthorNameData,
-  RawFields,
   AuthorData,
   AuthorArchive,
 } from "#/db-types/author/author.types";
@@ -14,6 +13,8 @@ import type { ObjectId as ObjectIdType } from "mongodb";
 import { REVIEW_NOTES } from "#/review-notes";
 import * as dbUtils from "#/utils/dbUtils";
 import { toTitleCase, removeDisambiguationSuffix, isAllCaps, stringArraysEqual } from "#/utils/stringUtils";
+
+type NameInputFields = { listingName?: string; headingName?: string; altName?: string };
 
 /**
  * Usage:
@@ -37,9 +38,8 @@ import { toTitleCase, removeDisambiguationSuffix, isAllCaps, stringArraysEqual }
 
 export default class Author {
   private _id: ObjectIdType;
-  private _archive: AuthorArchive;
+  private _archive: Readonly<AuthorArchive>;
   private metadata: InitialMetadata;
-  private rawFields: RawFields;
 
   private name: string;
   private displayName: string;
@@ -120,19 +120,16 @@ export default class Author {
     const { name, displayName, isOrganization, lastName, firstName, middleNames, suffixes } = this.parseName(input);
 
     this._id = new ObjectId();
-    this._archive = Object.freeze({ ...input._archive });
+    this._archive = Object.freeze({
+      ...input._archive,
+      ...(input.listingName ? { listingName: input.listingName } : {}),
+    });
 
     this.metadata = {
       createdAt: undefined,
       updatedAt: undefined,
       scrapedAt: input.scrapedAt,
       sourceUrl: input.sourceUrl,
-    };
-
-    this.rawFields = {
-      listingName: input.listingName ?? name,
-      headingName: input.headingName,
-      altName: input.altName,
     };
 
     this.name = name;
@@ -170,7 +167,7 @@ export default class Author {
    *  If the name is a single word, it may still be a mononym, and will
    *  require manual review.
    */
-  private parseOrganization({ listingName = "", headingName = "", altName = "" }: RawFields): AuthorNameData {
+  private parseOrganization({ listingName = "", headingName = "", altName = "" }: NameInputFields): AuthorNameData {
     const lowercaseListing = listingName.normalize("NFC").toLocaleLowerCase().trim();
     const lowercaseHeading = headingName.normalize("NFC").toLocaleLowerCase().trim();
     const lowercaseAltName = altName.normalize("NFC").toLocaleLowerCase().trim();
@@ -205,7 +202,7 @@ export default class Author {
    *  as needing manual review. String comparisons are made after normalizing
    *  for unicode and using locale-sensitive case.
    */
-  private parseAuthorName({ listingName = "", headingName = "", altName = "" }: RawFields): AuthorNameData {
+  private parseAuthorName({ listingName = "", headingName = "", altName = "" }: NameInputFields): AuthorNameData {
     const listingNames = listingName.split(" ");
     const headingNames = headingName.split(" ");
     const headingFirstName = headingNames[0];
@@ -251,8 +248,8 @@ export default class Author {
   private parseName(input: AuthorData): AuthorNameData {
     const data = {
       listingName: removeDisambiguationSuffix(input.listingName),
-      headingName: removeDisambiguationSuffix(input.headingName),
-      altName: removeDisambiguationSuffix(input.altName ?? ""),
+      headingName: removeDisambiguationSuffix(input._archive.name),
+      altName: removeDisambiguationSuffix(input._archive.altName ?? ""),
     };
 
     const organizationData = this.parseOrganization(data);
@@ -287,7 +284,6 @@ export default class Author {
         updatedAt: now,
         reviewNotes: this.reviewNotes,
       },
-      rawFields: this.rawFields,
       name: this.name,
       ...this.nameData,
       ...this.biographyData,

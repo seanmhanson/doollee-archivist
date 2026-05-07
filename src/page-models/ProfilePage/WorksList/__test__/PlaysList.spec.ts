@@ -149,15 +149,6 @@ describe("PlaysList", () => {
       expect(plays.worksData[0]).not.toHaveProperty("partsCountMale");
     });
 
-    it("should store publishingInfo and productionInfo as raw values", async () => {
-      const page = createMockPage([
-        { ...minimalRow, publisher: "Samuel French 1972", production: "National Theatre Oct 2010" },
-      ]);
-      const plays = await PlaysList.create(page);
-      expect(plays.worksData[0].publishingInfo).toBe("Samuel French 1972");
-      expect(plays.worksData[0].productionInfo).toBe("National Theatre Oct 2010");
-    });
-
     it("should include an _archive entry with the raw scraped values", async () => {
       const page = createMockPage([
         { ...minimalRow, playId: "42", genres: "comedy", parts: "Male: 1 Female: 1 Other: -" },

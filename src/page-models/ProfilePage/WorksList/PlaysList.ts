@@ -28,7 +28,7 @@ export default class PlaysList extends BaseWorksList {
     const data = this.normalizeStringFields(rawData);
 
     this.data = data.map(
-      ({ playId: playIdText, parts: partsText, genres: rawGenres, publisher, production, ...rest }, index) => {
+      ({ playId: playIdText, parts: partsText, genres: rawGenres, publisher, production, ...rest }) => {
         const publicationDetails = this.parsePublicationDetails(publisher, true);
         const productionDetails = this.parseProductionDetails(production);
         const playId = this.formatPlayId(playIdText, "play");
@@ -50,9 +50,9 @@ export default class PlaysList extends BaseWorksList {
           ...rest,
         };
 
+        const { altTitle, ...restWithoutAltTitle } = rest;
+
         return {
-          publishingInfo: publisher,
-          productionInfo: production,
           _archive,
           playId,
           genres,
@@ -60,7 +60,7 @@ export default class PlaysList extends BaseWorksList {
           ...publicationRest,
           ...productionRest,
           ...parts,
-          ...rest,
+          ...restWithoutAltTitle,
           ...(reviewNotes.length ? { reviewNotes } : {}),
         };
       },
