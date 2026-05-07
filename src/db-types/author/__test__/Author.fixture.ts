@@ -1,13 +1,12 @@
 import type { AuthorData } from "../author.types";
 
-const DEFAULT_HEADING_NAME = "DAVID MAMET";
-
 const defaults = {
-  name: "David Mamet",
-  scrapedAt: new Date(),
-  sourceUrl: "https://www.doollee.com/PlaywrightsM/mamet-david.php",
-  listingName: "MAMET David",
+  headingName: "DAVID MAMET",
   altName: "David Mamet",
+};
+
+const commonData = {
+  name: "David Mamet",
   nationality: "USA",
   email: "damnitmamet@example.co.uk",
   website: "https://damnitmamet.co.uk",
@@ -16,24 +15,31 @@ const defaults = {
   research: "Member of the Dramatists Guild of America (as at 2015)",
   address: "Mr. David Mamet, 275 Doollee Avenue, LONDON, NW10 1JN, UNITED KINGDOM",
   telephone: "020-7946-0111",
+};
+
+const authorOnlyData = {
   yearBorn: "1947",
   yearDied: "2047",
+  scrapedAt: new Date(),
+  sourceUrl: "https://www.doollee.com/PlaywrightsM/mamet-david.php",
+  listingName: "MAMET David",
 };
 
 function getAuthorFixture(
   overrides: Partial<AuthorData> & { headingName?: string; altName?: string } = {},
 ): AuthorData {
-  const { headingName = DEFAULT_HEADING_NAME, altName: altOverride, ...authorOverrides } = overrides;
-  const authorData = { ...defaults, ...authorOverrides };
-  const { yearBorn, yearDied, scrapedAt, sourceUrl, listingName, altName: defaultAlt, ...archiveData } = authorData;
-  const altName = altOverride ?? defaultAlt;
+  const { headingName: nameOverride, altName: altNameOverride, ...authorOverrides } = overrides;
+  const authorData = { ...commonData, ...authorOnlyData, ...authorOverrides };
+  const altName = altNameOverride ?? defaults.altName;
+  const _archive = {
+    ...commonData,
+    dates: `(${authorData.yearBorn} - ${authorData.yearDied})`,
+    name: nameOverride ?? defaults.headingName,
+    ...(altName !== undefined ? { altName } : {}),
+  };
+
   return {
-    _archive: {
-      dates: `(${yearBorn ?? ""} - ${yearDied ?? ""})`,
-      ...archiveData,
-      name: headingName,
-      ...(altName !== undefined ? { altName } : {}),
-    },
+    _archive,
     ...authorData,
   };
 }

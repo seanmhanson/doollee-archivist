@@ -71,10 +71,6 @@ export default class Play {
     return !!this.adaptingAuthor;
   }
 
-  public get archiveData() {
-    return this._archive;
-  }
-
   public get authorData() {
     return {
       author: this.author,

@@ -50,7 +50,7 @@ export default class PlaysList extends BaseWorksList {
           ...rest,
         };
 
-        const { altTitle: _altTitle, ...restWithoutAltTitle } = rest;
+        const { altTitle, ...restWithoutAltTitle } = rest;
 
         return {
           _archive,
