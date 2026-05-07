@@ -80,6 +80,41 @@ describe("StandardBiography", () => {
         research: "Member of the Unit Test Dramatists Guild",
       });
     });
+
+    it("should include all AuthorArchive fields in the _archive", async () => {
+      // Build an innerHTML with all possible labeled fields. Address and telephone
+      // are placed last (before Research) so that parseBiography sees Research as the
+      // last label and returns an empty biography — avoiding the telephone value from
+      // being captured as biography text. No <br /><br /> precedes Research, so
+      // parseBiography correctly returns "".
+      const fullLabelHTML = `
+        <strong>Nationality:</strong> English
+        <strong>Email:</strong> <a href="mailto:test@example.com">test@example.com</a>
+        <strong>Website:</strong> <a href="https://example.com">Website</a>
+        <strong>Literary Agent:</strong> <a href="/agents/test.php">Test Agent</a>
+        <strong>Address:</strong> 1 Test Street, London, UK
+        <strong>Telephone:</strong> 020-1234-5678
+        <strong>Research: </strong> Some research text
+      `;
+
+      const mockPage = createMockPage({ altName, name, dates, innerHTML: fullLabelHTML });
+      const biography = new TestStandardBiography(mockPage);
+      await biography.extractData();
+
+      expect(biography.biographyData._archive).toEqual({
+        name,
+        altName,
+        dates,
+        biography: "",
+        nationality: "English",
+        email: "test@example.com",
+        website: "https://example.com",
+        literaryAgent: "Test Agent",
+        address: "1 Test Street, London, UK",
+        telephone: "020-1234-5678",
+        research: "Some research text",
+      });
+    });
   });
 
   describe("#parseBiography", () => {

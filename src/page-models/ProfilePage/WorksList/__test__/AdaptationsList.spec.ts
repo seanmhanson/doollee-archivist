@@ -213,18 +213,33 @@ describe("AdaptationsList", () => {
       expect(adaptationsList.worksData[0].productionYear).toBe("Oct 2010");
     });
 
-    it("should store flat maleParts/femaleParts/otherParts in the _archive", async () => {
-      const page = createMockPage([
-        { ...minimalRow, parts: { maleParts: "3", femaleParts: "-", otherParts: "6 m/f" } },
-      ]);
+    it("should include a complete _archive entry with all AdaptationArchiveData fields", async () => {
+      const fullRow: ScrapedAdaptationRow = {
+        playId: "12345",
+        adaptingAuthor: "JAY MILLER",
+        title: "Test Adaptation",
+        productionLocation: "Donmar Warehouse",
+        productionYear: "Oct 2010",
+        organizations: "Test Org",
+        publisher: "Nick Hern Books 2001",
+        isbn: "9780571231041",
+        music: "Original Score",
+        genres: "adaptation",
+        notes: "Original Playwright - Euripides. A free adaptation.",
+        imgAlt: "Test Image Alt",
+        synopsis: "A test synopsis.",
+        reference: "ref123",
+        parts: { maleParts: "3", femaleParts: "2", otherParts: "-" },
+      };
+      const { parts, ...baseArchiveFields } = fullRow;
+      const expectedArchive = {
+        _type: "adaptation",
+        ...baseArchiveFields,
+        ...parts,
+      };
+      const page = createMockPage([fullRow]);
       const adaptationsList = await AdaptationsList.create(page);
-      const archive = adaptationsList.worksData[0]._archive;
-      expect(archive._type).toBe("adaptation");
-      if (archive._type === "adaptation") {
-        expect(archive.maleParts).toBe("3");
-        expect(archive.femaleParts).toBe("-");
-        expect(archive.otherParts).toBe("6 m/f");
-      }
+      expect(adaptationsList.worksData[0]._archive).toEqual(expectedArchive);
     });
 
     it("should accumulate reviewNotes from both productionDetails and publicationDetails", async () => {

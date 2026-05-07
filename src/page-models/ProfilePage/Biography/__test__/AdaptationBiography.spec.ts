@@ -77,6 +77,44 @@ describe("AdaptationBiography", () => {
         literaryAgent: "",
       });
     });
+
+    it("should include all AuthorArchive fields in the _archive", async () => {
+      // AdaptationBiography parses biography from the `bio` string directly, so
+      // all labeled fields can be freely placed in innerHTML without affecting biography.
+      const fullLabelHTML = `
+        <strong>Nationality:</strong> Greek
+        <strong>Email:</strong> <a href="mailto:test@example.com">test@example.com</a>
+        <strong>Website:</strong> <a href="https://example.com">Website</a>
+        <strong>Literary Agent:</strong> <a href="/agents/test.php">Test Agent</a>
+        <strong>Address:</strong> 1 Test Street, Athens, Greece
+        <strong>Telephone:</strong> +30-1234-5678
+        <strong>Research: </strong> Ancient sources and modern scholarship
+      `;
+
+      const mockPage = createMockPage({
+        bio: biography,
+        dates,
+        imageSrc,
+        imageAlt: altName,
+        innerHTML: fullLabelHTML,
+      });
+      const bio = new TestAdaptationBiography(mockPage);
+      await bio.extractData();
+
+      expect(bio.biographyData._archive).toEqual({
+        name,
+        altName,
+        dates,
+        biography,
+        nationality: "Greek",
+        email: "test@example.com",
+        website: "https://example.com",
+        literaryAgent: "Test Agent",
+        address: "1 Test Street, Athens, Greece",
+        telephone: "+30-1234-5678",
+        research: "Ancient sources and modern scholarship",
+      });
+    });
   });
 
   describe("#parseAdaptationNameAndDates", () => {
