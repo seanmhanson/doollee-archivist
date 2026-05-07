@@ -120,7 +120,7 @@ export default class Author {
     const { name, displayName, isOrganization, lastName, firstName, middleNames, suffixes } = this.parseName(input);
 
     this._id = new ObjectId();
-    this._archive = input._archive;
+    this._archive = Object.freeze({ ...input._archive });
 
     this.metadata = {
       createdAt: undefined,

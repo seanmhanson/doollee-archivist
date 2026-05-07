@@ -52,10 +52,10 @@ export default abstract class BaseBiography {
    * This method parses these sections and normalizes the text or attributes corresponding
    * to the biographical fields.
    * @param sectionHTML the HTML content that should be parsed into biography fields.
-   * @param authorName optional author name for logging purposes when parsing labeled content that may contain PII (e.g. address, telephone)
+   * @param _authorName optional unused author name parameter retained for signature compatibility.
    * @returns an object containing the parsed biography fields as key-value pairs.
    */
-  protected parseLabeledContent(sectionHTML: string, authorName?: string): LabeledContents {
+  protected parseLabeledContent(sectionHTML: string, _authorName?: string): LabeledContents {
     const strongOpenTagPattern = `<strong\\b[^>]*>`;
     const labelTextPattern = `${strongOpenTagPattern}(${BaseBiography.labelString})[^<]*</strong>`;
     const htmlContentPattern = `(.*?)`;
@@ -74,11 +74,6 @@ export default abstract class BaseBiography {
       const key = BaseBiography.labelMap[label];
       if (!key) {
         continue;
-      }
-
-      if (key === "address" || key === "telephone") {
-        const rawText = this.normalizeHtmlString(htmlContent);
-        console.log(`[parseLabeledContent] ${key} found for "${authorName ?? "unknown"}": "${rawText}"`);
       }
 
       // for author websites and emails, we capture the href value rather than display text;
