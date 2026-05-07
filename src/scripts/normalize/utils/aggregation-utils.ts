@@ -228,7 +228,12 @@ export function getFieldPresencePipeline(fields: string[]) {
  * matching only documents where publishing or production info is non-null.
  */
 export function getProdPubDataPipeline() {
-  const matchFields = ["_archive.publisher", "_archive.production"];
+  const matchFields = [
+    "_archive.publisher",
+    "_archive.production",
+    "_archive.productionLocation",
+    "_archive.productionYear",
+  ];
   const projectionFields = [
     "publisher",
     "publicationYear",
