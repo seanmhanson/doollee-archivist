@@ -1,13 +1,12 @@
-name: Lint and Format Check
+name: Format, Lint, & Build Checks
 
 on:
-  # push:
   workflow_dispatch:
   pull_request:
     branches: ["main"]
 
 jobs:
-  lint-and-format:
+  format-lint-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -29,8 +28,11 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
+      - name: Run Prettier
+        run: yarn format:check
+
       - name: Run ESLint
         run: yarn lint
 
-      - name: Run Prettier
-        run: yarn format:check
+      - name: Build TypeScript
+        run: yarn build:noEmit
