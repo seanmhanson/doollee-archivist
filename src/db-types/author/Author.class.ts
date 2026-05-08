@@ -310,8 +310,12 @@ export default class Author {
     };
 
     const pruned = dbUtils.removeEmptyFields(archiveDocument);
-    if (!pruned) {
-      throw new Error("Failed to create author archive document: all fields are empty or undefined");
+    const invalidDocument = !pruned;
+    const requiredFields: (keyof AuthorArchiveDocument)[] = ["name"] as const;
+    const missingRequiredFields = requiredFields.some((field) => !pruned?.[field]);
+
+    if (invalidDocument || missingRequiredFields) {
+      throw new Error(`Failed to create author archive document: missing required field (name)`);
     }
 
     return pruned;

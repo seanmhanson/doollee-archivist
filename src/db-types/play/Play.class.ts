@@ -201,8 +201,12 @@ export default class Play {
     };
 
     const pruned = dbUtils.removeEmptyFields(archiveDocument);
-    if (!pruned) {
-      throw new Error("Failed to create play archive document: all fields are empty or undefined");
+    const requiredFields: (keyof PlayArchiveDocument)[] = ["_type", "playId", "title"] as const;
+    const invalidDocument = !pruned;
+    const missingRequiredFields = requiredFields.some((field) => !pruned?.[field]);
+
+    if (invalidDocument || missingRequiredFields) {
+      throw new Error(`Failed to create play archive document: missing required fields (_type,  playId, and/or title)`);
     }
 
     return pruned;
