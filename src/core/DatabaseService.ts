@@ -3,12 +3,16 @@ import { MongoClient } from "mongodb";
 import type { Db, Collection, CreateIndexesOptions } from "mongodb";
 
 import { getConfig } from "#/core/Config";
+import authorArchiveSchema from "#/db-types/author/author-archive.schema";
 import authorSchema from "#/db-types/author/author.schema";
+import playArchiveSchema from "#/db-types/play/play-archive.schema";
 import playSchema from "#/db-types/play/play.schema";
 
 const COLLECTIONS = [
   { name: "plays", $jsonSchema: playSchema },
   { name: "authors", $jsonSchema: authorSchema },
+  { name: "play_archives", $jsonSchema: playArchiveSchema },
+  { name: "author_archives", $jsonSchema: authorArchiveSchema },
 ] as const;
 
 export type CollectionName = (typeof COLLECTIONS)[number]["name"];
@@ -22,6 +26,8 @@ type IndexInfo = { field: string; options?: CreateIndexesOptions };
 const indexesByCollection = {
   plays: [{ field: "playId", options: { unique: true } }],
   authors: [], // Authors use _id as primary key, no additional indexes needed
+  play_archives: [], // play_archives use _id as primary key, no additional indexes needed
+  author_archives: [], // author_archives use _id as primary key, no additional indexes needed
 } as const satisfies Record<CollectionName, IndexInfo[]>;
 
 type IndexCollectionName = keyof typeof indexesByCollection;

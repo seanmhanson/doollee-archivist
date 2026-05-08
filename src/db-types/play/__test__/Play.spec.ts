@@ -128,4 +128,28 @@ describe("Play.class", () => {
       expect(play.toDocument().metadata).not.toHaveProperty("reviewNotes");
     });
   });
+
+  describe("#toArchiveDocument", () => {
+    it("should return an archive document with _id matching play.id by default", () => {
+      const play = new Play(getPlayFixture());
+      const archiveDocument = play.toArchiveDocument();
+      expect(archiveDocument._id).toEqual(play.id);
+    });
+
+    it("should return an archive document with archive fields matching play.archiveData", () => {
+      const fixture = getPlayFixture();
+      const play = new Play(fixture);
+      const archiveDocument = play.toArchiveDocument();
+      const { _id, ...archiveFields } = archiveDocument;
+      expect(archiveFields).toEqual(fixture._archive);
+    });
+
+    it("should use the provided id override when supplied", () => {
+      const play = new Play(getPlayFixture());
+      const overrideId = new ObjectId();
+      const archiveDocument = play.toArchiveDocument(overrideId);
+      expect(archiveDocument._id).toEqual(overrideId);
+      expect(archiveDocument._id).not.toEqual(play.id);
+    });
+  });
 });

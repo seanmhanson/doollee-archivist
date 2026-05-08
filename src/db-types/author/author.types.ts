@@ -28,7 +28,6 @@ export type AuthorArchive = {
 
 export type AuthorDocument = {
   _id: ObjectId;
-  _archive: AuthorArchive;
 
   metadata: {
     createdAt: Date;
@@ -85,8 +84,8 @@ export type AuthorNameData = Pick<AuthorDocument, RequiredNameKeys> & Partial<Pi
 type LabeledKeys = "nationality" | "email" | "website" | "literaryAgent" | "research" | "address" | "telephone";
 export type LabeledContents = Partial<Pick<AuthorDocument, LabeledKeys>>;
 
-type RequiredKeys = "name" | "_archive";
-type RequiredFields = Pick<AuthorDocument, RequiredKeys>;
+type RequiredKeys = "name";
+type RequiredFields = Pick<AuthorDocument, RequiredKeys> & { _archive: AuthorArchive };
 
 type RequiredMetadataKeys = "scrapedAt" | "sourceUrl";
 type RequiredMetadata = Pick<Metadata, RequiredMetadataKeys>;

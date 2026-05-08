@@ -611,6 +611,15 @@ class ScrapingOrchestrator {
           { $set: authorDocument, $setOnInsert: { _id } },
           { upsert: true },
         );
+
+        const authorArchivesCollection = await this.services.dbService.getCollection("author_archives");
+        const archiveDocument = this.state.currentAuthor.toArchiveDocument();
+        const { _id: archiveId, ...archiveFields } = archiveDocument;
+        await authorArchivesCollection.findOneAndUpdate(
+          { _id: archiveId },
+          { $set: archiveFields, $setOnInsert: { _id: archiveId } },
+          { upsert: true },
+        );
       } catch (dbError) {
         if (this.isDbNetworkError(dbError)) {
           this.incrementErrorStats("networkErrors");
@@ -632,6 +641,13 @@ class ScrapingOrchestrator {
           stringify: true,
           fileType: "json",
           data: document,
+        });
+        const archiveDocument = this.state.currentAuthor.toArchiveDocument();
+        await this.services.authorModuleWriter.writeFile({
+          filename: `${this.state.profileSlug}-archive.json`,
+          stringify: true,
+          fileType: "json",
+          data: archiveDocument,
         });
       } catch (fileWriteError) {
         this.incrementErrorStats("writeErrors");
@@ -670,9 +686,19 @@ class ScrapingOrchestrator {
       try {
         const playsCollection = await this.services.dbService.getCollection("plays");
         const { _id, ...documentWithoutId } = document;
-        await playsCollection.findOneAndUpdate(
+        const result = await playsCollection.findOneAndUpdate(
           { playId: documentWithoutId.playId },
           { $set: documentWithoutId, $setOnInsert: { _id } },
+          { upsert: true, returnDocument: "after" },
+        );
+        const persistedId = result?._id ?? _id;
+
+        const playArchivesCollection = await this.services.dbService.getCollection("play_archives");
+        const archiveDocument = this.state.currentPlay.toArchiveDocument(persistedId);
+        const { _id: archiveId, ...archiveFields } = archiveDocument;
+        await playArchivesCollection.findOneAndUpdate(
+          { _id: archiveId },
+          { $set: archiveFields, $setOnInsert: { _id: archiveId } },
           { upsert: true },
         );
       } catch (dbError) {
@@ -698,6 +724,14 @@ class ScrapingOrchestrator {
           fileType: "json",
           data: document,
           filename,
+        });
+        const archiveDocument = this.state.currentPlay.toArchiveDocument();
+        const archiveFilename = this.getPlayFilename(title, playId).replace(".json", "-archive.json");
+        await this.services.playModuleWriter.writeFile({
+          stringify: true,
+          fileType: "json",
+          data: archiveDocument,
+          filename: archiveFilename,
         });
       } catch (fileWriteError) {
         this.incrementErrorStats("writeErrors");

@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 
+import type { AuthorArchiveDocument } from "#/db-types/author/author-archive.types";
 import type {
   AuthorDocument,
   InitialMetadata,
@@ -277,7 +278,6 @@ export default class Author {
 
     const document: AuthorDocument = {
       _id: this._id,
-      _archive: this._archive,
       metadata: {
         ...this.metadata,
         createdAt: this.metadata.createdAt ?? now,
@@ -301,5 +301,19 @@ export default class Author {
     }
 
     return prunedDocument;
+  }
+
+  public toArchiveDocument(): AuthorArchiveDocument {
+    const archiveDocument: AuthorArchiveDocument = {
+      _id: this._id,
+      ...this._archive,
+    };
+
+    const pruned = dbUtils.removeEmptyFields(archiveDocument);
+    if (!pruned) {
+      throw new Error("Failed to create author archive document: all fields are empty or undefined");
+    }
+
+    return pruned;
   }
 }

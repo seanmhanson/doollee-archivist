@@ -64,7 +64,7 @@ describe("core/DatabaseService", () => {
     });
 
     it("should create collections", async () => {
-      const expectedCollections = ["plays", "authors"];
+      const expectedCollections = ["plays", "authors", "play_archives", "author_archives"];
       const db = await dbService.connect();
 
       const collections = await db.listCollections().toArray();
@@ -104,7 +104,6 @@ describe("core/DatabaseService", () => {
         title: "Test Play",
         author: "Test Author",
         metadata: { createdAt: now, updatedAt: now, scrapedAt: now, sourceUrl: "http://example.com" },
-        _archive: { _type: "play", playId: "12345", title: "Test Play" },
       };
       await expect(db.collection("plays").insertOne(validPlay)).resolves.toBeDefined();
     });
@@ -118,7 +117,6 @@ describe("core/DatabaseService", () => {
         title: "Test Play",
         author: "Test Author",
         metadata: { createdAt: now, updatedAt: now, scrapedAt: now, sourceUrl: "http://example.com" },
-        _archive: { _type: "play", playId: "12345", title: "Test Play" },
         unknownField: "this is not in the schema",
       };
       await expect(db.collection("plays").insertOne(invalidPlay)).rejects.toThrow();
@@ -129,7 +127,6 @@ describe("core/DatabaseService", () => {
       const now = new Date();
       const validAuthor = {
         _id: new ObjectId(),
-        _archive: { name: "Test Author" },
         metadata: { createdAt: now, updatedAt: now, scrapedAt: now, sourceUrl: "http://example.com" },
         name: "Test Author",
         displayName: "Test Author",
@@ -145,7 +142,6 @@ describe("core/DatabaseService", () => {
       const now = new Date();
       const invalidAuthor = {
         _id: new ObjectId(),
-        _archive: { name: "Test Author" },
         metadata: { createdAt: now, updatedAt: now, scrapedAt: now, sourceUrl: "http://example.com" },
         name: "Test Author",
         displayName: "Test Author",
@@ -155,6 +151,48 @@ describe("core/DatabaseService", () => {
         unknownField: "this is not in the schema",
       };
       await expect(db.collection("authors").insertOne(invalidAuthor)).rejects.toThrow();
+    });
+
+    it("should accept a minimal valid play archive document", async () => {
+      const db = await dbService.connect();
+      const validPlayArchive = {
+        _id: new ObjectId(),
+        _type: "play",
+        playId: "12345",
+        title: "Test Play",
+      };
+      await expect(db.collection("play_archives").insertOne(validPlayArchive)).resolves.toBeDefined();
+    });
+
+    it("should reject a play archive document with an unrecognised field", async () => {
+      const db = await dbService.connect();
+      const invalidPlayArchive = {
+        _id: new ObjectId(),
+        _type: "play",
+        playId: "12345",
+        title: "Test Play",
+        unknownField: "this is not in the schema",
+      };
+      await expect(db.collection("play_archives").insertOne(invalidPlayArchive)).rejects.toThrow();
+    });
+
+    it("should accept a minimal valid author archive document", async () => {
+      const db = await dbService.connect();
+      const validAuthorArchive = {
+        _id: new ObjectId(),
+        name: "Test Author",
+      };
+      await expect(db.collection("author_archives").insertOne(validAuthorArchive)).resolves.toBeDefined();
+    });
+
+    it("should reject an author archive document with an unrecognised field", async () => {
+      const db = await dbService.connect();
+      const invalidAuthorArchive = {
+        _id: new ObjectId(),
+        name: "Test Author",
+        unknownField: "this is not in the schema",
+      };
+      await expect(db.collection("author_archives").insertOne(invalidAuthorArchive)).rejects.toThrow();
     });
   });
 
