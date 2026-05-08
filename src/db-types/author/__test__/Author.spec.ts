@@ -109,12 +109,18 @@ describe("Author.class", () => {
       expect(document).toEqual(expectedDocument);
     });
 
-    it("should output a valid archive document structure with toArchiveDocument()", () => {
-      const archiveDocument = author.toArchiveDocument();
-      const expectedArchive = getExpectedArchive(fixture);
+    describe("#toArchiveDocument", () => {
+      it("should return an archive document with _id matching author.id", () => {
+        const archiveDocument = author.toArchiveDocument();
+        expect(archiveDocument._id).toEqual(author.id);
+      });
 
-      expect(archiveDocument._id).toEqual(author.id);
-      expect(archiveDocument).toEqual({ _id: author.id, ...expectedArchive });
+      it("should return an archive document with archive fields matching author.archiveData", () => {
+        const archiveDocument = author.toArchiveDocument();
+        const { _id, ...archiveFields } = archiveDocument;
+
+        expect(archiveFields).toEqual(getExpectedArchive(fixture));
+      });
     });
   });
 
