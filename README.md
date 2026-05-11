@@ -191,8 +191,8 @@ yarn install</code></pre>
 
   <h4>2. Start the database (if not already running)</h4>
   
-  <table>
-  <thead><tr><th>Method / Documentation</th><th>Command</th></tr></thead>
+  <table style="width: 100%">
+  <thead><tr><th style="width: 34%">Method / Documentation</th><th style="width: 66%">Command</th></tr></thead>
     <tbody>
       <tr>
         <td>
@@ -225,9 +225,9 @@ yarn install</code></pre>
 
   <h4>3. Run DB Initialization Script(s)</h4>
 
-  <table>
+  <table style="width: 100%">
     <thead>
-      <tr><th>Script</th><th>Command</th></tr>
+      <tr><th style="width: 34%">Script</th><th style="width: 66%">Command</th></tr>
     </thead>
     <tbody>
       <tr>
@@ -250,7 +250,7 @@ yarn install</code></pre>
   <h2>Available Commands</h2>
   <table>
     <thead>
-      <tr><th>Command</th><th>Description</th></tr>
+      <tr><th style="width: 34%">Command</th><th style="width: 66%">Description</th></tr>
     </thead>
     <tbody>
       <tr><td><code>yarn test</code></td><td>Run unit tests</td></tr>
