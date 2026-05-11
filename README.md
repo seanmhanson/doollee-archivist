@@ -1,46 +1,57 @@
 <section align="center">
-  <h1>Doollee Archivist</h1>
-
-  ![Linting Status](https://github.com/seanmhanson/doollee-archivist/actions/workflows/lint-and-format.yml/badge.svg?branch=main)
-  ![Unit Tests](https://github.com/seanmhanson/doollee-archivist/actions/workflows/unit-testing.yml/badge.svg?branch=main)
-  ![Int Tests](https://github.com/seanmhanson/doollee-archivist/actions/workflows/integration-testing.yml/badge.svg?branch=main)
-
-  <p>
-  A set of scripts leveraging <a href="https://playwright.dev/" target="_blank" rel="noopener noreferrer">Playwright</a> to scrape, normalize, and preserve the playwright and play collection of doollee.com and curate a modern online database and search interface for the works.
-</p>
-
-  <h3>Phases:</h3>
+  <h1 style="margin-bottom: 0.5rem">
+    Doollee Archivist
+    <br/>
+    <img src="https://github.com/seanmhanson/doollee-archivist/actions/workflows/format-lint-build.yml/badge.svg?branch=main" alt="Format, Lint, & Build Status Status" />
+    <img src="https://github.com/seanmhanson/doollee-archivist/actions/workflows/unit-testing.yml/badge.svg?branch=main" alt="Unit Tests Status" />
+    <img src="https://github.com/seanmhanson/doollee-archivist/actions/workflows/integration-testing.yml/badge.svg?branch=main" alt="Integration Tests Status" />
+  </h1>
   <div>
-    ✅ &nbsp;&nbsp;<a href="#scraping">Scraping</a>&nbsp;&nbsp;→&nbsp;&nbsp;
-    ⏳ &nbsp;&nbsp;<a href="#normalization">Normalization</a>&nbsp;&nbsp;→&nbsp;&nbsp;
-    ● &nbsp;&nbsp;<a href="database-configuration">Database & Search</a>&nbsp;&nbsp;→&nbsp;&nbsp;
-    ● &nbsp;&nbsp;<a href="web-application">Web App</a>
+    <strong>Development Status</strong>:&nbsp;
+      ✅ &nbsp;&nbsp;<a href="#scraping">Scraping</a>&nbsp;&nbsp;→&nbsp;&nbsp;
+      ⏳ &nbsp;&nbsp;<a href="#normalization">Normalization</a>&nbsp;&nbsp;→&nbsp;&nbsp;
+      ● &nbsp;&nbsp;<a href="database-configuration">Database & Search</a>&nbsp;&nbsp;→&nbsp;&nbsp;
+      ● &nbsp;&nbsp;<a href="web-application">Web App</a>
+    <hr/>
   </div>
+  <p>
+    A set of scripts leveraging <a href="https://playwright.dev/" target="_blank" rel="noopener noreferrer">Playwright</a> to scrape, normalize, and preserve the playwright and play collection of <a href="https://doollee.com/" target="_blank" rel="noopener noreferrer">doollee.com</a> and curate a modern online database and search interface for the works.
+  </p>
 </section>
 
 <section>
   <h2>FAQs</h2>
-
   <h3>What is Doollee?</h3>
-
   <p>
-  <a href="https://doollee.com" target="_blank" rel="noopener noreferrer">Doollee.com</a> is a massive online project spearheaded by <strong>Julian Oddy</strong> cataloging theatre plays that were written, adapted, or translated into English since the 1956 production of John Osborne's <em>Look Back in Anger</em> until 2021. Oddy spent his life curating this collection, and died in September 2022 at which time the website was maintained in tribute to his work and his person.
-</p>
-
+    <a href="https://doollee.com" target="_blank" rel="noopener noreferrer">Doollee.com</a> is a massive online project spearheaded by <strong>Julian Oddy</strong> cataloging theatre plays that were written, adapted, or translated into English since the 1956 production of John Osborne's <em>Look Back in Anger</em> until 2021. Oddy spent his life curating this collection, and died in September 2022 at which time the website was maintained in tribute to his work and his person.
+  </p>
   <h3>Why scrape and archive Doollee?</h3>
-
   <p>
-  Doollee, while remaining online as a tribute, is no longer maintained. The site has accumulated usability issues over time from code written before XHTML/HTML5 standards, expired security certificates, 404s, and other bugs. At the same time, the value of the site and work is absolutely prodigious, often presenting significantly more information for younger and lesser known playwrights than other resources like wikipedia.
-</p>
-
+    Doollee, while remaining online as a tribute, is no longer maintained. The site has accumulated usability issues over time from code written before XHTML/HTML5 standards, expired security certificates, 404s, and other bugs. At the same time, the value of the site and work is absolutely prodigious, often presenting significantly more information for younger and lesser known playwrights than other resources like wikipedia.
+  </p>
   <p>
-  Archiving this means:
-</p>
+    Archiving this means:
+  </p>
   <ul>
     <li>preserving Julian Oddy's work beyond a single source</li>
     <li>no longer requiring friends and family to carry the burden of maintenance</li>
     <li>making this resource available more readily online</li>
     <li>allowing the curation of modern search for easier surfacing of plays and playwrights</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Recommended AI Usage</h2>
+  <p>This section links project-specific and workflow documentation for GitHub Copilot that is recommended for all contributors regardless of AI tooling usage.</p>
+
+  <ul>
+    <li>
+      <a href="/.github/copilot-instructions.md">Project-specific instructions for Copilot</a>, which address project architecture, codebase conventions, testing patterns, verification standards, and known data quality concerns.
+    </li>
+    <li>
+      <a href="/.github/instructions/plan-execution.instructions.md">Workflow instructions for Copilot</a>, managing branch creation, plan execution, a dual-focus self-review, verification, PR creation, and plan and execution documentation.</li>
+    <li>
+      <a href="/docs/workflow-notes.md">Notes on workflow best practices</a>, recommended for usage with the workflow instructions, as well as for all contributors regardless of Copilot usage, including detail about self-reviews, manual reviews, pre-planning, and iterative improvement.</li>
   </ul>
 </section>
 
