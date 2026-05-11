@@ -77,6 +77,7 @@ class AnalyzeOrchestrator {
   private services: Services;
   private playsCollection?: Collection<Document>;
   private authorsCollection?: Collection<Document>;
+  private playArchivesCollection?: Collection<Document>;
   private writtenFiles: string[] = [];
   private workbook = new XlsxWorkbook();
 
@@ -98,6 +99,13 @@ class AnalyzeOrchestrator {
     return this.authorsCollection;
   }
 
+  private getPlayArchivesCollection() {
+    if (!this.playArchivesCollection) {
+      throw new Error("Database not connected. Call connect() first.");
+    }
+    return this.playArchivesCollection;
+  }
+
   private async connect() {
     const dbConnected = await this.services.dbService.isConnected();
 
@@ -114,6 +122,7 @@ class AnalyzeOrchestrator {
 
     this.playsCollection = await this.services.dbService.getCollection("plays");
     this.authorsCollection = await this.services.dbService.getCollection("authors");
+    this.playArchivesCollection = await this.services.dbService.getCollection("play_archives");
   }
 
   public async run() {
@@ -371,7 +380,7 @@ class AnalyzeOrchestrator {
   }
 
   private async getPublicationProductionInfoCSV() {
-    const collection = this.getPlaysCollection();
+    const collection = this.getPlayArchivesCollection();
     const pipeline = getProdPubDataPipeline();
     const result = await collection.aggregate(pipeline).toArray();
     await this.writeDocumentsToCSV(result, "publication-production-info");
@@ -562,7 +571,7 @@ class AnalyzeOrchestrator {
 
   private async analyzePublishingInfoFormats() {
     const pipeline = getPublishingInfoFormatsPipeline();
-    const collection = this.getPlaysCollection();
+    const collection = this.getPlayArchivesCollection();
     const result = (await collection.aggregate(pipeline).toArray())[0] as PublishingInfoResult;
 
     const { formatCategories, publisherNames } = result;

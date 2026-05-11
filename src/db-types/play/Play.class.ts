@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 
+import type { PlayArchiveDocument } from "#/db-types/play/play-archive.types";
 import type { InitialMetadata, PlayDocument, PlayData, PlayArchive } from "#/db-types/play/play.types";
 import type { ReviewNote } from "#/review-notes";
 
@@ -169,7 +170,6 @@ export default class Play {
 
     const document: PlayDocument = {
       _id: this._id,
-      _archive: this._archive,
       metadata: {
         ...this.metadata,
         createdAt: this.metadata.createdAt ?? now,
@@ -192,5 +192,23 @@ export default class Play {
     }
 
     return prunedDocument;
+  }
+
+  toArchiveDocument(id?: ObjectId): PlayArchiveDocument {
+    const archiveDocument: PlayArchiveDocument = {
+      _id: id ?? this._id,
+      ...this._archive,
+    };
+
+    const pruned = dbUtils.removeEmptyFields(archiveDocument);
+    const requiredFields: (keyof PlayArchiveDocument)[] = ["_type", "playId", "title"] as const;
+    const invalidDocument = !pruned;
+    const missingRequiredFields = requiredFields.some((field) => !pruned?.[field]);
+
+    if (invalidDocument || missingRequiredFields) {
+      throw new Error(`Failed to create play archive document: missing required fields (_type, playId, and/or title)`);
+    }
+
+    return pruned;
   }
 }

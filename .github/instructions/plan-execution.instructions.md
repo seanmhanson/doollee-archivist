@@ -1,5 +1,5 @@
 ---
-description: "Use when a plan is approved and ready to execute: set up feature branch before plan execution, create branch from main before starting work, plan execution git workflow, commit and push changes after plan completion, open a pull request after plan execution, stage and commit plan execution results."
+description: "Use when a plan is approved and ready to execute. Covers the full lifecycle: create a clean feature branch from main, execute the plan, commit the initial changeset, run a self-review (with verification), commit any corrections, open a pull request with a formatted body, request a Copilot review, and inform the user."
 ---
 
 # Plan Execution Git Workflow
@@ -86,7 +86,7 @@ Do not delete or abandon the branch — leave it in place so the user can inspec
 
 ## Step 4 — Agent Self-Review
 
-The self-review is an analytical code review performed independently of the constraints that shaped execution. The goal is to read the changed code as a reviewer who was not involved in writing it — without the forward teleology of "does it fulfill the plan" dominating the lens. Concerns that execution is unlikely to surface are precisely what the review is for.
+The self-review is an analytical code review performed from a perspective independent of the execution that produced it. Execution is goal-oriented and linear; review should be broad and non-linear to reduce bias and avoid simply retracing the logic of the plan. The goal is to read the changed code as a reviewer who was not involved in writing it — concerns that execution is unlikely to surface are precisely what the review is for.
 
 1. Read every file changed during plan execution. To get the exact list and full diff:
 
@@ -95,17 +95,20 @@ The self-review is an analytical code review performed independently of the cons
    git diff origin/main
    ```
 
-2. Review each changed file against the following criteria. Each is a distinct lens — apply all of them:
+2. Review each changed file against the following criteria, organized into two groups. Each criterion is a distinct lens — apply all of them. For each, record concrete observations: what was examined, what was found, and any concern or confirmation. Do not summarize with "looks fine"; name what was checked.
 
+   **Functional alignment** — how the changes relate to the intent and the broader codebase:
    - **Alignment** — Does the implementation match the intent of the plan and the broader feature? Has anything drifted, been over-engineered, or added scope not in the plan?
    - **Impact on existing code** — Do changes to shared modules, types, utilities, or interfaces affect callsites beyond what was planned? Are existing behaviors preserved?
-   - **Stability** — Are there unhandled edge cases, fragile error paths, implicit assumptions about ordering or state, or race conditions?
-   - **Security** — Are there injection vulnerabilities, unvalidated inputs, exposed secrets, or other OWASP concerns introduced?
-   - **Accuracy** — Is the logic correct? Are there off-by-one errors, wrong data transformations, incorrect assumptions about data shape, or silent failures?
-   - **Efficiency** — Are there obvious performance concerns (unnecessary iterations, unbounded queries, redundant work) that could be avoided without significant added complexity?
-   - **Clarity** — Is the code readable and consistent with codebase conventions? Would a future reader understand it without asking questions?
+   - **Integration** — How do the changes fit into the surrounding code? Are there implicit dependencies, ordering assumptions, or coordination requirements that could break under normal use?
+   - **Avoidance** — Was any part of the intended work avoided, deferred without acknowledgment, or implemented only partially?
 
-   For each criterion, record concrete observations — what was examined, what was found, and any concern or confirmation. Do not summarize with "looks fine"; name what was checked.
+   **Technical alignment** — how the code itself holds up:
+   - **Test coverage** — Are the new or changed behaviors covered by tests? Are edge cases and failure paths exercised?
+   - **Accuracy** — Is the logic correct? Are there off-by-one errors, wrong data transformations, incorrect assumptions about data shape, or silent failures?
+   - **Edge cases and stability** — Are there unhandled inputs, fragile error paths, implicit state assumptions, or race conditions?
+   - **Efficiency** — Are there obvious performance concerns (unnecessary iterations, unbounded queries, redundant work) that could be avoided without significant added complexity?
+   - **Clarity and maintainability** — Is the code readable and consistent with codebase conventions? Is it as simple as it can be for what it does? Would a future reader understand it without asking questions?
 
 3. Run the Verification Standards suite defined in `.github/copilot-instructions.md` as a mechanical complement to the review. That file is the source of truth for required steps; follow it exactly. Report whether each step passed or describe what was found.
 
@@ -241,8 +244,10 @@ Written by the executing agent after the plan is complete. `## Summary` is requi
 <details>
 <summary><strong>Verified</strong></summary><br/>
 
+- `yarn test` — N suites, N tests, all passed
 - `yarn build:noEmit` — clean
 - `yarn lint` — clean
+- `yarn format` — clean
 </details>
 
 <details>
@@ -254,7 +259,9 @@ Any notes relevant for using the feature.
 
 ### Section 3 — Agent Self-Review
 
-Written by the executing agent after the self-review step. One `<details>` block per review category from Step 4. Omit any category for which no substantive observation can be made. `Verification` is always included.
+Written by the executing agent after the self-review step. One `<details>` block per review category from Step 4. Omit any category for which no substantive observation can be made. `Verification` is always included. Append `✅` to summary labels for passing categories; describe the finding plainly for anything else.
+
+The two groups of criteria map to two sets of blocks. Order within each group is flexible — lead with the most substantive observations.
 
 ```markdown
 # Agent Self-Review
@@ -271,10 +278,23 @@ One or two sentences on the overall finding (e.g. "Implementation matches the pl
 </details>
 
 <details>
+<summary><strong>Impact on existing code ✅</strong></summary><br/>
+
+- bullet observation
+</details>
+
+<details>
+<summary><strong>Accuracy ✅</strong></summary><br/>
+
+- bullet observation
+</details>
+
+<details>
 <summary><strong>Verification</strong></summary><br/>
 
 - `yarn test` — N suites, N tests, all passed
 - `yarn build:noEmit` — clean
 - `yarn lint` — clean
+- `yarn format` — clean
 </details>
 ```

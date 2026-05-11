@@ -74,7 +74,6 @@ describe("Author.class", () => {
       author.addAdaptations(adaptationIds);
       author.addDoolleeIds(doolleePlayIds);
 
-      const _archive = getExpectedArchive(fixture);
       const biographyData = getExpectedBiographyData(fixture);
       const metadata = {
         scrapedAt: fixture.scrapedAt,
@@ -96,7 +95,6 @@ describe("Author.class", () => {
 
       const expectedDocument = {
         _id: expect.any(ObjectId),
-        _archive,
         metadata,
         ...nameData,
         ...biographyData,
@@ -107,7 +105,22 @@ describe("Author.class", () => {
 
       const document = author.toDocument();
       omittedFields.forEach(expect(document).not.toHaveProperty);
+      expect(document).not.toHaveProperty("_archive");
       expect(document).toEqual(expectedDocument);
+    });
+
+    describe("#toArchiveDocument", () => {
+      it("should return an archive document with _id matching author.id", () => {
+        const archiveDocument = author.toArchiveDocument();
+        expect(archiveDocument._id).toEqual(author.id);
+      });
+
+      it("should return an archive document with archive fields matching author.archiveData", () => {
+        const archiveDocument = author.toArchiveDocument();
+        const { _id, ...archiveFields } = archiveDocument;
+
+        expect(archiveFields).toEqual(getExpectedArchive(fixture));
+      });
     });
   });
 

@@ -49,7 +49,6 @@ export type PlayArchive = ({ _type: "play" } & PlayArchiveData) | ({ _type: "ada
 
 export type PlayDocument = {
   _id: ObjectId;
-  _archive: PlayArchive;
   playId: string; // the id used by doollee, not our internal id
 
   metadata: {
@@ -102,8 +101,8 @@ export type InitialMetadata = Omit<Metadata, OptionalInitialMetadataKeys> &
  * the Play document structure
  */
 
-type RequiredKeys = "playId" | "title" | "_archive";
-type RequiredFields = Pick<PlayDocument, RequiredKeys>;
+type RequiredKeys = "playId" | "title";
+type RequiredFields = Pick<PlayDocument, RequiredKeys> & { _archive: PlayArchive };
 
 type RequiredMetadataKeys = "scrapedAt" | "sourceUrl";
 type RequiredMetadata = Pick<Metadata, RequiredMetadataKeys>;
