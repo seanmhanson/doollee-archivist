@@ -206,7 +206,7 @@ export default class Play {
     const missingRequiredFields = requiredFields.some((field) => !pruned?.[field]);
 
     if (invalidDocument || missingRequiredFields) {
-      throw new Error(`Failed to create play archive document: missing required fields (_type,  playId, and/or title)`);
+      throw new Error(`Failed to create play archive document: missing required fields (_type, playId, and/or title)`);
     }
 
     return pruned;
