@@ -1,7 +1,7 @@
 <section align="center">
   <h1>Doollee Archivist</h1>
 
-  ![Linting Status](https://github.com/seanmhanson/doollee-archivist/actions/workflows/lint-and-format.yml/badge.svg?branch=main)
+  ![Linting Status](https://github.com/seanmhanson/doollee-archivist/actions/workflows/format-lint-build.yml/badge.svg?branch=main)
   ![Unit Tests](https://github.com/seanmhanson/doollee-archivist/actions/workflows/unit-testing.yml/badge.svg?branch=main)
   ![Int Tests](https://github.com/seanmhanson/doollee-archivist/actions/workflows/integration-testing.yml/badge.svg?branch=main)
 
