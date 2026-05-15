@@ -1,5 +1,5 @@
 <section align="center">
-  <h1 style="margin-bottom: 0.5rem">
+  <h1>
     Doollee Archivist
     <br/>
     <img src="https://github.com/seanmhanson/doollee-archivist/actions/workflows/format-lint-build.yml/badge.svg?branch=main" alt="Format, Lint, & Build Status" />
@@ -49,9 +49,11 @@
       <a href="/.github/copilot-instructions.md">Project-specific instructions for Copilot</a>, which address project architecture, codebase conventions, testing patterns, verification standards, and known data quality concerns.
     </li>
     <li>
-      <a href="/.github/instructions/plan-execution.instructions.md">Workflow instructions for Copilot</a>, managing branch creation, plan execution, a dual-focus self-review, verification, PR creation, and plan and execution documentation.</li>
+      <a href="/.github/instructions/plan-execution.instructions.md">Workflow instructions for Copilot</a>, managing branch creation, plan execution, a dual-focus self-review, verification, PR creation, and plan and execution documentation.
+    </li>
     <li>
-      <a href="/docs/workflow/workflow-notes.md">Notes on workflow best practices</a>, recommended for usage with the workflow instructions, as well as for all contributors regardless of Copilot usage, including detail about self-reviews, manual reviews, pre-planning, and iterative improvement.</li>
+      <a href="/docs/workflow/workflow-notes.md">Notes on workflow best practices</a>, recommended for usage with the workflow instructions, as well as for all contributors regardless of Copilot usage, including detail about self-reviews, manual reviews, pre-planning, and iterative improvement.
+    </li>
   </ul>
 </section>
 
@@ -78,7 +80,7 @@
         </td>
       </tr>
       <tr>
-        <th id="database-configuration">Phase 3: Database Configuration</th>
+        <th id="database-configuration">Phase 3: Database &amp; Search Configuration</th>
         <td>
           <p>Configure an instance of MongoDB Atlas and populate the data, using native tools to analyze performance while configuring a MongoDB Atlas Search Index.</p>
           <p>Identify gaps in search accuracy by defining a comprehensive set of expected query behaviors and validating results against them, with settings selected to reflect anticipated usage patterns.</p>
@@ -191,8 +193,8 @@ yarn install</code></pre>
 
   <h4>2. Start the database (if not already running)</h4>
   
-  <table style="width: 100%">
-  <thead><tr><th style="width: 34%">Method / Documentation</th><th style="width: 66%">Command</th></tr></thead>
+  <table>
+  <thead><tr><th>Method / Documentation</th><th>Command</th></tr></thead>
     <tbody>
       <tr>
         <td>
@@ -225,9 +227,9 @@ yarn install</code></pre>
 
   <h4>3. Run DB Initialization Script(s)</h4>
 
-  <table style="width: 100%">
+  <table>
     <thead>
-      <tr><th style="width: 34%">Script</th><th style="width: 66%">Command</th></tr>
+      <tr><th>Script</th><th>Command</th></tr>
     </thead>
     <tbody>
       <tr>
@@ -250,7 +252,7 @@ yarn install</code></pre>
   <h2>Available Commands</h2>
   <table>
     <thead>
-      <tr><th style="width: 34%">Command</th><th style="width: 66%">Description</th></tr>
+      <tr><th>Command</th><th>Description</th></tr>
     </thead>
     <tbody>
       <tr><td><code>yarn test</code></td><td>Run unit tests</td></tr>
