@@ -4,17 +4,17 @@ Author pages come in various templates, with text content that isn't always acce
 
 <h2 id="TOC">TOC</h2>
 <ul>
-  <li><a href="#simple-template"/>Simple Template Examples</a></li>
+  <li><a href="#simple-template">Simple Template Examples</a></li>
   <ul>
-    <li><a href="#mcdonagh"/>Martin McDonagh</a></li>
-    <li><a href="#mamet"/>David Mamet</a></li>
-    <li><a href="#kane"/>Sarah Kane</a></li>
-    <li><a href="#ashby-rock"/>Jonathan Ashby-Rock</a></li>
+    <li><a href="#mcdonagh">Martin McDonagh</a></li>
+    <li><a href="#mamet">David Mamet</a></li>
+    <li><a href="#kane">Sarah Kane</a></li>
+    <li><a href="#ashby-rock">Jonathan Ashby-Rock</a></li>
   </ul>
-  <li><a href="#table-template"/>Table Template Examples</a></li>
+  <li><a href="#table-template">Table Template Examples</a></li>
   <ul>
-    <li><a href="#shakespeare"/>Shakespeare</a></li>
-    <li><a href="#7-84"/>7-84 Company</a></li>
+    <li><a href="#shakespeare">Shakespeare</a></li>
+    <li><a href="#7-84">7-84 Company</a></li>
   </ul>
 </ul>
 
@@ -156,7 +156,7 @@ Identical with one minor difference in parsing text.
 <h3>Multiple Social Media</h3>
 
 - two root level `a` tags to social media are listed between nationality and email address
-- these are omitted from scarping but impact order of text
+- these are omitted from scraping but impact order of text
 
 <h3>No Literary Agent</h3>
 

@@ -1,39 +1,109 @@
 <section align="center">
-  <h1>Doollee Archivist</h1>
-
-  ![Linting Status](https://github.com/seanmhanson/doollee-archivist/actions/workflows/format-lint-build.yml/badge.svg?branch=main)
-  ![Unit Tests](https://github.com/seanmhanson/doollee-archivist/actions/workflows/unit-testing.yml/badge.svg?branch=main)
-  ![Int Tests](https://github.com/seanmhanson/doollee-archivist/actions/workflows/integration-testing.yml/badge.svg?branch=main)
-
-  <p>A set of scripts leveraging <a href="https://playwright.dev/" target="_blank" rel="noopener noreferrer">Playwright</a> to scrape, normalize, and preserve the playwright and play collection of doollee.com and curate a modern online database and search interface for the works.</p>
-
-  <h3>Phases:</h3>
+  <h1>
+    Doollee Archivist
+    <br/>
+    <img src="https://github.com/seanmhanson/doollee-archivist/actions/workflows/format-lint-build.yml/badge.svg?branch=main" alt="Format, Lint, & Build Status" />
+    <img src="https://github.com/seanmhanson/doollee-archivist/actions/workflows/unit-testing.yml/badge.svg?branch=main" alt="Unit Tests Status" />
+    <img src="https://github.com/seanmhanson/doollee-archivist/actions/workflows/integration-testing.yml/badge.svg?branch=main" alt="Integration Tests Status" />
+  </h1>
   <div>
-    ⌛  Scrape &nbsp;&nbsp;→&nbsp;&nbsp;
-    ⏳  Normalize &nbsp;&nbsp;→&nbsp;&nbsp;
-    🔳  Database &nbsp;&nbsp;→&nbsp;&nbsp;
-    🔳  Search
+    <strong>Development Status</strong>:&nbsp;
+      ✅ &nbsp;&nbsp;<a href="#scraping">Scraping</a>&nbsp;&nbsp;→&nbsp;&nbsp;
+      ⏳ &nbsp;&nbsp;<a href="#normalization">Normalization</a>&nbsp;&nbsp;→&nbsp;&nbsp;
+      ● &nbsp;&nbsp;<a href="#database-configuration">Database & Search</a>&nbsp;&nbsp;→&nbsp;&nbsp;
+      ● &nbsp;&nbsp;<a href="#web-application">Web App</a>
+    <hr/>
   </div>
+  <p>
+    A set of scripts leveraging <a href="https://playwright.dev/" target="_blank" rel="noopener noreferrer">Playwright</a> to scrape, normalize, and preserve the playwright and play collection of <a href="https://doollee.com/" target="_blank" rel="noopener noreferrer">doollee.com</a> and curate a modern online database and search interface for the works.
+  </p>
 </section>
 
 <section>
   <h2>FAQs</h2>
-
   <h3>What is Doollee?</h3>
-
-  <p><a href="https://doollee.com" target="_blank" rel="noopener noreferrer">Doollee.com</a> is a massive online project spearheaded by <strong>Julian Oddy</strong> cataloging theatre plays that were written, adapted, or translated into English since the 1956 production of John Osborne's <em>Look Back in Anger</em> until 2021. Oddy spent his life curating this collection, and died in September 2022 at which time the website was maintained in tribute to his work and his person.</p>
-
+  <p>
+    <a href="https://doollee.com" target="_blank" rel="noopener noreferrer">Doollee.com</a> is a massive online project spearheaded by <strong>Julian Oddy</strong> cataloging theatre plays that were written, adapted, or translated into English since the 1956 production of John Osborne's <em>Look Back in Anger</em> until 2021. Oddy spent his life curating this collection, and died in September 2022 at which time the website was maintained in tribute to his work and his person.
+  </p>
   <h3>Why scrape and archive Doollee?</h3>
-
-  <p>Doollee, while remaining online as a tribute, is no longer maintained. The site has accumulated usability issues over time from code written before XHTML/HTML5 standards, expired security certificates, 404s, and other bugs. At the same time, the value of the site and work is absolutely prodigious, often presenting significantly more information for younger and lesser known playwrights than other resources like wikipedia.</p>
-
-  <p>Archiving this means:</p>
+  <p>
+    Doollee, while remaining online as a tribute, is no longer maintained. The site has accumulated usability issues over time from code written before XHTML/HTML5 standards, expired security certificates, 404s, and other bugs. At the same time, the value of the site and work is absolutely prodigious, often presenting significantly more information for younger and lesser known playwrights than other resources like wikipedia.
+  </p>
+  <p>
+    Archiving this means:
+  </p>
   <ul>
     <li>preserving Julian Oddy's work beyond a single source</li>
     <li>no longer requiring friends and family to carry the burden of maintenance</li>
     <li>making this resource available more readily online</li>
     <li>allowing the curation of modern search for easier surfacing of plays and playwrights</li>
   </ul>
+</section>
+
+<section>
+  <h2>Recommended AI Usage</h2>
+  <p>This section links project-specific and workflow documentation for GitHub Copilot that is recommended for all contributors regardless of AI tooling usage.</p>
+
+  <ul>
+    <li>
+      <a href="/.github/copilot-instructions.md">Project-specific instructions for Copilot</a>, which address project architecture, codebase conventions, testing patterns, verification standards, and known data quality concerns.
+    </li>
+    <li>
+      <a href="/.github/instructions/plan-execution.instructions.md">Workflow instructions for Copilot</a>, managing branch creation, plan execution, a dual-focus self-review, verification, PR creation, and plan and execution documentation.
+    </li>
+    <li>
+      <a href="/docs/workflow/workflow-notes.md">Notes on workflow best practices</a>, recommended for usage with the workflow instructions, as well as for all contributors regardless of Copilot usage, including detail about self-reviews, manual reviews, pre-planning, and iterative improvement.
+    </li>
+  </ul>
+</section>
+
+<section>
+  <h2>Development Outline</h2>
+
+  <table>
+    <tbody>
+      <tr>
+        <th id="scraping">
+        Phase 1: Scraping
+        </th>
+        <td>
+          <p>Scrape the data from the original website and perform a first-pass normalization to account for inconsistencies in data and presentation.</p>
+          <p>Prepare a database-ready document, archive of the unnormalized content, and flag concerns requiring later manual review.</p>
+        </td>
+      </tr>
+      <tr>
+        <th id="normalization">Phase 2: Normalization</th>
+        <td>
+          <p>Optimize document structures for usage with MongoDB Atlas Search.</p>
+          <p>Use frequency tables, field-presence distributions, and language model assistance to standardize and consolidate fields, resolve inconsistencies, and build synonym libraries.</p>
+          <p>Repeat this process with increasing sizes of datasets, building out a normalization layer between document generation and database insertion.</p>
+        </td>
+      </tr>
+      <tr>
+        <th id="database-configuration">Phase 3: Database &amp; Search Configuration</th>
+        <td>
+          <p>Configure an instance of MongoDB Atlas and populate the data, using native tools to analyze performance while configuring a MongoDB Atlas Search Index.</p>
+          <p>Identify gaps in search accuracy by defining a comprehensive set of expected query behaviors and validating results against them, with settings selected to reflect anticipated usage patterns.</p>
+        </td>
+      </tr>
+      <tr>
+        <th id="web-application">Phase 4: Web Application</th>
+        <td>
+          <p>Create a lightweight Node server to facilitate search and filter requests, and to surface archive data.</p>
+          <p>Build a Next.js application to provide a clean UI for simple searches, more complex browsing, and archival access of original data.</p>
+          <p>Create a small section for attribution and a dedicated informational page appropriate to memorialize Julian and Pat Oddy.</p>
+        </td>
+      </tr>
+      <tr>
+        <th>Additional Prospects</th>
+        <td>
+          <p>Build out a user account service using SSO identity providers to allow for saving and grouping of results and grouped exports.</p>
+          <p>Add a method for suggesting corrections with reasonable safe guards against abuse and means for verification of accuracy.</p>
+          <p>Examine other contributions from Doollee.com involving publishers and other non-author/play entities for archiving.</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </section>
 
 <section>
@@ -179,7 +249,7 @@ yarn install</code></pre>
 </section>
 
 <section>
-  <h2>Selected Available Commands</h2>
+  <h2>Available Commands</h2>
   <table>
     <thead>
       <tr><th>Command</th><th>Description</th></tr>

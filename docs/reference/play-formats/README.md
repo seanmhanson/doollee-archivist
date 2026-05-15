@@ -106,7 +106,7 @@ See above for selectors; all tags exist, but most are empty content ("<code>-</c
 
 <h1 id="table-template">Table Templates</h1>
 
-Table values are not labeled programmmatically, but do have label text which can be parsed if needed. Otherwise, they maintain a consistent layout summarized below. Note: for actual selectors, see the comparison of the templates below.
+Table values are not labeled programmatically, but do have label text which can be parsed if needed. Otherwise, they maintain a consistent layout summarized below. Note: for actual selectors, see the comparison of the templates below.
 
 <table>
   <thead>
@@ -178,7 +178,7 @@ Table values are not labeled programmmatically, but do have label text which can
   </tbody>
 </table>
 
-<h2 id="#comparison">Template Comparison</h2>
+<h2 id="comparison">Template Comparison</h2>
 <h3>Example: <em>Bakkhai</em>, Euripedes (trans. Anne Carson)</h3>
 🔗 <strong><a href="./euripedes-carson-bakkhai.html">Table Template Example</a></strong><br/>
 🔗 <strong><a href="./carson-bakkhai.html">Simple Template Example</a></strong>

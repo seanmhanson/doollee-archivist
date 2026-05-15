@@ -35,4 +35,4 @@ Profile pages may be broken out due to the size and division of content:
 Templates should be named to preserve meaning:
 
 - `Standard` - the typical template for playwrights and plays
-- `Adaptations` - the template used for prevoius playwrights and adaptations of their works
+- `Adaptations` - the template used for previous playwrights and adaptations of their works

@@ -1,20 +1,20 @@
 # Rate Limiting Assessment
 
-To ensure data scraping of the site does not contribute to excessive load or servicer performance, simple tests were run to estimate the necessary delays among requests; this information was not provided in response headers, these are best estimates.
+To ensure data scraping of the site does not contribute to excessive load or service performance, simple tests were run to estimate the necessary delays among requests; this information was not provided in response headers, these are best estimates.
 
 ## Procedure
 
-A set of eight urls were selected to have comprable data and unique directories. A set of six delay lengths were selected between 3000ms and 500ms. 
+A set of eight URLs were selected to have comparable data and unique directories. A set of six delay lengths were selected between 3000ms and 500ms.
 
-The set of urls were pinged in succession, with a given delay between each, and response times and statuses were recorded. 
+The set of URLs were pinged in succession, with a given delay between each, and response times and statuses were recorded.
 
-After a ten second delay, the set was pinged agani with the next of the delay lengths being tested.
+After a ten second delay, the set was pinged again with the next of the delay lengths being tested.
 
 After completion, the test was repeated two more times after several minute delays between each. 
 
 ## Results
 
-In general, there was no significant difference between delays of 2000ms thorugh 500ms, excluding the outlier of the first ping of each test, which 
+In general, there was no significant difference between delays of 2000ms through 500ms, excluding the outlier of the first ping of each test, which
 had a longer than average time and likely was because of a lack of any cached data; the scraping of data is intended to be done in bundles, and this
 is not a concern as a result.
 
@@ -22,7 +22,7 @@ Excluding the 3000ms values, the average standard deviation for a given delay wa
 
 ## Implementation Notes
 
-500ms was set as a lower bound for the delay in the scraping, to avoid any unneccessary traffic concerns or burden on the servers. Two requests per second is reasonable, but to ensure adequate distribution of load and to minimize overall need:
+500ms was set as a lower bound for the delay in the scraping, to avoid any unnecessary traffic concerns or burden on the servers. Two requests per second is reasonable, but to ensure adequate distribution of load and to minimize overall need:
 - scripts for authors and plays are optimized to evaluate in-browser for all dom requests at once, and in node for handling of the data; this greatly reduces the duration of
 the script executions and allows for a higher tolerance for longer network requests
 - script executions will be bundled for report, execution, and error handling, and the bundles can also be run at delays
@@ -43,9 +43,9 @@ The aggregated statistics across the three tests is presented below:
 
 The individual test results and statistics are available below:
 
-<summary>
-Test 1 of 3
 <details>
+<summary>Test 1 of 3</summary>
+
 <table>
 <thead>
 <tr><th>Duration</th><th colspan="8">Response Times</th><th>Count</th><th>Min</th><th>Max</th><th>Median</th><th>Average</th><th>Stdev</th><th>Variance</th></tr>
@@ -57,13 +57,12 @@ Test 1 of 3
 <tr><td>1000ms</td><td>182</td><td>168</td><td>309</td><td>173</td><td>300</td><td>265</td><td>251</td><td>294</td>	<td>8</td><td>168</td><td>309</td><td>258.0</td><td>242.8</td><td>59.76</td><td>3571.36</td></tr>
 <tr><td>750ms</td><td>182</td><td>190</td><td>310</td><td>177</td><td>309</td><td>269</td><td>260</td><td>304</td>	<td>8</td><td>177</td><td>310</td><td>264.5</td><td>250.1</td><td>58.57</td><td>3430.13</td></tr>
 <tr><td>500ms</td><td>176</td><td>187</td><td>312</td><td>180</td><td>305</td><td>252</td><td>264</td><td>308</td>	<td>8</td><td>176</td><td>312</td><td>258.0</td><td>248.0</td><td>59.46</td><td>3535.14</td></tr>
-
+</tbody>
+</table>
 </details>
-</summary>
 
-<summary>
-Test (2 of 3)																
 <details>
+<summary>Test 2 of 3</summary>
 
 <table>
 <thead>
@@ -79,11 +78,9 @@ Test (2 of 3)
 </tbody>
 </table>
 </details>
-</summary>
 
-<summary>
-Test (<td>3</td>of 3)		
 <details>
+<summary>Test 3 of 3</summary>
 
 <table>
 <thead>
@@ -99,4 +96,3 @@ Test (<td>3</td>of 3)
 </tbody>
 </table>
 </details>
-</summary>
