@@ -2,7 +2,7 @@
   <h1 style="margin-bottom: 0.5rem">
     Doollee Archivist
     <br/>
-    <img src="https://github.com/seanmhanson/doollee-archivist/actions/workflows/format-lint-build.yml/badge.svg?branch=main" alt="Format, Lint, & Build Status Status" />
+    <img src="https://github.com/seanmhanson/doollee-archivist/actions/workflows/format-lint-build.yml/badge.svg?branch=main" alt="Format, Lint, & Build Status" />
     <img src="https://github.com/seanmhanson/doollee-archivist/actions/workflows/unit-testing.yml/badge.svg?branch=main" alt="Unit Tests Status" />
     <img src="https://github.com/seanmhanson/doollee-archivist/actions/workflows/integration-testing.yml/badge.svg?branch=main" alt="Integration Tests Status" />
   </h1>
@@ -10,8 +10,8 @@
     <strong>Development Status</strong>:&nbsp;
       ✅ &nbsp;&nbsp;<a href="#scraping">Scraping</a>&nbsp;&nbsp;→&nbsp;&nbsp;
       ⏳ &nbsp;&nbsp;<a href="#normalization">Normalization</a>&nbsp;&nbsp;→&nbsp;&nbsp;
-      ● &nbsp;&nbsp;<a href="database-configuration">Database & Search</a>&nbsp;&nbsp;→&nbsp;&nbsp;
-      ● &nbsp;&nbsp;<a href="web-application">Web App</a>
+      ● &nbsp;&nbsp;<a href="#database-configuration">Database & Search</a>&nbsp;&nbsp;→&nbsp;&nbsp;
+      ● &nbsp;&nbsp;<a href="#web-application">Web App</a>
     <hr/>
   </div>
   <p>
