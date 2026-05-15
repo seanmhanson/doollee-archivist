@@ -51,7 +51,7 @@
     <li>
       <a href="/.github/instructions/plan-execution.instructions.md">Workflow instructions for Copilot</a>, managing branch creation, plan execution, a dual-focus self-review, verification, PR creation, and plan and execution documentation.</li>
     <li>
-      <a href="/docs/workflow-notes.md">Notes on workflow best practices</a>, recommended for usage with the workflow instructions, as well as for all contributors regardless of Copilot usage, including detail about self-reviews, manual reviews, pre-planning, and iterative improvement.</li>
+      <a href="/docs/workflow/workflow-notes.md">Notes on workflow best practices</a>, recommended for usage with the workflow instructions, as well as for all contributors regardless of Copilot usage, including detail about self-reviews, manual reviews, pre-planning, and iterative improvement.</li>
   </ul>
 </section>
 

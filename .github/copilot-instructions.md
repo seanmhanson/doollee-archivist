@@ -108,7 +108,7 @@ Example: a change to `src/page-models/ProfilePage/WorksList/PlaysList.ts` should
 GitHub Actions enforces the full integration test suite (`yarn test:int`) on every push. Local verification only requires the traversal-scoped subset.
 
 ### Naming
-See `docs/naming.md`. Key points:
+See `/instructions/naming.md`. Key points:
 - DB collection entries use `displayName` (normalized) and `name` (raw scraped heading)
 - Author file slugs follow doollee's own URL convention
 
