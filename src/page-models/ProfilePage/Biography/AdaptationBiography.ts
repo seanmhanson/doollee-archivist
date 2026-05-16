@@ -13,8 +13,10 @@ export type ScrapedData = {
 
 export type ParsedNameAndDates = {
   name: string;
-  yearBorn: string;
-  yearDied: string;
+  yearBorn?: number;
+  yearBornUncertain?: boolean;
+  yearDied?: number;
+  yearDiedUncertain?: boolean;
 };
 
 export default class AdaptationBiography extends BaseBiography {
@@ -26,7 +28,7 @@ export default class AdaptationBiography extends BaseBiography {
 
   protected async extractData(): Promise<void> {
     const { bio, dates, imageSrc, imageAlt, innerHTML } = await this.scrapeData();
-    const { name, yearBorn, yearDied } = this.parseAdaptationNameAndDates(dates);
+    const { name, yearBorn, yearBornUncertain, yearDied, yearDiedUncertain } = this.parseAdaptationNameAndDates(dates);
     const labeledContents = this.parseLabeledContent(innerHTML, name);
     const altName = this.getAltName(imageSrc, imageAlt);
     const biography = this.normalizeBiography(bio);
@@ -43,7 +45,9 @@ export default class AdaptationBiography extends BaseBiography {
       _archive,
       name,
       yearBorn,
+      yearBornUncertain,
       yearDied,
+      yearDiedUncertain,
       biography,
       ...labeledContents,
     };
@@ -74,7 +78,16 @@ export default class AdaptationBiography extends BaseBiography {
   }
 
   protected parseAdaptationNameAndDates(dateString: string): ParsedNameAndDates {
-    return this.parseDateString(dateString, true);
+    const { name, yearBorn: yearBornStr, yearDied: yearDiedStr } = this.parseDateString(dateString, true);
+    const bornResult = this.parseYearInt(yearBornStr);
+    const diedResult = this.parseYearInt(yearDiedStr);
+    return {
+      name,
+      yearBorn: bornResult?.value,
+      yearBornUncertain: bornResult?.uncertain ? true : undefined,
+      yearDied: diedResult?.value,
+      yearDiedUncertain: diedResult?.uncertain ? true : undefined,
+    };
   }
 
   protected getAltName(imageSrc: string, imageAlt: string): string {

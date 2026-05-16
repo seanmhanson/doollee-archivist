@@ -131,10 +131,10 @@ describe("AdaptationsList", () => {
       expect(adaptationsList.worksData[0].adaptingAuthor).toBe("Jay Miller");
     });
 
-    it("should title-case the genre", async () => {
+    it("should lowercase and split comma-separated genres into an array", async () => {
       const page = createMockPage([{ ...minimalRow, genres: "adaptation" }]);
       const adaptationsList = await AdaptationsList.create(page);
-      expect(adaptationsList.worksData[0].genres).toBe("Adaptation");
+      expect(adaptationsList.worksData[0].genres).toEqual(["adaptation"]);
     });
 
     it("should prefix playId with 'A' for adaptations", async () => {

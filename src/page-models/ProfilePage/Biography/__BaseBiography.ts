@@ -144,4 +144,18 @@ export default abstract class BaseBiography {
       yearDied: "",
     };
   }
+
+  protected parseYearInt(yearString: string): { value: number; uncertain: boolean } | undefined {
+    const LEADING_DIGITS = /^\d+/;
+
+    const trimmed = yearString.trim();
+    const digitsMatch = LEADING_DIGITS.exec(trimmed);
+    if (!digitsMatch) return undefined;
+
+    const value = parseInt(digitsMatch[0], 10);
+    const isBC = trimmed.toUpperCase().includes("BC");
+    const uncertain = trimmed.includes("?");
+
+    return { value: isBC ? -value : value, uncertain };
+  }
 }

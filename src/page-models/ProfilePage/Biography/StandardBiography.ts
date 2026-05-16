@@ -11,8 +11,10 @@ export type ScrapedData = {
 };
 
 export type ParsedDates = {
-  yearBorn: string;
-  yearDied: string;
+  yearBorn?: number;
+  yearBornUncertain?: boolean;
+  yearDied?: number;
+  yearDiedUncertain?: boolean;
 };
 
 export default class StandardBiography extends BaseBiography {
@@ -24,7 +26,7 @@ export default class StandardBiography extends BaseBiography {
 
   protected async extractData(): Promise<void> {
     const { altName, name, dates, innerHTML } = await this.scrapeData();
-    const { yearBorn, yearDied } = this.parseDates(dates);
+    const { yearBorn, yearBornUncertain, yearDied, yearDiedUncertain } = this.parseDates(dates);
     const biography = this.parseBiography(innerHTML);
     const labeledContent = this.parseLabeledContent(innerHTML, name);
 
@@ -40,7 +42,9 @@ export default class StandardBiography extends BaseBiography {
       _archive,
       name,
       yearBorn,
+      yearBornUncertain,
       yearDied,
+      yearDiedUncertain,
       biography,
       ...labeledContent,
     };
@@ -109,7 +113,14 @@ export default class StandardBiography extends BaseBiography {
 
   // a thin wrapper to strip away the empty name field from the base implementation
   protected parseDates(dateString: string): ParsedDates {
-    const { yearBorn, yearDied } = this.parseDateString(dateString);
-    return { yearBorn, yearDied };
+    const { yearBorn: yearBornStr, yearDied: yearDiedStr } = this.parseDateString(dateString);
+    const bornResult = this.parseYearInt(yearBornStr);
+    const diedResult = this.parseYearInt(yearDiedStr);
+    return {
+      yearBorn: bornResult?.value,
+      yearBornUncertain: bornResult?.uncertain ? true : undefined,
+      yearDied: diedResult?.value,
+      yearDiedUncertain: diedResult?.uncertain ? true : undefined,
+    };
   }
 }

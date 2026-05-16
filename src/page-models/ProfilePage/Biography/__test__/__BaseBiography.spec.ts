@@ -37,6 +37,10 @@ class TestBiography extends BaseBiography {
     return super.parseDateString(dateString, includeName);
   }
 
+  public parseYearInt(yearString: string) {
+    return super.parseYearInt(yearString);
+  }
+
   public static placeholderPhrases = BaseBiography.placeholders;
 }
 
@@ -231,6 +235,27 @@ describe("BaseBiography", () => {
       expect(rangeResult).toEqual({ name, yearBorn, yearDied });
       expect(singleYearResult).toEqual({ name, yearBorn, yearDied: "" });
       expect(noDateResult).toEqual({ name, yearBorn: "", yearDied: "" });
+    });
+  });
+
+  describe("#parseYearInt", () => {
+    it("should return the integer value and uncertain: false for a plain year string", () => {
+      expect(biography.parseYearInt("1930")).toEqual({ value: 1930, uncertain: false });
+    });
+
+    it("should return a negative integer for a BC year", () => {
+      expect(biography.parseYearInt("406 BC")).toEqual({ value: -406, uncertain: false });
+    });
+
+    it("should return uncertain: true when a ? is present", () => {
+      expect(biography.parseYearInt("480 BC?")).toEqual({ value: -480, uncertain: true });
+      expect(biography.parseYearInt("1850?")).toEqual({ value: 1850, uncertain: true });
+    });
+
+    it("should return undefined for strings with no leading digits", () => {
+      expect(biography.parseYearInt("")).toBeUndefined();
+      expect(biography.parseYearInt("?")).toBeUndefined();
+      expect(biography.parseYearInt("deceased")).toBeUndefined();
     });
   });
 });

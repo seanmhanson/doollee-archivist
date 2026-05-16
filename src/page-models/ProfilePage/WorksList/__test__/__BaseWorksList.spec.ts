@@ -62,7 +62,7 @@ class TestBaseWorksList extends BaseWorksList {
     return super.formatDisplayTitle(title);
   }
 
-  public formatGenres(genres: string): string {
+  public formatGenres(genres: string): string[] {
     return super.formatGenres(genres);
   }
 
@@ -314,16 +314,16 @@ describe("BaseWorksList", () => {
   });
 
   describe("#formatGenres", () => {
-    it("should title-case valid genre strings", () => {
-      expect(worksList.formatGenres("adaptation")).toBe("Adaptation");
-      expect(worksList.formatGenres("COMEDY DRAMA")).toBe("Comedy Drama");
-      expect(worksList.formatGenres("tragedy/one-act")).toBe("Tragedy/one-act");
-      expect(worksList.formatGenres("hisTORIcal comedy")).toBe("Historical Comedy");
+    it("should lowercase and split comma-separated genre strings", () => {
+      expect(worksList.formatGenres("adaptation")).toEqual(["adaptation"]);
+      expect(worksList.formatGenres("Comedy Drama")).toEqual(["comedy drama"]);
+      expect(worksList.formatGenres("Gay, Full Length")).toEqual(["gay", "full length"]);
+      expect(worksList.formatGenres("COMEDY,DRAMA")).toEqual(["comedy", "drama"]);
     });
 
-    it("should return an empty string for empty input after trimming", () => {
-      expect(worksList.formatGenres("")).toBe("");
-      expect(worksList.formatGenres("   ")).toBe("");
+    it("should return an empty array for empty or blank input", () => {
+      expect(worksList.formatGenres("")).toEqual([]);
+      expect(worksList.formatGenres("   ")).toEqual([]);
     });
   });
 

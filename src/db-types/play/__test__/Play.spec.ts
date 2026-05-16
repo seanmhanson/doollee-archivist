@@ -152,4 +152,42 @@ describe("Play.class", () => {
       expect(archiveDocument._id).not.toEqual(play.id);
     });
   });
+
+  describe("#toDocument", () => {
+    it("should include isAdaptation: false for a standard play", () => {
+      const play = new Play(getPlayFixture());
+      const doc = play.toDocument();
+      expect(doc.isAdaptation).toBe(false);
+    });
+
+    it("should include isAdaptation: true when adaptingAuthor is present", () => {
+      const play = new Play(getPlayFixture({ adaptingAuthor: "Adaptor Name" }));
+      const doc = play.toDocument();
+      expect(doc.isAdaptation).toBe(true);
+    });
+
+    it("should include productionYearInt when productionYear is a pure 4-digit year", () => {
+      const play = new Play(getPlayFixture({ productionYear: "1965" }));
+      const doc = play.toDocument();
+      expect(doc.productionYearInt).toBe(1965);
+    });
+
+    it("should not include productionYearInt when productionYear is not a pure 4-digit year", () => {
+      const play = new Play(getPlayFixture({ productionYear: "Oct 2010" }));
+      const doc = play.toDocument();
+      expect(doc).not.toHaveProperty("productionYearInt");
+    });
+
+    it("should include publicationYearInt when publicationYear is a pure 4-digit year", () => {
+      const play = new Play(getPlayFixture({ publicationYear: "1972" }));
+      const doc = play.toDocument();
+      expect(doc.publicationYearInt).toBe(1972);
+    });
+
+    it("should not include publicationYearInt when publicationYear is absent", () => {
+      const play = new Play(getPlayFixture());
+      const doc = play.toDocument();
+      expect(doc).not.toHaveProperty("publicationYearInt");
+    });
+  });
 });

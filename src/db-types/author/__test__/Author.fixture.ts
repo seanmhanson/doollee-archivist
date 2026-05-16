@@ -18,8 +18,8 @@ const commonData = {
 };
 
 const authorOnlyData = {
-  yearBorn: "1947",
-  yearDied: "2047",
+  yearBorn: 1947,
+  yearDied: 2047,
   scrapedAt: new Date(),
   sourceUrl: "https://www.doollee.com/PlaywrightsM/mamet-david.php",
   listingName: "MAMET David",

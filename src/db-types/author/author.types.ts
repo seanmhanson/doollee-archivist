@@ -45,8 +45,10 @@ export type AuthorDocument = {
   middleNames?: string[];
   suffixes?: string[];
 
-  yearBorn?: string;
-  yearDied?: string;
+  yearBorn?: number;
+  yearBornUncertain?: boolean;
+  yearDied?: number;
+  yearDiedUncertain?: boolean;
   nationality?: string;
   email?: string;
   website?: string;
@@ -92,7 +94,9 @@ type RequiredMetadata = Pick<Metadata, RequiredMetadataKeys>;
 
 type OptionalKeys =
   | "yearBorn"
+  | "yearBornUncertain"
   | "yearDied"
+  | "yearDiedUncertain"
   | "nationality"
   | "email"
   | "website"
