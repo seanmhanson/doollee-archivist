@@ -158,10 +158,10 @@ export default class Play {
 
     const FOUR_DIGIT_YEAR = /^\d{4}$/;
     this.productionYearInt = FOUR_DIGIT_YEAR.test(input.productionYear ?? "")
-      ? parseInt(input.productionYear!, 10)
+      ? parseInt(input.productionYear ?? "", 10)
       : undefined;
     this.publicationYearInt = FOUR_DIGIT_YEAR.test(input.publicationYear ?? "")
-      ? parseInt(input.publicationYear!, 10)
+      ? parseInt(input.publicationYear ?? "", 10)
       : undefined;
 
     this.partsTextMale = input.partsTextMale;

@@ -42,9 +42,9 @@ export default class StandardBiography extends BaseBiography {
       _archive,
       name,
       yearBorn,
-      yearBornUncertain,
+      ...(yearBornUncertain !== undefined && { yearBornUncertain }),
       yearDied,
-      yearDiedUncertain,
+      ...(yearDiedUncertain !== undefined && { yearDiedUncertain }),
       biography,
       ...labeledContent,
     };

@@ -45,9 +45,9 @@ export default class AdaptationBiography extends BaseBiography {
       _archive,
       name,
       yearBorn,
-      yearBornUncertain,
+      ...(yearBornUncertain !== undefined && { yearBornUncertain }),
       yearDied,
-      yearDiedUncertain,
+      ...(yearDiedUncertain !== undefined && { yearDiedUncertain }),
       biography,
       ...labeledContents,
     };
