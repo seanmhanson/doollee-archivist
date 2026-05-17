@@ -254,24 +254,16 @@ export function getProdPubDataPipeline() {
 }
 
 /**
- * Generate a MongoDB aggregation pipeline that splits compound genre strings on the ". - - "
- * delimiter, clusters terms by case-normalized value, and returns per-term variant lists and counts.
- * Also produces a facet counting documents with compound (multi-term) vs single-term genres.
+ * Generate a MongoDB aggregation pipeline that clusters genre array elements by case-normalized
+ * value and returns per-term variant lists and counts. Also produces a facet counting documents
+ * with compound (multi-term) vs single-term genres.
  */
 export function getGenreTermsPipeline() {
-  const GENRE_DELIMITER = ". - - ";
-
   return [
-    { $match: { genres: { $exists: true, $nin: ["", null] } } },
+    { $match: { "genres.0": { $exists: true } } },
     {
       $addFields: {
-        _genreTerms: {
-          $map: {
-            input: { $split: ["$genres", GENRE_DELIMITER] },
-            as: "t",
-            in: { $trim: { input: "$$t" } },
-          },
-        },
+        _genreTerms: "$genres",
       },
     },
     {
