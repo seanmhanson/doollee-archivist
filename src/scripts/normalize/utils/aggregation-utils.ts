@@ -45,35 +45,39 @@ export function getSamplePipeline({ sampleSize = 10, randomSample = false }: Sam
 
 /**
  * This generates a MongoDB aggregation pipeline that specifically creates frequency tables for
- * male, female, and other parts for a given play. If the play has corresponding text fields for
- * these parts, the pipeline will also count the frequency of their content. Frequencies are
- * sorted into male, female, other, and total counts.
+ * male, female, and other parts for a given play. Intended to run against the play_archives
+ * collection. Handles both archive shapes:
+ * - _type: "play" — raw parts stored as a combined string in `parts` (e.g. "Male: 4 Female: 3 Other: -")
+ * - _type: "adaptation" — raw parts stored as separate `maleParts`, `femaleParts`, `otherParts` strings
+ * Frequencies are sorted into male, female, other, and total counts.
  */
 export function getPartsFrequencyPipeline() {
-  const labels = [
-    {
-      header: "male",
-      primaryField: "maleParts",
-      textField: "$partsTextMale",
-    },
-    {
-      header: "female",
-      primaryField: "femaleParts",
-      textField: "$partsTextFemale",
-    },
-    {
-      header: "other",
-      primaryField: "otherParts",
-      textField: "$partsTextOther",
-    },
-  ];
+  // Matches the combined parts string format used in play archives
+  const PARTS_REGEX = "Male:\\s*(.+?)\\s+Female:\\s*(.+?)\\s+Other:\\s*(.+)$";
 
-  const input = labels.map(({ header: type, textField: text }) => {
-    return { type, text };
+  const extractFromParts = (captureIndex: number) => ({
+    $let: {
+      vars: { m: { $regexFind: { input: "$parts", regex: PARTS_REGEX } } },
+      in: { $arrayElemAt: ["$$m.captures", captureIndex] },
+    },
   });
 
+  const labels = [
+    { header: "male", captureIndex: 0, adaptationField: "$maleParts" },
+    { header: "female", captureIndex: 1, adaptationField: "$femaleParts" },
+    { header: "other", captureIndex: 2, adaptationField: "$otherParts" },
+  ];
+
+  const input = labels.map(({ header: type, captureIndex, adaptationField }) => ({
+    type,
+    text: {
+      $cond: [{ $eq: ["$_type", "adaptation"] }, adaptationField, extractFromParts(captureIndex)],
+    },
+  }));
+
   const groupings = labels.reduce(
-    (acc, { header, primaryField: key }) => {
+    (acc, { header }) => {
+      const key = `${header}Parts`;
       const condition = { $eq: ["$parts.type", header] };
       acc[key] = { $sum: { $cond: [condition, 1, 0] } };
       return acc;
@@ -82,8 +86,8 @@ export function getPartsFrequencyPipeline() {
   );
 
   const projections = labels.reduce(
-    (acc, { primaryField: key }) => {
-      acc[key] = 1;
+    (acc, { header }) => {
+      acc[`${header}Parts`] = 1;
       return acc;
     },
     {} as Record<string, unknown>,
