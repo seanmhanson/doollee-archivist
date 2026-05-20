@@ -189,21 +189,17 @@ export default class AdaptationsList extends BaseWorksList {
   }
 
   protected parseParts({ maleParts, femaleParts, otherParts }: UnparsedParts) {
-    const partsTextMale = maleParts.trim();
-    const partsTextFemale = femaleParts.trim();
-    const partsTextOther = otherParts.trim();
-
     const isEmpty = (text: string) => {
       return !text || text === "-" || text === "0";
     };
 
-    if ([partsTextMale, partsTextFemale, partsTextOther].every(isEmpty)) {
+    if ([maleParts, femaleParts, otherParts].map((s) => s.trim()).every(isEmpty)) {
       return {};
     }
 
-    const partsCountMale = this.parseCount(partsTextMale);
-    const partsCountFemale = this.parseCount(partsTextFemale);
-    const partsCountOther = this.parseCount(partsTextOther);
+    const partsCountMale = this.parseCount(maleParts.trim());
+    const partsCountFemale = this.parseCount(femaleParts.trim());
+    const partsCountOther = this.parseCount(otherParts.trim());
     const partsCountTotal = partsCountMale + partsCountFemale + partsCountOther;
 
     return {
@@ -211,9 +207,6 @@ export default class AdaptationsList extends BaseWorksList {
       partsCountFemale,
       partsCountOther,
       partsCountTotal,
-      partsTextMale,
-      partsTextFemale,
-      partsTextOther,
     };
   }
 }

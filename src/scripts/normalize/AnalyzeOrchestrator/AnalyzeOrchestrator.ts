@@ -327,9 +327,6 @@ class AnalyzeOrchestrator {
       "partsCountMale",
       "partsCountFemale",
       "partsCountOther",
-      "partsTextMale",
-      "partsTextFemale",
-      "partsTextOther",
       "metadata.reviewNotes",
     ];
 

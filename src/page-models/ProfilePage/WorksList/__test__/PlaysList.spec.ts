@@ -65,9 +65,6 @@ describe("PlaysList", () => {
         partsCountFemale: 3,
         partsCountOther: 0,
         partsCountTotal: 7,
-        partsTextMale: "4",
-        partsTextFemale: "3",
-        partsTextOther: "-",
       });
     });
 
