@@ -154,7 +154,7 @@ export default abstract class BaseBiography {
 
     const value = parseInt(digitsMatch[0], 10);
     const uncertain = trimmed.includes("?");
-    
+
     // "BC" will match on both BC and BCE, which we represent as a negative value
     const isBCE = trimmed.toUpperCase().includes("BC");
     return { value: isBCE ? -value : value, uncertain };
