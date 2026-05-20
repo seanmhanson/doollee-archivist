@@ -103,6 +103,7 @@ describe("core/DatabaseService", () => {
         playId: "12345",
         title: "Test Play",
         author: "Test Author",
+        displayAuthor: "Test Author",
         isAdaptation: false,
         metadata: { createdAt: now, updatedAt: now, scrapedAt: now, sourceUrl: "http://example.com" },
       };
