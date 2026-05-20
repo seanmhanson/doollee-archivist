@@ -73,8 +73,8 @@ describe("StandardBiography", () => {
           research: "Member of the Unit Test Dramatists Guild",
         },
         name,
-        yearBorn: "1971",
-        yearDied: "1999",
+        yearBorn: 1971,
+        yearDied: 1999,
         biography: expectedBiography,
         literaryAgent: "Unit Test Artists Agency",
         research: "Member of the Unit Test Dramatists Guild",
@@ -157,7 +157,7 @@ describe("StandardBiography", () => {
     it("should return parsed birth and death dates, without a name field", () => {
       const biography = new TestStandardBiography(createMockPage());
       const result = biography.parseDates(dates);
-      expect(result).toEqual({ yearBorn: "1971", yearDied: "1999" });
+      expect(result).toEqual({ yearBorn: 1971, yearDied: 1999 });
       expect(result).not.toHaveProperty("name");
     });
   });

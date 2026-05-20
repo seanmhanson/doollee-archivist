@@ -68,8 +68,9 @@ describe("AdaptationBiography", () => {
           literaryAgent: "",
         },
         name,
-        yearBorn: "480 BC?",
-        yearDied: "406 BC",
+        yearBorn: -480,
+        yearBornUncertain: true,
+        yearDied: -406,
         biography,
         nationality: "Greek",
         email: "",
@@ -121,7 +122,7 @@ describe("AdaptationBiography", () => {
     it("should return the name, yearBorn, and yearDied parsed from a combined date string", () => {
       const bio = new TestAdaptationBiography(createMockPage());
       const result = bio.parseAdaptationNameAndDates(dates);
-      expect(result).toEqual({ name, yearBorn: "480 BC?", yearDied: "406 BC" });
+      expect(result).toEqual({ name, yearBorn: -480, yearBornUncertain: true, yearDied: -406 });
     });
   });
 

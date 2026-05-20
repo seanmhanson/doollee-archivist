@@ -50,8 +50,10 @@ export default class Author {
   private middleNames?: string[];
   private suffixes?: string[];
 
-  private yearBorn?: string;
-  private yearDied?: string;
+  private yearBorn?: number;
+  private yearBornUncertain?: boolean;
+  private yearDied?: number;
+  private yearDiedUncertain?: boolean;
   private nationality?: string;
   private email?: string;
   private website?: string;
@@ -93,7 +95,9 @@ export default class Author {
   public get biographyData() {
     return {
       yearBorn: this.yearBorn,
+      yearBornUncertain: this.yearBornUncertain,
       yearDied: this.yearDied,
+      yearDiedUncertain: this.yearDiedUncertain,
       nationality: this.nationality,
       email: this.email,
       website: this.website,
@@ -142,7 +146,9 @@ export default class Author {
     this.suffixes = suffixes;
 
     this.yearBorn = input.yearBorn;
+    this.yearBornUncertain = input.yearBornUncertain;
     this.yearDied = input.yearDied;
+    this.yearDiedUncertain = input.yearDiedUncertain;
     this.nationality = input.nationality;
     this.email = input.email;
     this.website = input.website;

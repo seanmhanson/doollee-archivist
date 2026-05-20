@@ -42,7 +42,7 @@ type SingleFrequencyProps = {
   collectionName?: string;
 };
 
-type ResultDocument = Record<string, string> & { count: number };
+type ResultDocument = { [fieldName: string]: string | number; count: number };
 
 type DateFormatResultItem = { value: string; frequency: number };
 
@@ -144,6 +144,7 @@ class AnalyzeOrchestrator {
       await this.analyzeNationality();
       await this.analyzeProductionDates();
       await this.analyzePublicationDates();
+      await this.analyzeAuthorYears();
 
       // Publishers (CSV only, no xlsx sheet)
       await this.analyzePublishers();
@@ -212,6 +213,23 @@ class AnalyzeOrchestrator {
       collection: this.getPlaysCollection(),
       fieldName: "publisher",
       sortByField: true,
+    });
+  }
+
+  private async analyzeAuthorYears() {
+    await this.getSingleFrequencyTable({
+      collection: this.getAuthorsCollection(),
+      fieldName: "yearBorn",
+      sortByField: true,
+      sheetName: "Frequencies \u2014 Year Born",
+      collectionName: "authors",
+    });
+    await this.getSingleFrequencyTable({
+      collection: this.getAuthorsCollection(),
+      fieldName: "yearDied",
+      sortByField: true,
+      sheetName: "Frequencies \u2014 Year Died",
+      collectionName: "authors",
     });
   }
 
@@ -513,8 +531,8 @@ class AnalyzeOrchestrator {
     return this.writeToCSV(csv, fileName);
   }
 
-  private escapeCsvField(value: string | null | undefined): string {
-    const safeValue = value ?? "";
+  private escapeCsvField(value: string | number | null | undefined): string {
+    const safeValue = value != null ? String(value) : "";
     return `"${safeValue.replace(/"/g, '""')}"`;
   }
 

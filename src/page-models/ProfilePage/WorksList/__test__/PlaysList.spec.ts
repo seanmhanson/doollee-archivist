@@ -111,10 +111,10 @@ describe("PlaysList", () => {
       expect(plays.worksData[0].playId).toBe("0000000");
     });
 
-    it("should title-case the genre", async () => {
+    it("should lowercase and split comma-separated genres into an array", async () => {
       const page = createMockPage([{ ...minimalRow, genres: "comedy drama" }]);
       const plays = await PlaysList.create(page);
-      expect(plays.worksData[0].genres).toBe("Comedy Drama");
+      expect(plays.worksData[0].genres).toEqual(["comedy drama"]);
     });
 
     it("should compute displayTitle by moving a trailing article to the front", async () => {

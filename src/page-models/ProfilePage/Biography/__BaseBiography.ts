@@ -144,4 +144,19 @@ export default abstract class BaseBiography {
       yearDied: "",
     };
   }
+
+  protected parseYearInt(yearString: string): { value: number; uncertain: boolean } | undefined {
+    const LEADING_DIGITS = /^\d+/;
+
+    const trimmed = yearString.trim();
+    const digitsMatch = LEADING_DIGITS.exec(trimmed);
+    if (!digitsMatch) return undefined;
+
+    const value = parseInt(digitsMatch[0], 10);
+    const uncertain = trimmed.includes("?");
+
+    // "BC" will match on both BC and BCE, which we represent as a negative value
+    const isBCE = trimmed.toUpperCase().includes("BC");
+    return { value: isBCE ? -value : value, uncertain };
+  }
 }

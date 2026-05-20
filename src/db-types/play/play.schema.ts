@@ -2,7 +2,7 @@ import { type Document } from "mongodb";
 
 const PlaySchema: Document = {
   bsonType: "object",
-  required: ["_id", "metadata", "playId", "title", "author"],
+  required: ["_id", "metadata", "playId", "title", "author", "isAdaptation"],
   additionalProperties: false,
   properties: {
     _id: { bsonType: "objectId" },
@@ -37,7 +37,8 @@ const PlaySchema: Document = {
     author: { bsonType: "string" },
     authorId: { bsonType: "objectId" },
     adaptingAuthor: { bsonType: "string" },
-    genres: { bsonType: "string" },
+    isAdaptation: { bsonType: "bool" },
+    genres: { bsonType: "array", items: { bsonType: "string" } },
     synopsis: { bsonType: "string" },
     notes: { bsonType: "string" },
     organizations: { bsonType: "string" },
@@ -49,6 +50,8 @@ const PlaySchema: Document = {
     isbn: { bsonType: "string" },
     productionLocation: { bsonType: "string" },
     productionYear: { bsonType: "string" },
+    productionYearInt: { bsonType: "int" },
+    publicationYearInt: { bsonType: "int" },
     partsCountMale: { bsonType: "number" },
     partsCountFemale: { bsonType: "number" },
     partsCountOther: { bsonType: "number" },

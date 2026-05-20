@@ -16,7 +16,7 @@ export default class Play {
   private authorId?: ObjectId;
   private adaptingAuthor?: string;
 
-  private genres?: string;
+  private genres?: string[];
   private synopsis?: string;
   private notes?: string;
   private organizations?: string;
@@ -25,11 +25,13 @@ export default class Play {
 
   private publisher?: string;
   private publicationYear?: string;
+  private publicationYearInt?: number;
   private containingWork?: string;
   private isbn?: string;
 
   private productionLocation?: string;
   private productionYear?: string;
+  private productionYearInt?: number;
 
   private partsTextMale?: string;
   private partsTextFemale?: string;
@@ -96,6 +98,7 @@ export default class Play {
     return {
       publisher: this.publisher,
       publicationYear: this.publicationYear,
+      publicationYearInt: this.publicationYearInt,
       containingWork: this.containingWork,
       isbn: this.isbn,
     };
@@ -105,6 +108,7 @@ export default class Play {
     return {
       productionLocation: this.productionLocation,
       productionYear: this.productionYear,
+      productionYearInt: this.productionYearInt,
     };
   }
 
@@ -152,6 +156,14 @@ export default class Play {
     this.productionLocation = input.productionLocation;
     this.productionYear = input.productionYear;
 
+    const FOUR_DIGIT_YEAR = /^\d{4}$/;
+    this.productionYearInt = FOUR_DIGIT_YEAR.test(input.productionYear ?? "")
+      ? parseInt(input.productionYear ?? "", 10)
+      : undefined;
+    this.publicationYearInt = FOUR_DIGIT_YEAR.test(input.publicationYear ?? "")
+      ? parseInt(input.publicationYear ?? "", 10)
+      : undefined;
+
     this.partsTextMale = input.partsTextMale;
     this.partsTextFemale = input.partsTextFemale;
     this.partsTextOther = input.partsTextOther;
@@ -178,6 +190,7 @@ export default class Play {
       },
       playId: this.playId,
       title: this.title,
+      isAdaptation: this.isAdaptation,
       ...this.authorData,
       ...this.mainData,
       ...this.publicationData,
