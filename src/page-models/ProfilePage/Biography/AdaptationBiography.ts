@@ -84,9 +84,9 @@ export default class AdaptationBiography extends BaseBiography {
     return {
       name,
       yearBorn: bornResult?.value,
-      yearBornUncertain: bornResult?.uncertain ? true : undefined,
+      ...(bornResult?.uncertain === true && { yearBornUncertain: true }),
       yearDied: diedResult?.value,
-      yearDiedUncertain: diedResult?.uncertain ? true : undefined,
+      ...(diedResult?.uncertain === true && { yearDiedUncertain: true }),
     };
   }
 

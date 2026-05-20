@@ -118,9 +118,9 @@ export default class StandardBiography extends BaseBiography {
     const diedResult = this.parseYearInt(yearDiedStr);
     return {
       yearBorn: bornResult?.value,
-      yearBornUncertain: bornResult?.uncertain ? true : undefined,
+      ...(bornResult?.uncertain === true ? { yearBornUncertain: true } : {}),
       yearDied: diedResult?.value,
-      yearDiedUncertain: diedResult?.uncertain ? true : undefined,
+      ...(diedResult?.uncertain === true ? { yearDiedUncertain: true } : {}),
     };
   }
 }
