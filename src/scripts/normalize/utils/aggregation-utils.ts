@@ -58,7 +58,7 @@ export function getPartsFrequencyPipeline() {
   const extractFromParts = (captureIndex: number) => ({
     $let: {
       vars: { m: { $regexFind: { input: "$parts", regex: PARTS_REGEX } } },
-      in: { $arrayElemAt: ["$$m.captures", captureIndex] },
+      in: { $arrayElemAt: [{ $ifNull: ["$$m.captures", []] }, captureIndex] },
     },
   });
 
