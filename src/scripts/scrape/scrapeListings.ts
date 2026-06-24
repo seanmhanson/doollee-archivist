@@ -3,6 +3,7 @@ import ModuleWriter from "#/core/ModuleWriter";
 import WebScraper from "#/core/WebScraper";
 import listingUrls from "#/input/listingUrls";
 import ListingPage from "#/page-models/ListingPage";
+import { createErrorLogPayload } from "#/scripts/scrape/ScrapingErrors";
 
 async function main() {
   // intentionally empty console.debug by default due to very high volume of logs
@@ -35,7 +36,10 @@ async function main() {
       try {
         await listingPage.extractPage();
       } catch (error) {
-        console.error(`  ⚠️ Error scraping page for url ${url}:`, error);
+        console.error(
+          `  ⚠️ Error scraping page for url ${url}:`,
+          JSON.stringify(createErrorLogPayload(error, { authorUrl: url })),
+        );
         filenameSuffix = "_error";
       }
 
@@ -61,7 +65,10 @@ async function main() {
           fileType: "ts",
         });
       } catch (error) {
-        console.error(`  ❌ Error writing data to file ${filename}:`, error);
+        console.error(
+          `  ❌ Error writing data to file ${filename}:`,
+          JSON.stringify(createErrorLogPayload(error, { authorUrl: url })),
+        );
       }
 
       totalFiles += 1;
@@ -92,7 +99,7 @@ async function main() {
       });
       console.log(`📊 Metadata written to: ${rootDir}/${metadataFilename}`);
     } catch (error) {
-      console.error("❌ Error writing metadata file:", error);
+      console.error("❌ Error writing metadata file:", JSON.stringify(createErrorLogPayload(error)));
     }
     await rootModuleWriter.close(false, true);
   }
@@ -107,4 +114,7 @@ async function main() {
   console.log("--------------------------------");
 }
 
-main().catch(console.error);
+main().catch((error) => {
+  console.error("Unhandled fatal error in scrapeListings:", JSON.stringify(createErrorLogPayload(error)));
+  process.exitCode = 1;
+});

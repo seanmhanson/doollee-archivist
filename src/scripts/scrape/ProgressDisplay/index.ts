@@ -9,4 +9,5 @@ export type {
   CurrentStats,
   DisplayData,
   ErrorStats,
+  ReviewStats,
 } from "./ProgressDisplay.types";

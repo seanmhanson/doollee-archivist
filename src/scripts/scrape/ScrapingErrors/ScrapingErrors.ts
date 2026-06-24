@@ -9,6 +9,32 @@ type ScrapingErrorProps = {
   context: errorContext;
 };
 
+type ErrorCauseSnapshot = {
+  name: string;
+  message: string;
+  stack?: string;
+};
+
+type SerializedScrapingError = {
+  name: string;
+  message: string;
+  stack?: string;
+  context?: errorContext;
+  recoveryStrategy?: recoveryStrategy;
+  causeChain: ErrorCauseSnapshot[];
+};
+
+type ScrapingErrorLogContext = {
+  profileName?: string;
+  profileSlug?: string;
+  authorUrl?: string;
+  playId?: string;
+  playTitle?: string;
+  writeTo?: string;
+  reviewFilePath?: string;
+  reviewFileWriteError?: string;
+};
+
 abstract class BaseScrapingError extends Error {
   public name: string;
   public cause?: unknown;
@@ -96,6 +122,72 @@ class WritePlayError extends BaseScrapingError {
   }
 }
 
-export { ScrapingError, SetupError, WriteAuthorError, WritePlayError, PlayProcessingError, AuthorProcessingError };
+const MAX_CAUSE_DEPTH = 5;
 
-export type { recoveryStrategy, errorContext, ScrapingErrorProps };
+function getCauseFromUnknown(error: unknown): unknown {
+  if (!error || typeof error !== "object") {
+    return undefined;
+  }
+  return Reflect.has(error, "cause") ? Reflect.get(error, "cause") : undefined;
+}
+
+function normalizeErrorLike(error: unknown): ErrorCauseSnapshot {
+  if (error instanceof Error) {
+    return {
+      name: error.name,
+      message: error.message || "Unknown error",
+      stack: error.stack,
+    };
+  }
+
+  const isObjectLike = typeof error === "object" && error !== null;
+  const name = isObjectLike && Reflect.has(error, "name") ? String(Reflect.get(error, "name")) : "UnknownError";
+  const message = isObjectLike && Reflect.has(error, "message") ? String(Reflect.get(error, "message")) : String(error);
+  return { name, message };
+}
+
+function serializeError(error: unknown): SerializedScrapingError {
+  const root = normalizeErrorLike(error);
+  const output: SerializedScrapingError = {
+    ...root,
+    causeChain: [],
+  };
+
+  if (error instanceof BaseScrapingError) {
+    output.context = error.context;
+    output.recoveryStrategy = error.recoveryStrategy;
+  }
+
+  const seen = new Set<unknown>();
+  let current = getCauseFromUnknown(error);
+  let depth = 0;
+
+  while (current && depth < MAX_CAUSE_DEPTH && !seen.has(current)) {
+    seen.add(current);
+    output.causeChain.push(normalizeErrorLike(current));
+    current = getCauseFromUnknown(current);
+    depth++;
+  }
+
+  return output;
+}
+
+function createErrorLogPayload(error: unknown, context: ScrapingErrorLogContext = {}) {
+  return {
+    error: serializeError(error),
+    context,
+    timestamp: new Date().toISOString(),
+  };
+}
+
+export { ScrapingError, SetupError, WriteAuthorError, WritePlayError, PlayProcessingError, AuthorProcessingError };
+export { serializeError, createErrorLogPayload };
+
+export type {
+  recoveryStrategy,
+  errorContext,
+  ScrapingErrorProps,
+  ErrorCauseSnapshot,
+  SerializedScrapingError,
+  ScrapingErrorLogContext,
+};

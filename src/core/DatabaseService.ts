@@ -57,8 +57,9 @@ export default class DatabaseService {
       console.info("✅ - Connected to MongoDB");
       return this.db;
     } catch (error) {
-      console.error("❌ - Failed to connect to MongoDB:", error);
-      throw error;
+      const message = `Failed to connect to MongoDB database '${this.dbName}'`;
+      console.error(`❌ - ${message}`);
+      throw new Error(message, { cause: error });
     }
   }
 
@@ -99,8 +100,9 @@ export default class DatabaseService {
       await database.dropDatabase();
       console.info("✅ - Database reset complete");
     } catch (error) {
-      console.error("❌ - Database reset failed:", error);
-      throw error;
+      const message = `Database reset failed for '${this.dbName}'`;
+      console.error(`❌ - ${message}`);
+      throw new Error(message, { cause: error });
     }
   }
 

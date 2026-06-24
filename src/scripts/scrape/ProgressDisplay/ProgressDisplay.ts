@@ -7,6 +7,8 @@ import type {
   PlayStats,
   LoggingStats,
   DisplayData,
+  ErrorStats,
+  ReviewStats,
 } from "#/scripts/scrape/ProgressDisplay/ProgressDisplay.types";
 
 import { getConfig } from "#/core/Config";
@@ -20,6 +22,8 @@ class ProgressDisplay {
   private currentStats: CurrentStats = defaults.currentStats;
   private authorStats: AuthorStats = defaults.authorStats;
   private playStats: PlayStats = defaults.playStats;
+  private errorStats: ErrorStats = defaults.errorStats;
+  private reviewStats: ReviewStats = defaults.reviewStats;
   private loggingStats: LoggingStats = defaults.loggingStats;
   private isReadyFlag = false;
 
@@ -87,12 +91,21 @@ class ProgressDisplay {
   }
 
   private updateData(data: DisplayData = {}) {
-    const { globalStats = {}, currentStats = {}, authorStats = {}, playStats = {} } = data;
+    const {
+      globalStats = {},
+      currentStats = {},
+      authorStats = {},
+      playStats = {},
+      errorStats = {},
+      reviewStats = {},
+    } = data;
     const { startTime, endTime, ...globalBatchStats } = globalStats;
     this.globalStats = { ...this.globalStats, ...globalBatchStats };
     this.currentStats = { ...this.currentStats, ...currentStats };
     this.authorStats = { ...this.authorStats, ...authorStats };
     this.playStats = { ...this.playStats, ...playStats };
+    this.errorStats = { ...this.errorStats, ...errorStats };
+    this.reviewStats = { ...this.reviewStats, ...reviewStats };
   }
 
   private setupLogFile() {
@@ -391,32 +404,28 @@ class ProgressDisplay {
   }
 
   private renderReviewSummary() {
-    const { writeTo } = getConfig();
     const flaggedAuthors = this.authorStats.totalAuthorsFlagged;
     const flaggedPlays = this.playStats.totalPlaysFlagged;
-    const scrapeErrors = 0; // TODO
-    const validationErrors = 0; // TODO
-    const writeErrors = 0; // TODO
-    const otherErrors = 0; // TODO
-    const reviewFilePath = ""; // TODO
+    const { scrapeErrors, processErrors, writeErrors, otherErrors, networkErrors } = this.errorStats;
+    const { filePath, hasError, lastError } = this.reviewStats;
+    const reviewFilePath = filePath || "N/A";
+    const reviewStatus = hasError ? `write failed (${lastError || "unknown error"})` : "write healthy";
 
-    let writeErrorLine = "";
-    if (writeTo === "file") {
-      writeErrorLine = `Write Errors:      ${writeErrors} errors encountered when writing files`;
-    }
-    if (writeTo === "db") {
-      writeErrorLine = `Write Errors:      ${writeErrors} errors encountered when inserting documents`;
-    }
+    const writeErrorLine = `Write Errors:      ${writeErrors} errors encountered when writing outputs`;
+    const processingErrorLine = `Processing Errors: ${processErrors} records failed validation or transformation`;
+    const networkErrorLine = `Network Errors:    ${networkErrors} navigation or Mongo network failures`;
 
     return (
       `REVIEW REQUIRED\n` +
       `┌─ Flagged Authors:   ${flaggedAuthors} authors need manual review\n` +
       `├─ Flagged Plays:     ${flaggedPlays} plays need verification\n` +
       `├─ Scrape Errors:     ${scrapeErrors} biography sections failed extraction\n` +
-      `├─ Validation Errors: ${validationErrors} authors had incomplete required fields\n` +
+      `├─ ${processingErrorLine}\n` +
       `├─ ${writeErrorLine}\n` +
+      `├─ ${networkErrorLine}\n` +
       `├─ Other Errors:      ${otherErrors} other errors encountered\n` +
-      `└─ Review File:       ${reviewFilePath}\n`
+      `├─ Review File:       ${reviewFilePath}\n` +
+      `└─ Review Queue:      ${reviewStatus}\n`
     );
   }
 }

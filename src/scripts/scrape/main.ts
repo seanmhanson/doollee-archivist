@@ -3,6 +3,7 @@ import DatabaseService from "#/core/DatabaseService";
 import ModuleWriter from "#/core/ModuleWriter";
 import WebScraper from "#/core/WebScraper";
 import ProgressDisplay from "#/scripts/scrape/ProgressDisplay/ProgressDisplay";
+import { createErrorLogPayload } from "#/scripts/scrape/ScrapingErrors";
 import ScrapingOrchestrator from "#/scripts/scrape/ScrapingOrchestrator";
 
 async function main() {
@@ -35,8 +36,12 @@ async function main() {
 
     console.log("Scraping completed successfully");
   } catch (error) {
-    console.error("Fatal error during scraping:", error);
+    console.error("Fatal error during scraping:", JSON.stringify(createErrorLogPayload(error)));
+    process.exitCode = 1;
   }
 }
 
-main().catch(console.error);
+main().catch((error) => {
+  console.error("Unhandled fatal error during scraping:", JSON.stringify(createErrorLogPayload(error)));
+  process.exitCode = 1;
+});

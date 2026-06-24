@@ -32,6 +32,7 @@ import {
   WriteAuthorError,
   WritePlayError,
   AuthorProcessingError,
+  createErrorLogPayload,
 } from "#/scripts/scrape/ScrapingErrors/ScrapingErrors";
 
 type AuthorItems = Record<string, string>;
@@ -119,6 +120,7 @@ type FlaggedEntries = {
 type ReviewState = {
   filePath: string;
   hasError: boolean;
+  lastError: string;
   skippedEntries: SkippedEntries;
   flaggedEntries: FlaggedEntries;
 };
@@ -133,6 +135,7 @@ class ScrapingOrchestrator {
   private reviewState: ReviewState = {
     filePath: "",
     hasError: false,
+    lastError: "",
     skippedEntries: { authors: [], plays: [] },
     flaggedEntries: { authors: [], plays: [] },
   };
@@ -296,6 +299,7 @@ class ScrapingOrchestrator {
   private async writeReviewFile() {
     if (!this.reviewState.filePath) {
       this.reviewState.hasError = true;
+      this.reviewState.lastError = "Review queue file path is not initialized";
       return;
     }
 
@@ -324,8 +328,21 @@ class ScrapingOrchestrator {
 
     try {
       await fs.writeFile(this.reviewState.filePath, JSON.stringify(reviewData, null, 2));
-    } catch {
+    } catch (error) {
       this.reviewState.hasError = true;
+      this.reviewState.lastError = error instanceof Error ? error.message : String(error);
+      this.incrementErrorStats("otherErrors");
+      console.error(
+        "Failed to write review queue file",
+        JSON.stringify(
+          createErrorLogPayload(error, {
+            profileName: this.state.profileName,
+            profileSlug: this.state.profileSlug,
+            authorUrl: this.currentStats.currentAuthorUrl,
+            reviewFilePath: this.reviewState.filePath,
+          }),
+        ),
+      );
     }
   }
 
@@ -772,37 +789,19 @@ class ScrapingOrchestrator {
    */
   private async errorHandler(error: unknown) {
     if (error instanceof SetupError) {
-      console.error("Fatal setup error encountered. Terminating process.");
+      console.error(
+        "Fatal setup error encountered. Terminating process.",
+        JSON.stringify(createErrorLogPayload(error, this.getErrorLogContext())),
+      );
       await this.teardown();
       process.exit(1);
     }
 
-    // Helper to log specific fields rather than entire trace, as this is a common
-    // and expected error that will occur frequently and is written to the log file
-    const logSkipError = (error: unknown) => {
-      const errorIsObjectLike = error && typeof error === "object";
-      if (!errorIsObjectLike) {
-        return;
-      }
-
-      if (Reflect.has(error, "message")) {
-        const message: unknown = Reflect.get(error, "message");
-        if (typeof message === "string" && message !== "") {
-          console.error(`Error message: ${message}`);
-        }
-      }
-
-      if (Reflect.has(error, "cause")) {
-        const cause: unknown = Reflect.get(error, "cause");
-        if (typeof cause === "string" && cause !== "") {
-          console.error(`Error cause: ${cause}`);
-        }
-      }
-    };
-
     const skipAuthor = async (reason: string, error?: unknown) => {
       console.warn(`Skipping author ${this.state.profileName} due to ${reason}`);
-      logSkipError(error);
+      if (error) {
+        this.logStructuredError(reason, error);
+      }
 
       this.authorStats.totalAuthorsSkipped++;
       this.authorStats.batchAuthorsSkipped++;
@@ -812,7 +811,9 @@ class ScrapingOrchestrator {
 
     const skipPlay = async (reason: string, error?: unknown) => {
       console.warn(`Skipping play due to ${reason}`);
-      logSkipError(error);
+      if (error) {
+        this.logStructuredError(reason, error);
+      }
 
       this.playStats.totalPlaysSkipped++;
       this.playStats.batchPlaysSkipped++;
@@ -836,7 +837,10 @@ class ScrapingOrchestrator {
     }
 
     this.incrementErrorStats("otherErrors");
-    console.error("Unexpected error encountered:", error);
+    console.error(
+      "Unexpected error encountered:",
+      JSON.stringify(createErrorLogPayload(error, this.getErrorLogContext())),
+    );
     throw error;
   }
 
@@ -851,9 +855,34 @@ class ScrapingOrchestrator {
         currentStats: this.currentStats,
         authorStats: this.authorStats,
         playStats: this.playStats,
+        errorStats: this.errorStats,
+        reviewStats: {
+          filePath: this.reviewState.filePath,
+          hasError: this.reviewState.hasError,
+          lastError: this.reviewState.lastError,
+        },
       },
       forceUpdate,
     );
+  }
+
+  private getErrorLogContext() {
+    const writeTo = getConfig().writeTo;
+    return {
+      profileName: this.state.profileName,
+      profileSlug: this.state.profileSlug,
+      authorUrl: this.currentStats.currentAuthorUrl,
+      playId: this.state.currentPlay?.doolleeId,
+      playTitle: this.state.currentPlay?.title,
+      writeTo,
+      reviewFilePath: this.reviewState.filePath,
+      reviewFileWriteError: this.reviewState.lastError,
+    };
+  }
+
+  private logStructuredError(reason: string, error: unknown) {
+    const payload = createErrorLogPayload(error, this.getErrorLogContext());
+    console.error(`Error detail (${reason}):`, JSON.stringify(payload));
   }
 
   private isDbNetworkError(error: unknown) {
