@@ -28,8 +28,8 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Download Playwright Browsers
-        run: yarn playwright install --with-deps
+      - name: Download Firefox Browser for Playwright
+        run: yarn playwright install firefox
 
       - name: Run integration tests
         env:
