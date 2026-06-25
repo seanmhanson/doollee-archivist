@@ -34,10 +34,10 @@ jobs:
       - name: Run integration tests
         env:
           MONGO_URI: mongodb://test:10000
-        run: yarn test:int
+        run: yarn test:int --reporter=html
 
       - name: Upload Playwright Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: ${{ !cancelled() }}
         with:
           name: playwright-report
