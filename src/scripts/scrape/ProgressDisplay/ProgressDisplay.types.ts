@@ -99,6 +99,8 @@ type DisplayData = {
   currentStats?: Partial<CurrentStats>;
   authorStats?: Partial<AuthorStats>;
   playStats?: Partial<PlayStats>;
+  errorStats?: Partial<ErrorStats>;
+  reviewStats?: Partial<ReviewStats>;
 };
 
 type ErrorStats = {
@@ -117,6 +119,18 @@ const errorStats: ErrorStats = {
   networkErrors: 0,
 };
 
+type ReviewStats = {
+  filePath: string;
+  hasError: boolean;
+  lastError: string;
+};
+
+const reviewStats: ReviewStats = {
+  filePath: "",
+  hasError: false,
+  lastError: "",
+};
+
 export const defaults = {
   globalStats,
   currentStats,
@@ -124,6 +138,7 @@ export const defaults = {
   playStats,
   loggingStats,
   errorStats,
+  reviewStats,
 };
 
-export type { GlobalStats, AuthorStats, PlayStats, LoggingStats, CurrentStats, DisplayData, ErrorStats };
+export type { GlobalStats, AuthorStats, PlayStats, LoggingStats, CurrentStats, DisplayData, ErrorStats, ReviewStats };

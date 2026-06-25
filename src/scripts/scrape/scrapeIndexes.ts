@@ -6,6 +6,7 @@ import type { IndexUrlsData } from "#/types";
 import { getConfig } from "#/core/Config";
 import WebScraper from "#/core/WebScraper";
 import IndexPage from "#/page-models/IndexPage";
+import { createErrorLogPayload } from "#/scripts/scrape/ScrapingErrors";
 
 async function main() {
   const data: IndexUrlsData = {};
@@ -28,7 +29,10 @@ async function main() {
       await indexPage.extractPage();
       console.log(`Successfully scraped data from: ${indexPage.url}`);
     } catch (error) {
-      console.error(`Error scraping page for letter ${letter}:`, error);
+      console.error(
+        `Error scraping page for letter ${letter}:`,
+        JSON.stringify(createErrorLogPayload(error, { authorUrl: indexPage.url })),
+      );
     }
 
     // Always record the result; on an error, links will be empty and metadata may
@@ -55,11 +59,14 @@ async function main() {
     await fs.writeFile(outputPath, JSON.stringify(data, null, 2), "utf8");
     console.log(`✅ Data saved to: ${outputPath}`);
   } catch (error) {
-    console.error(`Error writing data to file:`, error);
+    console.error(`Error writing data to file:`, JSON.stringify(createErrorLogPayload(error)));
     throw error;
   } finally {
     await scraper.close();
   }
 }
 
-main().catch(console.error);
+main().catch((error) => {
+  console.error("Unhandled fatal error in scrapeIndexes:", JSON.stringify(createErrorLogPayload(error)));
+  process.exitCode = 1;
+});

@@ -51,8 +51,9 @@ export default class WebScraper {
       this.browser = await firefox.launch({ ...options, firefoxUserPrefs });
       console.log("  ✅ Firefox launched successfully");
     } catch (error) {
-      console.log("  ❌ Firefox failed to launch.");
-      throw error;
+      const message = "Firefox failed to launch";
+      console.error(`  ❌ ${message}`);
+      throw new Error(message, { cause: error });
     }
 
     const context = await this.browser.newContext(contextOptions);
@@ -66,7 +67,7 @@ export default class WebScraper {
         return; // Ignore aborted requests
       }
 
-      console.log(
+      console.warn(
         `❌ Request failed: ${request.url()}`,
         `   Method: ${request.method()}`,
         `   Failure: ${errorText ?? "Unknown error"}`,
