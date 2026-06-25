@@ -56,7 +56,7 @@ async function closeServices(services: Services = {}) {
         return;
       }
 
-      if ((service instanceof WebScraper || service instanceof DatabaseService) && !service.isConnected()) {
+      if (service instanceof WebScraper && !service.isConnected()) {
         return;
       }
 
