@@ -7,32 +7,20 @@ on:
 
 jobs:
   format-lint-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
+      - name: Checkout Code
+        uses: actions/checkout@v7
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: 24.x
-          package-manager-cache: false
+      - name: Setup Environment
+        uses: ./.github/actions/setup-node-env
 
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Prepare Yarn
-        run: corepack prepare yarn@4.12.0 --activate
-
-      - name: Install dependencies
-        run: yarn install --immutable
-
-      - name: Run Prettier
+      - name: Run Formatting Check
         run: yarn format:check
 
-      - name: Run ESLint
+      - name: Run Linting Check
         run: yarn lint
 
-      - name: Build TypeScript
+      - name: Build TypeScript Project
         run: yarn build:noEmit

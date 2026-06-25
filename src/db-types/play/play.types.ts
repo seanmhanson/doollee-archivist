@@ -62,6 +62,7 @@ export type PlayDocument = {
   title: string;
   displayTitle?: string;
   author: string;
+  displayAuthor: string;
   authorId?: ObjectId;
   adaptingAuthor?: string;
   isAdaptation: boolean;
@@ -83,9 +84,6 @@ export type PlayDocument = {
   partsCountFemale?: number;
   partsCountOther?: number;
   partsCountTotal?: number;
-  partsTextMale?: string;
-  partsTextFemale?: string;
-  partsTextOther?: string;
 };
 
 /**
@@ -110,7 +108,14 @@ type RequiredFields = Pick<PlayDocument, RequiredKeys> & { _archive: PlayArchive
 type RequiredMetadataKeys = "scrapedAt" | "sourceUrl";
 type RequiredMetadata = Pick<Metadata, RequiredMetadataKeys>;
 
-type OmittedKeys = "_id" | "author" | "metadata" | "isAdaptation" | "productionYearInt" | "publicationYearInt";
+type OmittedKeys =
+  | "_id"
+  | "author"
+  | "displayAuthor"
+  | "metadata"
+  | "isAdaptation"
+  | "productionYearInt"
+  | "publicationYearInt";
 type OptionalCoreFields = Partial<Omit<PlayDocument, OmittedKeys | RequiredKeys>>;
 
 type RenamedFields = {

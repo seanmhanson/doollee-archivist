@@ -148,20 +148,16 @@ export default class PlaysList extends BaseWorksList {
       return null;
     }
 
-    const partsTextMale = match[1].trim();
-    const partsTextFemale = match[2].trim();
-    const partsTextOther = match[3].trim();
-
     const isEmpty = (text: string) => {
       return !text || text === "-" || text === "0";
     };
-    if ([partsTextMale, partsTextFemale, partsTextOther].every(isEmpty)) {
+    if ([match[1], match[2], match[3]].map((s) => s.trim()).every(isEmpty)) {
       return {};
     }
 
-    const partsCountMale = this.parseCount(partsTextMale);
-    const partsCountFemale = this.parseCount(partsTextFemale);
-    const partsCountOther = this.parseCount(partsTextOther);
+    const partsCountMale = this.parseCount(match[1].trim());
+    const partsCountFemale = this.parseCount(match[2].trim());
+    const partsCountOther = this.parseCount(match[3].trim());
     const partsCountTotal = partsCountMale + partsCountFemale + partsCountOther;
 
     return {
@@ -169,9 +165,6 @@ export default class PlaysList extends BaseWorksList {
       partsCountFemale,
       partsCountOther,
       partsCountTotal,
-      partsTextMale,
-      partsTextFemale,
-      partsTextOther,
     };
   }
 }

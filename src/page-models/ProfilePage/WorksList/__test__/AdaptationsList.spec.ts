@@ -105,9 +105,6 @@ describe("AdaptationsList", () => {
         partsCountFemale: 0,
         partsCountOther: 6,
         partsCountTotal: 9,
-        partsTextMale: "3",
-        partsTextFemale: "-",
-        partsTextOther: "6 m/f",
       });
     });
 

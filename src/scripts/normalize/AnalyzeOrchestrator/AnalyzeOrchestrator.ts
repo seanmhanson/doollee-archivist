@@ -236,7 +236,7 @@ class AnalyzeOrchestrator {
   private async analyzeParts() {
     const pipeline = getPartsFrequencyPipeline();
 
-    const collection = this.getPlaysCollection();
+    const collection = this.getPlayArchivesCollection();
     const results = (await collection.aggregate(pipeline).toArray()) as ResultDocument[];
 
     const csv = [
@@ -327,9 +327,6 @@ class AnalyzeOrchestrator {
       "partsCountMale",
       "partsCountFemale",
       "partsCountOther",
-      "partsTextMale",
-      "partsTextFemale",
-      "partsTextOther",
       "metadata.reviewNotes",
     ];
 

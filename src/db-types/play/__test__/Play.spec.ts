@@ -189,5 +189,17 @@ describe("Play.class", () => {
       const doc = play.toDocument();
       expect(doc).not.toHaveProperty("publicationYearInt");
     });
+
+    it("should strip a trailing date-range suffix from originalAuthor to produce displayAuthor", () => {
+      const play = new Play(getPlayFixture({ originalAuthor: "Robert Anderson (1917 - 2009)" }));
+      const doc = play.toDocument();
+      expect(doc.displayAuthor).toBe("Robert Anderson");
+    });
+
+    it("should leave displayAuthor unchanged when originalAuthor has no date-range suffix", () => {
+      const play = new Play(getPlayFixture({ originalAuthor: "Sarah Kane" }));
+      const doc = play.toDocument();
+      expect(doc.displayAuthor).toBe("Sarah Kane");
+    });
   });
 });

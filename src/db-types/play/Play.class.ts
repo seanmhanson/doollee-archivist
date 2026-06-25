@@ -5,6 +5,7 @@ import type { InitialMetadata, PlayDocument, PlayData, PlayArchive } from "#/db-
 import type { ReviewNote } from "#/review-notes";
 
 import * as dbUtils from "#/utils/dbUtils";
+import { removeDisambiguationSuffix } from "#/utils/stringUtils";
 
 export default class Play {
   private _id: ObjectId;
@@ -13,6 +14,7 @@ export default class Play {
   private playId: string;
 
   private author: string;
+  private displayAuthor: string;
   private authorId?: ObjectId;
   private adaptingAuthor?: string;
 
@@ -33,9 +35,6 @@ export default class Play {
   private productionYear?: string;
   private productionYearInt?: number;
 
-  private partsTextMale?: string;
-  private partsTextFemale?: string;
-  private partsTextOther?: string;
   private partsCountMale?: number;
   private partsCountFemale?: number;
   private partsCountOther?: number;
@@ -77,6 +76,7 @@ export default class Play {
   public get authorData() {
     return {
       author: this.author,
+      displayAuthor: this.displayAuthor,
       authorId: this.authorId,
       adaptingAuthor: this.adaptingAuthor,
     };
@@ -114,9 +114,6 @@ export default class Play {
 
   public get partsData() {
     return {
-      partsTextMale: this.partsTextMale,
-      partsTextFemale: this.partsTextFemale,
-      partsTextOther: this.partsTextOther,
       partsCountMale: this.partsCountMale,
       partsCountFemale: this.partsCountFemale,
       partsCountOther: this.partsCountOther,
@@ -138,6 +135,8 @@ export default class Play {
     this.title = input.title;
     this.displayTitle = input.displayTitle;
     this.author = input.originalAuthor ?? "";
+    const DATE_RANGE_SUFFIX = /\s*\(\d{3,4}[^)]*\)$/;
+    this.displayAuthor = removeDisambiguationSuffix(this.author).replace(DATE_RANGE_SUFFIX, "").trim();
     this.authorId = input.authorId;
     this.adaptingAuthor = input.adaptingAuthor;
 
@@ -164,9 +163,6 @@ export default class Play {
       ? parseInt(input.publicationYear ?? "", 10)
       : undefined;
 
-    this.partsTextMale = input.partsTextMale;
-    this.partsTextFemale = input.partsTextFemale;
-    this.partsTextOther = input.partsTextOther;
     this.partsCountMale = input.partsCountMale;
     this.partsCountFemale = input.partsCountFemale;
     this.partsCountOther = input.partsCountOther;
