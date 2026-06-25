@@ -1,0 +1,40 @@
+name: "Setup Node & Yarn Environment"
+description: "Installs dependencies to run a test suite in a node environment using yarn"
+
+inputs:
+  node-version:
+    description: "The node environment version used to execute tests"
+    required: false
+    default: "24"
+  yarn-version:
+    description: "The yarn package manager version used to install dependencies"
+    required: false
+    default: "4.12.0"
+  package-manager-cache:
+    description: "Enable package manager caching. Set to false to disable (e.g. when debugging cache issues)."
+    required: false
+    default: "true"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout Code
+      uses: actions/checkout@v5
+
+    - name: Enable Corepack
+      run: corepack enable
+      shell: bash
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v5
+      with:
+        node-version: ${{ inputs.node-version }}
+        package-manager-cache: ${{ inputs.package-manager-cache }}
+
+    - name: Prepare Yarn
+      run: corepack prepare yarn@${{ inputs.yarn-version }} --activate
+      shell: bash
+
+    - name: Install dependencies
+      run: yarn install --immutable
+      shell: bash

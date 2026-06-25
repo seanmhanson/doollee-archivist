@@ -10,36 +10,21 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: "24"
-          package-manager-cache: true
-
-      - name: Prepare Yarn
-        run: corepack prepare yarn@4.12.0 --activate
-
-      - name: Install dependencies
-        run: yarn install --immutable
+      - name: Setup Environment
+        uses: ./.github/actions/setup-node-env
 
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps firefox
 
-      - name: Run integration tests
+      - name: Run Integration Tests
         env:
           MONGO_URI: mongodb://test:10000
-        run: yarn test:int --reporter=html
+        run: yarn test:int --ci --json --outputFile=test-results.json
 
-      - name: Upload Playwright Report
+      - name: Upload Integration Test Results
         uses: actions/upload-artifact@v5
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
+          name: integration-test-results
+          path: test-results.json
+          retention-days: 14
