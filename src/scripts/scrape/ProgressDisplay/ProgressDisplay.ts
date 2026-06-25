@@ -419,7 +419,7 @@ class ProgressDisplay {
       `REVIEW REQUIRED\n` +
       `┌─ Flagged Authors:   ${flaggedAuthors} authors need manual review\n` +
       `├─ Flagged Plays:     ${flaggedPlays} plays need verification\n` +
-      `├─ Scrape Errors:     ${scrapeErrors} biography sections failed extraction\n` +
+      `├─ Scrape Errors:     ${scrapeErrors} pages failed extraction\n` +
       `├─ ${processingErrorLine}\n` +
       `├─ ${writeErrorLine}\n` +
       `├─ ${networkErrorLine}\n` +

@@ -954,3 +954,5 @@ class ScrapingOrchestrator {
 }
 
 export default ScrapingOrchestrator;
+
+export type { Services };
