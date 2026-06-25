@@ -33,14 +33,37 @@ async function initServices(): Promise<Services> {
 }
 
 async function closeServices(services: Services = {}) {
-  await Promise.all(
+  const { progressDisplay } = services;
+
+  // close the progress display first to resume normal console output before closing other services
+  if (progressDisplay?.isReady) {
+    progressDisplay.close();
+  }
+
+  return await Promise.all(
     Object.values(services).map(async (service) => {
-      if (typeof service?.close === "function") {
-        try {
-          await service.close();
-        } catch (error) {
-          console.error("Error closing service:", JSON.stringify(createErrorLogPayload(error)));
-        }
+      // handle null or undefined services gracefully
+      if (!service) {
+        return;
+      }
+
+      // typecheck to ensure the service has a close method before calling it
+      if (typeof (service as { close?: unknown }).close !== "function") {
+        return;
+      }
+
+      if (service instanceof ModuleWriter && !service.isReady) {
+        return;
+      }
+
+      if ((service instanceof WebScraper || service instanceof DatabaseService) && !service.isConnected()) {
+        return;
+      }
+
+      try {
+        await service.close();
+      } catch (error) {
+        console.error("Error closing service:", JSON.stringify(createErrorLogPayload(error)));
       }
     }),
   );

@@ -141,8 +141,12 @@ function normalizeErrorLike(error: unknown): ErrorCauseSnapshot {
   }
 
   const isObjectLike = typeof error === "object" && error !== null;
-  const name = isObjectLike && Reflect.has(error, "name") ? String(Reflect.get(error, "name")) : "UnknownError";
-  const message = isObjectLike && Reflect.has(error, "message") ? String(Reflect.get(error, "message")) : String(error);
+  const rawName = isObjectLike && Reflect.has(error, "name") ? (Reflect.get(error, "name") as unknown) : undefined;
+  const rawMessage =
+    isObjectLike && Reflect.has(error, "message") ? (Reflect.get(error, "message") as unknown) : undefined;
+  const name = typeof rawName === "string" && rawName.trim() !== "" ? rawName : "UnknownError";
+  const message = typeof rawMessage === "string" && rawMessage.trim() !== "" ? rawMessage : String(error);
+
   return { name, message };
 }
 

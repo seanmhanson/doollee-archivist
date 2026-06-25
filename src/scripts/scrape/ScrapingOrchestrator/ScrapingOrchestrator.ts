@@ -201,7 +201,6 @@ class ScrapingOrchestrator {
     this.globalStats.endTime = new Date();
     this.services.progressDisplay.close();
     await this.writeReviewFile();
-    await this.teardown();
   }
 
   /**
@@ -298,8 +297,14 @@ class ScrapingOrchestrator {
 
   private async writeReviewFile() {
     if (!this.reviewState.filePath) {
+      const error = new Error("Review queue file path is not initialized");
       this.reviewState.hasError = true;
-      this.reviewState.lastError = "Review queue file path is not initialized";
+      this.reviewState.lastError = error.message;
+      this.incrementErrorStats("otherErrors");
+      console.error(
+        "Failed to write review queue file",
+        JSON.stringify(createErrorLogPayload(error, this.getErrorLogContext())),
+      );
       return;
     }
 
@@ -793,8 +798,7 @@ class ScrapingOrchestrator {
         "Fatal setup error encountered. Terminating process.",
         JSON.stringify(createErrorLogPayload(error, this.getErrorLogContext())),
       );
-      await this.teardown();
-      process.exit(1);
+      throw error; // Fatal error, rethrow to terminate process
     }
 
     const skipAuthor = async (reason: string, error?: unknown) => {
@@ -933,22 +937,6 @@ class ScrapingOrchestrator {
       this.errorStats[errorType]++;
     } else {
       this.errorStats.otherErrors++;
-    }
-  }
-
-  /**
-   * Cleans up and closes all services used during the scraping process.
-   * The progress display is closed first to restore terminal state before other services are closed.
-   */
-  private async teardown() {
-    this.services.progressDisplay.close();
-    await this.services.scraper.close();
-    await this.services.dbService.close();
-    if (this.services.authorModuleWriter) {
-      await this.services.authorModuleWriter.close();
-    }
-    if (this.services.playModuleWriter) {
-      await this.services.playModuleWriter.close();
     }
   }
 }
