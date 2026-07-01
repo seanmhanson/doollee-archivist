@@ -24,6 +24,7 @@ export const DEFAULT_TEST_CONFIG: ConfigData = {
   logDirectory: defaults.LOG_DIRECTORY,
   logFile: defaults.LOG_FILE,
   authorListPath: defaults.AUTHOR_LIST_PATH,
+  retryFile: defaults.RETRY_FILE,
 };
 
 export function mockConfig(overrides: ConfigOverrides = {}): ConfigData {

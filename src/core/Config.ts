@@ -17,6 +17,7 @@ const defaults: Record<string, string> = {
   AUTHOR_LIST_PATH: "input/authors",
   LOG_DIRECTORY: "output/logs",
   LOG_FILE: "",
+  RETRY_FILE: "",
 };
 
 export class Config {
@@ -36,6 +37,7 @@ export class Config {
   public readonly logDirectory: string;
   public readonly logFile: string;
   public readonly authorListPath: string;
+  public readonly retryFile: string;
 
   private constructor() {
     this.mongoUri = this.getEnvOrDefault("MONGO_URI");
@@ -51,6 +53,7 @@ export class Config {
     this.tailLength = this.getTailLength();
     this.logFile = this.getLogFile();
     this.authorListPath = this.getEnvOrDefault("AUTHOR_LIST_PATH");
+    this.retryFile = this.getEnvOrDefault("RETRY_FILE");
   }
 
   private getEnvOrDefault(key: keyof typeof Config.defaults): string {

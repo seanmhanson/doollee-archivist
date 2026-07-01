@@ -210,7 +210,7 @@ class ScrapingOrchestrator {
    * @throws {SetupError} If there is an error during setup. Fatal error.
    */
   private async setup() {
-    this.getBatches();
+    await this.getBatches();
     this.globalStats.startTime = new Date();
     this.globalStats.globalBatchSize = getConfig().batchSize;
     this.globalStats.globalBatchCount = this.state.batches.length;
@@ -354,11 +354,23 @@ class ScrapingOrchestrator {
   /**
    * Prepares the list of author batches to be processed by partitioning authors into groups of a max size
    */
-  private getBatches() {
-    const { batchSize, maxBatches } = getConfig();
+  private async getBatches() {
+    const { batchSize, maxBatches, retryFile } = getConfig();
+
+    if (retryFile) {
+      const raw = await fs.readFile(retryFile, "utf-8");
+      const retryInput: AuthorItems = JSON.parse(raw) as AuthorItems;
+      const entries = Object.entries(retryInput);
+      for (let i = 0; i < entries.length; i += batchSize) {
+        if (maxBatches > 0 && this.state.batches.length >= maxBatches) break;
+        this.state.batches.push(Object.fromEntries(entries.slice(i, i + batchSize)));
+      }
+      return;
+    }
+
     const letters: string[] = [];
     const firstLetter = `A`.charCodeAt(0);
-    const lastLetter = `A`.charCodeAt(0);
+    const lastLetter = `Z`.charCodeAt(0);
     const exception = `V`.charCodeAt(0);
     for (let i = firstLetter; i <= lastLetter; i++) {
       if (i === exception) {

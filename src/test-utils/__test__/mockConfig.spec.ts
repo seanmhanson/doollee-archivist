@@ -33,5 +33,6 @@ describe("test-utils/mockConfig", () => {
     expect(config).toHaveProperty("logDirectory");
     expect(config).toHaveProperty("logFile");
     expect(config).toHaveProperty("authorListPath");
+    expect(config).toHaveProperty("retryFile");
   });
 });
