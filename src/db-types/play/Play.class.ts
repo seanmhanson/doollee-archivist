@@ -6,7 +6,7 @@ import type { GenreTags } from "#/normalization/classifyGenreString";
 import type { Duration, DurationRange } from "#/normalization/extractDuration";
 import type { ReviewNote } from "#/review-notes";
 
-import { classifyGenres } from "#/normalization/classifyGenres";
+import { classifyGenres, flattenGenreTags } from "#/normalization/classifyGenres";
 import * as dbUtils from "#/utils/dbUtils";
 import { removeDisambiguationSuffix } from "#/utils/stringUtils";
 
@@ -156,7 +156,7 @@ export default class Play {
     // input.genres holds the raw, per-entry scraped genre tokens (see _archive.genres for the
     // untouched original string); classification derives the canonical tags/duration/structure
     const genreClassification = classifyGenres(input.genres);
-    this.genres = Object.values(genreClassification.tags).flat();
+    this.genres = flattenGenreTags(genreClassification.tags);
     this.genreTags = Object.keys(genreClassification.tags).length ? genreClassification.tags : undefined;
     this.duration = genreClassification.duration;
     this.durationRange = genreClassification.durationRange;

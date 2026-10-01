@@ -15,6 +15,12 @@ describe("classifyGenres", () => {
       });
     });
 
+    it("keeps categorized tag output stable when the source entry order differs", () => {
+      expect(classifyGenres(["one act", "comedy"])).toEqual({
+        tags: { format: ["one-act"], genre: ["comedy"] },
+      });
+    });
+
     it("dedupes a tag that appears in more than one entry", () => {
       expect(classifyGenres(["comedy", "comedy drama"])).toEqual({
         tags: { genre: ["comedy", "drama"] },

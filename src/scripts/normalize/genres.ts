@@ -7,7 +7,7 @@ import type { PlayArchiveDocument } from "#/db-types/play/play-archive.types";
 import type { Document } from "mongodb";
 
 import DatabaseService from "#/core/DatabaseService";
-import { classifyGenres } from "#/normalization/classifyGenres";
+import { classifyGenres, flattenGenreTags } from "#/normalization/classifyGenres";
 import * as dbUtils from "#/utils/dbUtils";
 
 // mirrors BaseWorksList#formatGenres - kept local since this reads directly from the
@@ -35,6 +35,14 @@ export type GenreNormalizationSummary = {
 
 const MAX_RESIDUE_SAMPLES = 5;
 const DERIVED_FIELDS = ["genres", "genreTags", "duration", "durationRange", "actCount", "collectionSize"] as const;
+const OBJECT_ID_HEX_REGEX = /^[a-f\d]{24}$/i;
+
+const toObjectId = (id: string): ObjectId => {
+  if (!OBJECT_ID_HEX_REGEX.test(id)) {
+    throw new Error(`Invalid play archive _id: "${id}". Expected a 24-character hexadecimal ObjectId.`);
+  }
+  return new ObjectId(id);
+};
 
 export const runGenreNormalization = async ({
   dbService,
@@ -45,7 +53,7 @@ export const runGenreNormalization = async ({
   const archiveCollection = await dbService.getCollection("play_archives");
   const playsCollection = await dbService.getCollection("plays");
 
-  const filter: Document = ids?.length ? { _id: { $in: ids.map((id) => new ObjectId(id)) } } : {};
+  const filter: Document = ids?.length ? { _id: { $in: ids.map(toObjectId) } } : {};
 
   let processed = 0;
   let updated = 0;
@@ -70,7 +78,7 @@ export const runGenreNormalization = async ({
     }
 
     const update = dbUtils.removeEmptyFields({
-      genres: Object.values(classification.tags).flat(),
+      genres: flattenGenreTags(classification.tags),
       genreTags: Object.keys(classification.tags).length ? classification.tags : undefined,
       duration: classification.duration,
       durationRange: classification.durationRange,
@@ -104,7 +112,7 @@ export const runGenreNormalization = async ({
     updated += 1;
   }
 
-  const residueEntries = [...residueByValue.values()];
+  const residueEntries = [...residueByValue.values()].sort((a, b) => b.count - a.count);
   let reviewFilePath: string | undefined;
   if (residueEntries.length > 0) {
     const timestamp = new Date().toISOString().replace(/[:.]/g, "_");

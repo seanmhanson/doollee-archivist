@@ -177,6 +177,12 @@ describe("Play.class", () => {
       });
     });
 
+    it("should use a stable category order for canonical genres", () => {
+      const play = new Play(getPlayFixture({ genres: ["one act", "comedy"] }));
+
+      expect(play.toDocument().genres).toEqual(["comedy", "one-act"]);
+    });
+
     it("should include productionYearInt when productionYear is a pure 4-digit year", () => {
       const play = new Play(getPlayFixture({ productionYear: "1965" }));
       const doc = play.toDocument();

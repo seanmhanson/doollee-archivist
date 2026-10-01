@@ -4,6 +4,8 @@ import type { GenreTags } from "./classifyGenreString";
 import type { Duration, DurationRange } from "./extractDuration";
 import type { TagCategory } from "./tagMap";
 
+const TAG_CATEGORY_ORDER: TagCategory[] = ["genre", "format", "audience", "representation"];
+
 export type GenreClassification = {
   tags: GenreTags;
   duration?: Duration;
@@ -13,6 +15,9 @@ export type GenreClassification = {
   // non-empty leftover text, one entry per genre string that had unmatched words - diagnostic only
   residue?: string[];
 };
+
+export const flattenGenreTags = (tags: GenreTags): string[] =>
+  TAG_CATEGORY_ORDER.flatMap((category) => tags[category] ?? []);
 
 // aggregates classifyGenreString across every comma-separated genre entry for a play,
 // merging/deduping tags per category and keeping the first duration/structure signal found

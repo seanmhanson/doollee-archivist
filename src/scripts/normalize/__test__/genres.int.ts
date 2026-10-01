@@ -119,6 +119,19 @@ describe("scripts/normalize/genres", () => {
       ]);
     });
 
+    it("orders review residue by descending occurrence count", async () => {
+      await seedPlay("first", "jaime hayes");
+      await seedPlay("second", "typescript");
+      await seedPlay("third", "typescript");
+
+      const summary = await runGenreNormalization({ dbService, dryRun: true, reviewQueueDir });
+
+      expect(summary.residueEntries).toEqual([
+        { residue: "typescript", count: 2, samplePlayIds: ["second", "third"] },
+        { residue: "jaime hayes", count: 1, samplePlayIds: ["first"] },
+      ]);
+    });
+
     it("in dry-run mode, reports what would change without writing to the database", async () => {
       const id = await seedPlay("4", "comedy");
       const summary = await runGenreNormalization({ dbService, dryRun: true, reviewQueueDir });
@@ -155,6 +168,12 @@ describe("scripts/normalize/genres", () => {
       const db = await dbService.connect();
       const untouched = await db.collection("plays").findOne({ playId: "6" });
       expect(untouched?.genreTags).toBeUndefined();
+    });
+
+    it("rejects malformed targeted ids with a clear error", async () => {
+      await expect(runGenreNormalization({ dbService, ids: ["not-an-object-id"], reviewQueueDir })).rejects.toThrow(
+        'Invalid play archive _id: "not-an-object-id". Expected a 24-character hexadecimal ObjectId.',
+      );
     });
 
     it("is idempotent - re-running produces the same result", async () => {
