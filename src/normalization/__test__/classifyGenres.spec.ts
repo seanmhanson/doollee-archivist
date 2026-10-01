@@ -28,5 +28,12 @@ describe("classifyGenres", () => {
         actCount: 2,
       });
     });
+
+    it("collects unmatched residue from each entry that has any", () => {
+      expect(classifyGenres(["typescript comedy", "jaime hayes"])).toEqual({
+        tags: { genre: ["comedy"] },
+        residue: ["typescript", "jaime hayes"],
+      });
+    });
   });
 });

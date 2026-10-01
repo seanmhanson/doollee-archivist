@@ -24,6 +24,7 @@
     "snapshots:update-profiles": "ts-node -r tsconfig-paths/register src/scripts/admin/update-profile-snapshots.ts",
     "test:rateLimiting": "ts-node -r tsconfig-paths/register src/scripts/scrape/testRateLimiting.ts",
     "analyze": "ts-node -r tsconfig-paths/register src/scripts/normalize/main.ts",
+    "normalize:genres": "ts-node -r tsconfig-paths/register src/scripts/normalize/genres.ts",
     "test": "jest --testPathPatterns='(spec|test)\\.ts$'",
     "test:int": "jest --testPathPatterns='int\\.ts$'",
     "test:all": "jest",

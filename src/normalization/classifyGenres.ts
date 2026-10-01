@@ -10,6 +10,8 @@ export type GenreClassification = {
   durationRange?: DurationRange;
   actCount?: number;
   collectionSize?: number;
+  // non-empty leftover text, one entry per genre string that had unmatched words - diagnostic only
+  residue?: string[];
 };
 
 // aggregates classifyGenreString across every comma-separated genre entry for a play,
@@ -20,6 +22,7 @@ export const classifyGenres = (genres: string[] | undefined): GenreClassificatio
   let durationRange: DurationRange | undefined;
   let actCount: number | undefined;
   let collectionSize: number | undefined;
+  const residue: string[] = [];
 
   for (const genre of genres ?? []) {
     const result = classifyGenreString(genre);
@@ -34,6 +37,9 @@ export const classifyGenres = (genres: string[] | undefined): GenreClassificatio
     durationRange ??= result.durationRange;
     actCount ??= result.actCount;
     collectionSize ??= result.collectionSize;
+    if (result.residue.trim().length > 0) {
+      residue.push(result.residue);
+    }
   }
 
   return {
@@ -42,5 +48,6 @@ export const classifyGenres = (genres: string[] | undefined): GenreClassificatio
     ...(durationRange ? { durationRange } : {}),
     ...(actCount !== undefined ? { actCount } : {}),
     ...(collectionSize !== undefined ? { collectionSize } : {}),
+    ...(residue.length > 0 ? { residue } : {}),
   };
 };
