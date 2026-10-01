@@ -4,6 +4,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 
 import DatabaseService from "../DatabaseService";
 
+import type { CollectionName } from "../DatabaseService";
 import type { CollectionInfo } from "mongodb";
 
 describe("core/DatabaseService", () => {
@@ -195,6 +196,59 @@ describe("core/DatabaseService", () => {
         unknownField: "this is not in the schema",
       };
       await expect(db.collection("author_archives").insertOne(invalidAuthorArchive)).rejects.toThrow();
+    });
+  });
+
+  describe("when updating a collection's validator", () => {
+    beforeEach(async () => {
+      await dbService.initDatabase();
+    });
+
+    it("applies the current schema non-destructively to an existing collection", async () => {
+      const db = await dbService.connect();
+      const now = new Date();
+      const basePlay = {
+        _id: new ObjectId(),
+        playId: "12345",
+        title: "Test Play",
+        author: "Test Author",
+        displayAuthor: "Test Author",
+        isAdaptation: false,
+        metadata: { createdAt: now, updatedAt: now, scrapedAt: now, sourceUrl: "http://example.com" },
+      };
+      await db.collection("plays").insertOne(basePlay);
+
+      // simulate an older collection whose validator predates the `duration` field
+      await db.command({
+        collMod: "plays",
+        validator: {
+          $jsonSchema: {
+            bsonType: "object",
+            required: ["_id", "metadata", "playId", "title", "author", "displayAuthor", "isAdaptation"],
+            additionalProperties: true,
+          },
+        },
+        validationAction: "error",
+        validationLevel: "strict",
+      });
+
+      await dbService.updateValidator("plays");
+
+      const withDuration = { ...basePlay, _id: new ObjectId(), playId: "22222", duration: [1, 30, 0] };
+      await expect(db.collection("plays").insertOne(withDuration)).resolves.toBeDefined();
+
+      const withUnknownField = { ...basePlay, _id: new ObjectId(), playId: "33333", unknownField: "nope" };
+      await expect(db.collection("plays").insertOne(withUnknownField)).rejects.toThrow();
+
+      // pre-existing documents are untouched by the validator change
+      const original = await db.collection("plays").findOne({ _id: basePlay._id });
+      expect(original).toMatchObject({ playId: "12345", title: "Test Play" });
+    });
+
+    it("throws for a collection with no registered schema", async () => {
+      await expect(dbService.updateValidator("not_a_real_collection" as CollectionName)).rejects.toThrow(
+        "No schema registered for collection 'not_a_real_collection'",
+      );
     });
   });
 

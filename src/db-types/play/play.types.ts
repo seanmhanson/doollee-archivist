@@ -1,3 +1,5 @@
+import type { GenreTags } from "#/normalization/classifyGenreString";
+import type { Duration, DurationRange } from "#/normalization/extractDuration";
 import type { ReviewNotes } from "#/review-notes";
 import type { ObjectId } from "mongodb";
 
@@ -66,7 +68,12 @@ export type PlayDocument = {
   authorId?: ObjectId;
   adaptingAuthor?: string;
   isAdaptation: boolean;
-  genres?: string[];
+  genres?: string[]; // flat, deduped, canonical tags (not the raw scraped genre text - see _archive)
+  genreTags?: GenreTags; // the same tags, categorized (genre/format/audience/representation)
+  duration?: Duration;
+  durationRange?: DurationRange;
+  actCount?: number;
+  collectionSize?: number;
   synopsis?: string;
   notes?: string;
   organizations?: string;

@@ -2,8 +2,11 @@ import { ObjectId } from "mongodb";
 
 import type { PlayArchiveDocument } from "#/db-types/play/play-archive.types";
 import type { InitialMetadata, PlayDocument, PlayData, PlayArchive } from "#/db-types/play/play.types";
+import type { GenreTags } from "#/normalization/classifyGenreString";
+import type { Duration, DurationRange } from "#/normalization/extractDuration";
 import type { ReviewNote } from "#/review-notes";
 
+import { classifyGenres, flattenGenreTags } from "#/normalization/classifyGenres";
 import * as dbUtils from "#/utils/dbUtils";
 import { removeDisambiguationSuffix } from "#/utils/stringUtils";
 
@@ -19,6 +22,11 @@ export default class Play {
   private adaptingAuthor?: string;
 
   private genres?: string[];
+  private genreTags?: GenreTags;
+  private duration?: Duration;
+  private durationRange?: DurationRange;
+  private actCount?: number;
+  private collectionSize?: number;
   private synopsis?: string;
   private notes?: string;
   private organizations?: string;
@@ -86,6 +94,11 @@ export default class Play {
     return {
       displayTitle: this.displayTitle,
       genres: this.genres,
+      genreTags: this.genreTags,
+      duration: this.duration,
+      durationRange: this.durationRange,
+      actCount: this.actCount,
+      collectionSize: this.collectionSize,
       synopsis: this.synopsis,
       notes: this.notes,
       organizations: this.organizations,
@@ -140,7 +153,16 @@ export default class Play {
     this.authorId = input.authorId;
     this.adaptingAuthor = input.adaptingAuthor;
 
-    this.genres = input.genres;
+    // input.genres holds the raw, per-entry scraped genre tokens (see _archive.genres for the
+    // untouched original string); classification derives the canonical tags/duration/structure
+    const genreClassification = classifyGenres(input.genres);
+    this.genres = flattenGenreTags(genreClassification.tags);
+    this.genreTags = Object.keys(genreClassification.tags).length ? genreClassification.tags : undefined;
+    this.duration = genreClassification.duration;
+    this.durationRange = genreClassification.durationRange;
+    this.actCount = genreClassification.actCount;
+    this.collectionSize = genreClassification.collectionSize;
+
     this.synopsis = input.synopsis;
     this.notes = input.notes;
     this.organizations = input.organizations;

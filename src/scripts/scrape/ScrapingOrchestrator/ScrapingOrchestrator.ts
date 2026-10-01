@@ -708,9 +708,17 @@ class ScrapingOrchestrator {
       try {
         const playsCollection = await this.services.dbService.getCollection("plays");
         const { _id, ...documentWithoutId } = document;
+        const genreFields = ["genres", "genreTags", "duration", "durationRange", "actCount", "collectionSize"] as const;
+        const unsetGenreFields = Object.fromEntries(
+          genreFields.filter((field) => !(field in documentWithoutId)).map((field) => [field, ""]),
+        );
         const result = await playsCollection.findOneAndUpdate(
           { playId: documentWithoutId.playId },
-          { $set: documentWithoutId, $setOnInsert: { _id } },
+          {
+            $set: documentWithoutId,
+            $setOnInsert: { _id },
+            ...(Object.keys(unsetGenreFields).length ? { $unset: unsetGenreFields } : {}),
+          },
           { upsert: true, returnDocument: "after" },
         );
         const persistedId = result?._id ?? _id;

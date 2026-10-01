@@ -166,6 +166,23 @@ describe("Play.class", () => {
       expect(doc.isAdaptation).toBe(true);
     });
 
+    it("should normalize scraped genres into canonical tags and structural fields", () => {
+      const play = new Play(getPlayFixture({ genres: ["Comedy 2 acts 1h 30m", "T.V. Play"] }));
+
+      expect(play.toDocument()).toMatchObject({
+        genres: ["comedy", "television-play"],
+        genreTags: { genre: ["comedy"], format: ["television-play"] },
+        duration: [1, 30, 0],
+        actCount: 2,
+      });
+    });
+
+    it("should use a stable category order for canonical genres", () => {
+      const play = new Play(getPlayFixture({ genres: ["one act", "comedy"] }));
+
+      expect(play.toDocument().genres).toEqual(["comedy", "one-act"]);
+    });
+
     it("should include productionYearInt when productionYear is a pure 4-digit year", () => {
       const play = new Play(getPlayFixture({ productionYear: "1965" }));
       const doc = play.toDocument();
