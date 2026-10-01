@@ -9,8 +9,8 @@ describe("extractStructure", () => {
       expect(extractStructure("drama in three acts")).toEqual({ actCount: 3, prunedString: "drama" });
     });
 
-    it("parses one-act as an act count of 1", () => {
-      expect(extractStructure("one act comedy")).toEqual({ actCount: 1, prunedString: "comedy" });
+    it("does not extract a count of 1 - that's left for the 'one-act' format tag instead", () => {
+      expect(extractStructure("one act comedy")).toEqual({ prunedString: "one act comedy" });
     });
 
     it("parses collections of multiple short works", () => {
@@ -23,8 +23,8 @@ describe("extractStructure", () => {
       expect(extractStructure("3 x ten monologues")).toEqual({ collectionSize: 3, prunedString: "" });
     });
 
-    it("does not treat a single act/play as a collection", () => {
-      expect(extractStructure("one act play")).toEqual({ actCount: 1, prunedString: "play" });
+    it("does not treat a single act/play as a collection or an act count", () => {
+      expect(extractStructure("one act play")).toEqual({ prunedString: "one act play" });
     });
 
     it("does not match 'act' inside unrelated words", () => {

@@ -12,7 +12,12 @@ export type TagDefinition = {
 // not hand-completed here.
 export const TAG_DEFINITIONS: TagDefinition[] = [
   // genre
-  { canonical: "comedy", category: "genre", variants: ["comedy", "comedies", "comedic"] },
+  { canonical: "comedy", category: "genre", variants: ["comedy", "comedies", "comedic", "comic"] },
+  {
+    canonical: "dark-comedy",
+    category: "genre",
+    variants: ["black comedy", "dark comedy"],
+  },
   { canonical: "drama", category: "genre", variants: ["drama", "dramas", "drana"] },
   {
     canonical: "musical",
@@ -57,6 +62,13 @@ export const TAG_DEFINITIONS: TagDefinition[] = [
   { canonical: "absurdist", category: "genre", variants: ["absurdist", "absurd", "theatre of the absurd"] },
   { canonical: "morality-play", category: "genre", variants: ["morality play", "morality"] },
   { canonical: "verse-drama", category: "genre", variants: ["verse play", "verse drama", "poetic drama"] },
+  { canonical: "historical", category: "genre", variants: ["historical"] },
+  { canonical: "christmas", category: "genre", variants: ["christmas"] },
+  { canonical: "dance", category: "genre", variants: ["dance"] },
+  { canonical: "political", category: "genre", variants: ["political"] },
+  { canonical: "mime", category: "genre", variants: ["mime"] },
+  { canonical: "experimental", category: "genre", variants: ["experimental"] },
+  { canonical: "fairy-tale", category: "genre", variants: ["fairy tale", "fairytale"] },
 
   // format
   {
@@ -66,6 +78,7 @@ export const TAG_DEFINITIONS: TagDefinition[] = [
   },
   { canonical: "full-length", category: "format", variants: ["full length", "full-length", "fulllength"] },
   { canonical: "short-play", category: "format", variants: ["short play", "short plays"] },
+  { canonical: "play", category: "format", variants: ["play", "plays"] },
   {
     canonical: "ten-minute-play",
     category: "format",
@@ -93,13 +106,27 @@ export const TAG_DEFINITIONS: TagDefinition[] = [
   { canonical: "staged-reading", category: "format", variants: ["staged reading", "rehearsed reading", "reading"] },
   { canonical: "devised-piece", category: "format", variants: ["devised piece", "devised"] },
   { canonical: "site-specific", category: "format", variants: ["site specific", "site-specific"] },
+  { canonical: "piece", category: "format", variants: ["piece", "pieces"] },
+  { canonical: "show", category: "format", variants: ["show"] },
+  { canonical: "sketch", category: "format", variants: ["sketch", "sketches"] },
+  { canonical: "solo", category: "format", variants: ["solo"] },
+  {
+    canonical: "physical-theatre",
+    category: "format",
+    variants: ["physical theatre", "physical theater"],
+  },
+  { canonical: "multimedia", category: "format", variants: ["multimedia", "multi media", "multi-media"] },
 
   // audience (kept distinct per project decision, not collapsed into one tag)
-  { canonical: "young-audiences", category: "audience", variants: ["tya", "youth audience", "youth audiences"] },
+  {
+    canonical: "young-audiences",
+    category: "audience",
+    variants: ["tya", "youth audience", "youth audiences", "youth"],
+  },
   {
     canonical: "childrens",
     category: "audience",
-    variants: ["childrens", "children's", "childrens play", "chilidrens", "chrildren's"],
+    variants: ["childrens", "children's", "childrens play", "chilidrens", "chrildren's", "family"],
   },
   { canonical: "teens", category: "audience", variants: ["teenage", "teen", "teenagers", "young adult"] },
 

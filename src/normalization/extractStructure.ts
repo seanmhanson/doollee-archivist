@@ -38,12 +38,14 @@ const tryCollectionSize = (text: string): TryResult => {
   return { match, collectionSize: size };
 };
 
-// structural act count of a single play, e.g. "2 acts", "one act"
+// structural act count of a single play, e.g. "2 acts". A count of 1 ("one act"/"1 act") is
+// deliberately left unmatched here - it's handled as the "one-act" FORMAT tag instead, since that's
+// the dominant real-world reading of that phrase, not a literal structural-act fact worth storing
 const tryActCount = (text: string): TryResult => {
   const match = text.match(ACT_COUNT_REGEX);
   if (!match) return null;
   const count = parseAmount(match[1]);
-  if (Number.isNaN(count)) return null;
+  if (Number.isNaN(count) || count < 2) return null;
   return { match, actCount: count };
 };
 
