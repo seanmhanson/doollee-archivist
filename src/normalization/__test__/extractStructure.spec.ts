@@ -7,6 +7,7 @@ describe("extractStructure", () => {
     it("parses numeric act counts", () => {
       expect(extractStructure("2 acts play/drama")).toEqual({ actCount: 2, prunedString: "play/drama" });
       expect(extractStructure("drama in three acts")).toEqual({ actCount: 3, prunedString: "drama" });
+      expect(extractStructure("3 act play")).toEqual({ actCount: 3, prunedString: "play" });
     });
 
     it("does not extract a count of 1 - that's left for the 'one-act' format tag instead", () => {

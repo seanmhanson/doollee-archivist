@@ -33,8 +33,10 @@ export const classifyGenres = (genres: string[] | undefined): GenreClassificatio
       tags[category] = [...new Set([...(tags[category] ?? []), ...values])];
     }
 
-    duration ??= result.duration;
-    durationRange ??= result.durationRange;
+    if (duration === undefined && durationRange === undefined) {
+      duration = result.duration;
+      durationRange = result.durationRange;
+    }
     actCount ??= result.actCount;
     collectionSize ??= result.collectionSize;
     if (result.residue.trim().length > 0) {

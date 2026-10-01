@@ -95,13 +95,28 @@ describe("scripts/normalize/genres", () => {
       const summary = await runGenreNormalization({ dbService, reviewQueueDir });
 
       expect(summary.reviewFilePath).toBeDefined();
-      expect(summary.residueEntries).toEqual([{ playId: "3", residue: ["typescript", "jaime hayes"] }]);
+      expect(summary.residueEntries).toEqual([
+        { residue: "typescript", count: 1, samplePlayIds: ["3"] },
+        { residue: "jaime hayes", count: 1, samplePlayIds: ["3"] },
+      ]);
 
       if (!summary.reviewFilePath) throw new Error("expected reviewFilePath to be set");
       const written = JSON.parse(await fs.readFile(summary.reviewFilePath, "utf8")) as {
         residueEntries: typeof summary.residueEntries;
       };
       expect(written.residueEntries).toEqual(summary.residueEntries);
+    });
+
+    it("aggregates repeated residue with bounded play-id samples", async () => {
+      for (let index = 0; index < 7; index += 1) {
+        await seedPlay(String(index), "typescript");
+      }
+
+      const summary = await runGenreNormalization({ dbService, dryRun: true, reviewQueueDir });
+
+      expect(summary.residueEntries).toEqual([
+        { residue: "typescript", count: 7, samplePlayIds: ["0", "1", "2", "3", "4"] },
+      ]);
     });
 
     it("in dry-run mode, reports what would change without writing to the database", async () => {
@@ -113,6 +128,21 @@ describe("scripts/normalize/genres", () => {
       const db = await dbService.connect();
       const updatedPlay = await db.collection("plays").findOne({ _id: id });
       expect(updatedPlay?.genreTags).toBeUndefined();
+    });
+
+    it("reports missing play documents during dry runs", async () => {
+      const db = await dbService.connect();
+      await db.collection("play_archives").insertOne({
+        _id: new ObjectId(),
+        _type: "play",
+        playId: "missing",
+        title: "Missing Play",
+        genres: "comedy",
+      });
+
+      const summary = await runGenreNormalization({ dbService, dryRun: true, reviewQueueDir });
+
+      expect(summary).toMatchObject({ processed: 1, updated: 0, missingPlayDocument: 1 });
     });
 
     it("limits processing to the given ids", async () => {
@@ -136,6 +166,37 @@ describe("scripts/normalize/genres", () => {
       const db = await dbService.connect();
       const play = await db.collection("plays").findOne({ _id: id });
       expect(play?.genreTags).toEqual({ genre: ["comedy", "drama"] });
+    });
+
+    it("unsets stale derived values when the new classification is empty", async () => {
+      const id = await seedPlay("8", "comedy");
+      const db = await dbService.connect();
+      await db.collection("plays").updateOne(
+        { _id: id },
+        {
+          $set: {
+            duration: [1, 0, 0],
+            durationRange: [
+              [0, 20, 0],
+              [0, 30, 0],
+            ],
+            actCount: 2,
+            collectionSize: 3,
+          },
+        },
+      );
+      await db.collection("play_archives").updateOne({ _id: id }, { $set: { genres: "typescript" } });
+
+      const summary = await runGenreNormalization({ dbService, reviewQueueDir });
+      const play = await db.collection("plays").findOne({ _id: id });
+
+      expect(summary.updated).toBe(1);
+      expect(play?.genreTags).toBeUndefined();
+      expect(play?.genres).toBeUndefined();
+      expect(play?.duration).toBeUndefined();
+      expect(play?.durationRange).toBeUndefined();
+      expect(play?.actCount).toBeUndefined();
+      expect(play?.collectionSize).toBeUndefined();
     });
   });
 });

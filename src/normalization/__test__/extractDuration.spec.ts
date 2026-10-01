@@ -95,6 +95,7 @@ describe("extractDuration", () => {
 
     it("returns the original string unchanged when no duration is present", () => {
       expect(extractDuration("comedy")).toEqual({ prunedString: "comedy" });
+      expect(extractDuration("someone minute")).toEqual({ prunedString: "someone minute" });
     });
   });
 });

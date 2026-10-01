@@ -29,9 +29,12 @@ export type GenreNormalizationSummary = {
   processed: number;
   updated: number;
   missingPlayDocument: number;
-  residueEntries: { playId: string; residue: string[] }[];
+  residueEntries: { residue: string; count: number; samplePlayIds: string[] }[];
   reviewFilePath?: string;
 };
+
+const MAX_RESIDUE_SAMPLES = 5;
+const DERIVED_FIELDS = ["genres", "genreTags", "duration", "durationRange", "actCount", "collectionSize"] as const;
 
 export const runGenreNormalization = async ({
   dbService,
@@ -47,7 +50,7 @@ export const runGenreNormalization = async ({
   let processed = 0;
   let updated = 0;
   let missingPlayDocument = 0;
-  const residueEntries: { playId: string; residue: string[] }[] = [];
+  const residueByValue = new Map<string, { residue: string; count: number; samplePlayIds: string[] }>();
 
   const cursor = archiveCollection.find(filter);
   for await (const document of cursor) {
@@ -57,8 +60,13 @@ export const runGenreNormalization = async ({
     const genreTokens = splitGenres(archiveDoc.genres);
     const classification = classifyGenres(genreTokens);
 
-    if (classification.residue?.length) {
-      residueEntries.push({ playId: archiveDoc.playId, residue: classification.residue });
+    for (const residue of classification.residue ?? []) {
+      const entry = residueByValue.get(residue) ?? { residue, count: 0, samplePlayIds: [] };
+      entry.count += 1;
+      if (entry.samplePlayIds.length < MAX_RESIDUE_SAMPLES && !entry.samplePlayIds.includes(archiveDoc.playId)) {
+        entry.samplePlayIds.push(archiveDoc.playId);
+      }
+      residueByValue.set(residue, entry);
     }
 
     const update = dbUtils.removeEmptyFields({
@@ -70,13 +78,25 @@ export const runGenreNormalization = async ({
       collectionSize: classification.collectionSize,
     });
 
-    if (!update) continue;
+    const unset = Object.fromEntries(
+      DERIVED_FIELDS.filter((field) => !(field in (update ?? {}))).map((field) => [field, ""]),
+    );
+    const updateDocument = {
+      ...(update ? { $set: update } : {}),
+      ...(Object.keys(unset).length ? { $unset: unset } : {}),
+    };
+
     if (dryRun) {
+      const existingPlay = await playsCollection.findOne({ _id: archiveDoc._id }, { projection: { _id: 1 } });
+      if (!existingPlay) {
+        missingPlayDocument += 1;
+        continue;
+      }
       updated += 1;
       continue;
     }
 
-    const result = await playsCollection.findOneAndUpdate({ _id: archiveDoc._id }, { $set: update });
+    const result = await playsCollection.findOneAndUpdate({ _id: archiveDoc._id }, updateDocument);
     if (!result) {
       missingPlayDocument += 1;
       continue;
@@ -84,6 +104,7 @@ export const runGenreNormalization = async ({
     updated += 1;
   }
 
+  const residueEntries = [...residueByValue.values()];
   let reviewFilePath: string | undefined;
   if (residueEntries.length > 0) {
     const timestamp = new Date().toISOString().replace(/[:.]/g, "_");
@@ -127,18 +148,20 @@ async function main() {
     .filter((id) => id.length > 0);
 
   const dbService = new DatabaseService();
-  const summary = await runGenreNormalization({ dbService, dryRun, ids });
+  try {
+    const summary = await runGenreNormalization({ dbService, dryRun, ids });
 
-  console.info(`${dryRun ? "[dry run] " : ""}Processed ${summary.processed} archived play(s).`);
-  console.info(`${dryRun ? "Would update" : "Updated"} ${summary.updated} play document(s).`);
-  if (summary.missingPlayDocument > 0) {
-    console.info(`Skipped ${summary.missingPlayDocument} archive document(s) with no matching play document.`);
+    console.info(`${dryRun ? "[dry run] " : ""}Processed ${summary.processed} archived play(s).`);
+    console.info(`${dryRun ? "Would update" : "Updated"} ${summary.updated} play document(s).`);
+    if (summary.missingPlayDocument > 0) {
+      console.info(`Skipped ${summary.missingPlayDocument} archive document(s) with no matching play document.`);
+    }
+    if (summary.reviewFilePath) {
+      console.info(`Wrote ${summary.residueEntries.length} distinct unmatched residue(s) to ${summary.reviewFilePath}`);
+    }
+  } finally {
+    await dbService.close();
   }
-  if (summary.reviewFilePath) {
-    console.info(`Wrote ${summary.residueEntries.length} entries with unmatched residue to ${summary.reviewFilePath}`);
-  }
-
-  await dbService.close();
 }
 
 if (require.main === module) {

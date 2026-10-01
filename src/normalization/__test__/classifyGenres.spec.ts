@@ -29,6 +29,20 @@ describe("classifyGenres", () => {
       });
     });
 
+    it("keeps only the first duration signal, whether it is a duration or a range", () => {
+      expect(classifyGenres(["1 hour", "20-30 minutes"])).toEqual({
+        tags: {},
+        duration: [1, 0, 0],
+      });
+      expect(classifyGenres(["20-30 minutes", "1 hour"])).toEqual({
+        tags: {},
+        durationRange: [
+          [0, 20, 0],
+          [0, 30, 0],
+        ],
+      });
+    });
+
     it("collects unmatched residue from each entry that has any", () => {
       expect(classifyGenres(["typescript comedy", "jaime hayes"])).toEqual({
         tags: { genre: ["comedy"] },

@@ -17,9 +17,10 @@ const ACT_COUNT_REGEX = new RegExp(`(?:in\\s+)?(${NUMBER_OR_WORD})${SEP}acts?${U
 // nouns describing a single constituent piece within an anthology/collection of short works
 const COLLECTION_NOUN = `(?:plays?|monologues?|sketches?|playlets?|pieces?|scenes?|vignettes?|shorts?|comedies|comedy|dramas?)${UNIT_BOUNDARY}`;
 // up to 3 filler words between the leading count and the collection noun (e.g. "one act", "x ten minute");
-// plural "acts" is never consumed as filler so "2 acts play" is left for ACT_COUNT_REGEX instead
+// "act" is not consumed immediately after the count, and plural "acts" is never filler, so act counts
+// are left for ACT_COUNT_REGEX instead
 const COLLECTION_SIZE_REGEX = new RegExp(
-  `(${NUMBER_OR_WORD})${SEP}(?:(?!acts${UNIT_BOUNDARY})[a-z]+${SEP}){0,3}${COLLECTION_NOUN}`,
+  `(${NUMBER_OR_WORD})${SEP}(?!act${UNIT_BOUNDARY})(?:(?!acts${UNIT_BOUNDARY})[a-z]+${SEP}){0,3}${COLLECTION_NOUN}`,
   "i",
 );
 

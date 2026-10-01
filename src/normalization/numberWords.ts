@@ -47,7 +47,7 @@ const TEN_WORD_ALT = wordAlternation(Object.keys(TENS_WORDS));
 
 // matches "twenty-five", "twenty five", "fifteen", "ten", "one", etc.
 export const NUMBER_WORD = `(?:(?:${TEN_WORD_ALT})[\\s-](?:${ONE_WORD_ALT})|${TEN_WORD_ALT}|${ONE_WORD_ALT})`;
-export const NUMBER_OR_WORD = `(?:\\d+|${NUMBER_WORD})`;
+export const NUMBER_OR_WORD = `\\b(?:\\d+|${NUMBER_WORD})`;
 
 // zero or more spaces/hyphens between a number and its unit (handles "10-minute", "one-hour")
 export const SEP = `[\\s-]*`;
