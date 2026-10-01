@@ -12,6 +12,14 @@ describe("classifyGenreString", () => {
       });
     });
 
+    it("extracts a ten-minute duration without creating a duration-derived format tag", () => {
+      expect(classifyGenreString("ten minute play")).toEqual({
+        tags: { format: ["play"] },
+        duration: [0, 10, 0],
+        residue: "",
+      });
+    });
+
     it("dedupes a canonical tag that appears more than once in the same string", () => {
       expect(classifyGenreString("comedy drama comedy")).toEqual({
         tags: { genre: ["comedy", "drama"] },

@@ -80,11 +80,6 @@ export const TAG_DEFINITIONS: TagDefinition[] = [
   { canonical: "short-play", category: "format", variants: ["short play", "short plays"] },
   { canonical: "play", category: "format", variants: ["play", "plays"] },
   {
-    canonical: "ten-minute-play",
-    category: "format",
-    variants: ["ten minute play", "ten min", "10 min play", "10-minute play", "ten-minute play"],
-  },
-  {
     canonical: "monologue",
     category: "format",
     variants: ["monologue", "monologue play", "monolgue", "monolgue play"],
