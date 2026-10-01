@@ -78,7 +78,9 @@ export const classifyGenreString = (genreString: string): ClassifiedGenre => {
       splitWords(representationText),
     );
     if (representationTags.representation) {
-      tags.representation = [...(tags.representation ?? []), ...representationTags.representation];
+      // dedupe: the same representation word can appear in both the main text and the
+      // suffix (e.g. "gay comedy. - - gay"), since each half is matched independently
+      tags.representation = [...new Set([...(tags.representation ?? []), ...representationTags.representation])];
     }
     residue.push(...representationResidue);
   }

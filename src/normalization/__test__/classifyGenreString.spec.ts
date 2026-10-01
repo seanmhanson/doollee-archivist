@@ -51,6 +51,13 @@ describe("classifyGenreString", () => {
       });
     });
 
+    it("dedupes a representation tag that appears in both the main text and the suffix", () => {
+      expect(classifyGenreString("gay comedy. - - gay")).toEqual({
+        tags: { genre: ["comedy"], representation: ["gay"] },
+        residue: "",
+      });
+    });
+
     it("splits a slash-joined compound word into separate tokens", () => {
       expect(classifyGenreString("comedy/drama")).toEqual({
         tags: { genre: ["comedy", "drama"] },
