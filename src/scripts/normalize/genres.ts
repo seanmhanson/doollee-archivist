@@ -128,8 +128,7 @@ export const runGenreNormalization = async ({
 };
 
 async function main() {
-  // loaded dynamically so importing runGenreNormalization (e.g. in tests) doesn't require
-  // evaluating the ESM-only yargs package
+  // loaded dynamically so importing runGenreNormalization (e.g. in tests) doesn't load the CLI parser
   const { default: yargs } = await import("yargs");
   const argv = await yargs(process.argv.slice(2))
     .option("dry-run", {
