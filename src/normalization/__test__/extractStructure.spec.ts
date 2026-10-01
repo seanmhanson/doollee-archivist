@@ -18,6 +18,7 @@ describe("extractStructure", () => {
       expect(extractStructure("10 one act plays")).toEqual({ collectionSize: 10, prunedString: "" });
       expect(extractStructure("six short plays")).toEqual({ collectionSize: 6, prunedString: "" });
       expect(extractStructure("17 plays one act")).toEqual({ collectionSize: 17, prunedString: "one act" });
+      expect(extractStructure("3 * 1 Act Plays One Act")).toEqual({ collectionSize: 3, prunedString: "One Act" });
     });
 
     it("parses an 'x' separated collection count", () => {

@@ -9,10 +9,10 @@ describe("normalize:genres CLI", () => {
       throw new Error("The test must run through Yarn to exercise the normalize:genres package script.");
     }
 
-    const result = spawnSync(yarnExecutable, ["normalize:genres", "--bad-option"], { encoding: "utf8" });
+    const result = spawnSync(yarnExecutable, ["normalize:genres", "--bad", "--worse"], { encoding: "utf8" });
 
     expect(result.error).toBeUndefined();
     expect(result.status).toBe(1);
-    expect(result.stderr).toContain("Unknown arguments: bad-option");
+    expect(result.stderr).toContain("Unknown arguments: bad, worse");
   });
 });

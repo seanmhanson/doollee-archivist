@@ -20,7 +20,7 @@ const COLLECTION_NOUN = `(?:plays?|monologues?|sketches?|playlets?|pieces?|vigne
 // "act" is not consumed immediately after the count, and plural "acts" is never filler, so act counts
 // are left for ACT_COUNT_REGEX instead
 const COLLECTION_SIZE_REGEX = new RegExp(
-  `(${NUMBER_OR_WORD})${SEP}(?!act${UNIT_BOUNDARY})(?:(?!acts${UNIT_BOUNDARY})[a-z]+${SEP}){0,3}${COLLECTION_NOUN}`,
+  `(${NUMBER_OR_WORD})${SEP}(?!act${UNIT_BOUNDARY})(?:(?!acts${UNIT_BOUNDARY})(?:[a-z]+|\\d+|\\*)${SEP}){0,3}${COLLECTION_NOUN}`,
   "i",
 );
 const SERIES_OF_PREFIX_REGEX = /\bseries\s+of\s*$/i;
