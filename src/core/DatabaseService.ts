@@ -106,6 +106,30 @@ export default class DatabaseService {
     }
   }
 
+  // non-destructive schema update for an existing collection (e.g. after adding new
+  // optional fields) - does not touch any existing documents or drop data
+  public async updateValidator(name: CollectionName): Promise<void> {
+    const database = await this.connect();
+    const $jsonSchema = COLLECTIONS.find((collection) => collection.name === name)?.$jsonSchema;
+    if (!$jsonSchema) {
+      throw new Error(`No schema registered for collection '${name}'`);
+    }
+
+    try {
+      await database.command({
+        collMod: name,
+        validator: { $jsonSchema },
+        validationAction: "error",
+        validationLevel: "strict",
+      });
+      console.info(`✅ - Updated validator for collection '${name}'`);
+    } catch (error) {
+      const message = `Failed to update validator for collection '${name}'`;
+      console.error(`❌ - ${message}`);
+      throw new Error(message, { cause: error });
+    }
+  }
+
   private async createCollections(): Promise<void> {
     const database = await this.connect();
     console.info("⏳ Creating collections:");
