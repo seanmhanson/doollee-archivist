@@ -96,7 +96,11 @@ export const TAG_DEFINITIONS: TagDefinition[] = [
   },
   { canonical: "translation", category: "format", variants: ["translation", "tranlation", "tranaslation"] },
   { canonical: "radio-play", category: "format", variants: ["radio play"] },
-  { canonical: "television-play", category: "format", variants: ["tv play", "television play", "teleplay"] },
+  {
+    canonical: "television-play",
+    category: "format",
+    variants: ["tv play", "t.v. play", "television play", "teleplay"],
+  },
   { canonical: "screenplay", category: "format", variants: ["screenplay"] },
   { canonical: "staged-reading", category: "format", variants: ["staged reading", "rehearsed reading", "reading"] },
   { canonical: "devised-piece", category: "format", variants: ["devised piece", "devised"] },

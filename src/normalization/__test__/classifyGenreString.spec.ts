@@ -73,6 +73,13 @@ describe("classifyGenreString", () => {
       });
     });
 
+    it("recognizes the scraped punctuated T.V. Play format", () => {
+      expect(classifyGenreString("t.v. play")).toEqual({
+        tags: { format: ["television-play"] },
+        residue: "",
+      });
+    });
+
     it("leaves unrecognized words as residue without affecting matched tags", () => {
       expect(classifyGenreString("typescript comedy")).toEqual({
         tags: { genre: ["comedy"] },

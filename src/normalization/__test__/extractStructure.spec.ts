@@ -24,6 +24,14 @@ describe("extractStructure", () => {
       expect(extractStructure("3 x ten monologues")).toEqual({ collectionSize: 3, prunedString: "" });
     });
 
+    it("does not interpret a play's scene count as a collection size", () => {
+      expect(extractStructure("drama 9 scenes")).toEqual({ prunedString: "drama 9 scenes" });
+    });
+
+    it("does not interpret a duration in a series description as a collection size", () => {
+      expect(extractStructure("series of ten minute plays")).toEqual({ prunedString: "series of ten minute plays" });
+    });
+
     it("does not treat a single act/play as a collection or an act count", () => {
       expect(extractStructure("one act play")).toEqual({ prunedString: "one act play" });
     });
